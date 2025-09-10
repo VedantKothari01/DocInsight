@@ -8,6 +8,7 @@ dataset_cache/
 corpus_cache/
 test_cache/
 test_corpus_cache/
+cache/
 
 # Temporary files
 /tmp/
