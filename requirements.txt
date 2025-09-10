@@ -1,0 +1,27 @@
+# Core ML and NLP libraries
+sentence-transformers>=2.2.0
+faiss-cpu>=1.7.4
+transformers>=4.20.0
+datasets>=2.10.0
+torch>=1.12.0
+numpy>=1.21.0
+pandas>=1.4.0
+
+# NLP processing
+spacy>=3.4.0
+nltk>=3.8
+textstat>=0.7.0
+
+# Document processing
+python-docx>=0.8.11
+PyMuPDF>=1.20.0
+docx2txt>=0.8
+
+# Web interface
+streamlit>=1.20.0
+pyngrok>=5.0.0
+
+# Utilities
+requests>=2.25.0
+pathlib>=1.0.0
+logging>=0.4.9.6
