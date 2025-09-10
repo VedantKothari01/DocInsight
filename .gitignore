@@ -1,0 +1,38 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Dataset cache directories
+dataset_cache/
+corpus_cache/
+test_cache/
+test_corpus_cache/
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+
+# Model cache (HuggingFace)
+.cache/
+transformers_cache/
+sentence_transformers_cache/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment files
+.env
+.venv/
+venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
