@@ -1,5 +1,5 @@
 """
-Corpus builder for DocInsight - Manages corpus building, indexing, and storage
+Clean corpus builder for DocInsight - Defensive implementation with fallbacks
 """
 import os
 import json
@@ -7,328 +7,210 @@ import pickle
 import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
-import faiss
-from sentence_transformers import SentenceTransformer
 import logging
-from dataset_loaders import get_default_corpus
+
+# Defensive imports
+try:
+    import faiss
+    HAS_FAISS = True
+except ImportError:
+    HAS_FAISS = False
+
+try:
+    from sentence_transformers import SentenceTransformer
+    HAS_SENTENCE_TRANSFORMERS = True
+except ImportError:
+    HAS_SENTENCE_TRANSFORMERS = False
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class CorpusBuilder:
-    """Manages corpus building, embedding, indexing, and storage."""
+# Fallback mini corpus for offline operation
+FALLBACK_CORPUS = [
+    "Machine learning is a subset of artificial intelligence.",
+    "Neural networks can approximate complex non-linear functions.",
+    "Deep learning requires large amounts of training data.",
+    "Natural language processing helps computers understand human language.",
+    "Computer vision enables machines to interpret visual information.",
+    "Artificial intelligence aims to create intelligent machines.",
+    "Data science combines statistics, programming, and domain expertise.",
+    "Algorithm optimization improves computational efficiency and performance.",
+    "Cloud computing provides scalable infrastructure for applications.",
+    "Cybersecurity protects digital systems from malicious attacks.",
+    "Climate change affects global weather patterns significantly.",
+    "Renewable energy sources help reduce carbon emissions.",
+    "Sustainable development balances economic growth with environmental protection.",
+    "Biodiversity loss threatens ecosystem stability worldwide.",
+    "Ocean acidification impacts marine life and food chains.",
+    "Education technology transforms traditional learning methods.",
+    "Digital literacy skills are essential in modern society.",
+    "Remote work changes organizational culture and practices.",
+    "Social media influences public opinion and behavior.",
+    "Healthcare innovation improves patient outcomes and treatment options.",
+]
+
+class CorpusIndex:
+    """Clean corpus management with fallback capabilities."""
     
     def __init__(self, 
-                 cache_dir: str = "./corpus_cache",
+                 target_size: int = 5000,
+                 cache_dir: str = "./cache",
                  model_name: str = "all-MiniLM-L6-v2"):
         """
-        Initialize corpus builder.
+        Initialize corpus index.
         
         Args:
-            cache_dir: Directory to store cached embeddings and indices
-            model_name: SentenceTransformer model to use for embeddings
+            target_size: Target number of sentences in corpus
+            cache_dir: Directory for caching (not committed to git)
+            model_name: SentenceTransformer model name
         """
+        self.target_size = target_size
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
-        
         self.model_name = model_name
-        self.sbert_model = None
-        self.corpus_sentences = []
-        self.embeddings = None
+        
+        self.sentences: List[str] = []
+        self.embeddings: Optional[np.ndarray] = None
         self.index = None
+        self._model = None
         
-    def load_model(self):
-        """Load the SentenceTransformer model."""
-        if self.sbert_model is None:
-            logger.info(f"Loading SentenceTransformer model: {self.model_name}")
-            self.sbert_model = SentenceTransformer(self.model_name)
-        return self.sbert_model
-    
-    def build_corpus(self, 
-                    sentences: Optional[List[str]] = None,
-                    target_size: int = 50000,
-                    force_rebuild: bool = False) -> List[str]:
-        """
-        Build or load corpus.
-        
-        Args:
-            sentences: Optional list of sentences to use
-            target_size: Target number of sentences
-            force_rebuild: Force rebuilding even if cached version exists
-            
-        Returns:
-            List of corpus sentences
-        """
-        corpus_file = self.cache_dir / "corpus_sentences.json"
-        
-        # Try to load existing corpus if not forcing rebuild
-        if not force_rebuild and corpus_file.exists():
+    def _load_model(self):
+        """Lazy load SentenceTransformer model."""
+        if self._model is None and HAS_SENTENCE_TRANSFORMERS:
             try:
-                with open(corpus_file, 'r', encoding='utf-8') as f:
-                    self.corpus_sentences = json.load(f)
-                logger.info(f"Loaded cached corpus: {len(self.corpus_sentences)} sentences")
-                
-                # Check if we need more sentences
-                if len(self.corpus_sentences) >= target_size * 0.8:
-                    return self.corpus_sentences
+                logger.info(f"Loading SentenceTransformer: {self.model_name}")
+                self._model = SentenceTransformer(self.model_name)
             except Exception as e:
-                logger.warning(f"Error loading cached corpus: {e}")
+                logger.warning(f"Failed to load model {self.model_name}: {e}")
+                self._model = None
+        return self._model
+    
+    def _build_fallback_corpus(self) -> List[str]:
+        """Build corpus using fallback data."""
+        logger.info("Using fallback mini-corpus (offline mode)")
+        sentences = FALLBACK_CORPUS.copy()
+        
+        # Expand with variations if needed
+        while len(sentences) < min(self.target_size, 100):
+            for base in FALLBACK_CORPUS:
+                if len(sentences) >= min(self.target_size, 100):
+                    break
+                # Add simple variations
+                variations = [
+                    f"The concept of {base.lower()}",
+                    f"Research shows that {base.lower()}",
+                    f"Studies indicate that {base.lower()}",
+                ]
+                sentences.extend(variations[:1])  # Add one variation
+        
+        return sentences[:self.target_size]
+    
+    def _try_load_datasets(self) -> List[str]:
+        """Attempt to load from dataset_loaders, fallback gracefully."""
+        try:
+            from dataset_loaders import get_default_corpus
+            logger.info("Attempting to load real datasets...")
+            sentences = get_default_corpus(target_size=self.target_size)
+            if sentences and len(sentences) > 50:
+                logger.info(f"Loaded {len(sentences)} sentences from real datasets")
+                return sentences
+        except Exception as e:
+            logger.warning(f"Failed to load real datasets: {e}")
+        
+        return self._build_fallback_corpus()
+    
+    def load_or_build(self) -> 'CorpusIndex':
+        """Load existing corpus or build new one."""
+        cache_file = self.cache_dir / f"corpus_{self.target_size}.json"
+        
+        # Try to load cached corpus
+        if cache_file.exists():
+            try:
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    self.sentences = json.load(f)
+                logger.info(f"Loaded {len(self.sentences)} sentences from cache")
+                return self
+            except Exception as e:
+                logger.warning(f"Failed to load cache: {e}")
         
         # Build new corpus
-        if sentences is None:
-            logger.info("Downloading datasets to build corpus...")
-            sentences = get_default_corpus(target_size=target_size)
+        self.sentences = self._try_load_datasets()
         
-        # Deduplicate and filter
-        self.corpus_sentences = self._process_sentences(sentences)
-        
-        # Save corpus
+        # Cache the corpus
         try:
-            with open(corpus_file, 'w', encoding='utf-8') as f:
-                json.dump(self.corpus_sentences, f, ensure_ascii=False, indent=2)
-            logger.info(f"Cached corpus saved: {len(self.corpus_sentences)} sentences")
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                json.dump(self.sentences, f, ensure_ascii=False, indent=2)
+            logger.info(f"Cached {len(self.sentences)} sentences")
         except Exception as e:
-            logger.warning(f"Error saving corpus: {e}")
+            logger.warning(f"Failed to cache corpus: {e}")
         
-        return self.corpus_sentences
+        return self
     
-    def _process_sentences(self, sentences: List[str]) -> List[str]:
-        """Process and clean sentences."""
-        # Remove duplicates while preserving order
-        seen = set()
-        unique_sentences = []
+    def build_index(self) -> bool:
+        """Build FAISS index if possible."""
+        if not HAS_FAISS or not self.sentences:
+            logger.warning("Cannot build FAISS index (missing dependencies or sentences)")
+            return False
         
-        for sent in sentences:
-            sent = sent.strip()
-            if sent and sent not in seen:
-                # Basic quality filters
-                if (10 <= len(sent) <= 300 and
-                    len(sent.split()) >= 3 and
-                    any(c.isalpha() for c in sent) and
-                    not sent.startswith(('http', 'www', '[', '{', '<'))):
-                    unique_sentences.append(sent)
-                    seen.add(sent)
+        model = self._load_model()
+        if not model:
+            logger.warning("Cannot build index without SentenceTransformer model")
+            return False
         
-        logger.info(f"Processed sentences: {len(sentences)} -> {len(unique_sentences)}")
-        return unique_sentences
-    
-    def build_embeddings(self, batch_size: int = 64) -> np.ndarray:
-        """
-        Build embeddings for the corpus.
-        
-        Args:
-            batch_size: Batch size for encoding
-            
-        Returns:
-            Normalized embeddings array
-        """
-        if not self.corpus_sentences:
-            raise ValueError("No corpus sentences available. Call build_corpus() first.")
-        
-        embeddings_file = self.cache_dir / f"embeddings_{self.model_name.replace('/', '_')}.pkl"
-        
-        # Try to load cached embeddings
-        if embeddings_file.exists():
-            try:
-                with open(embeddings_file, 'rb') as f:
-                    cached_data = pickle.load(f)
-                
-                # Check if cached embeddings match current corpus
-                if (len(cached_data['sentences']) == len(self.corpus_sentences) and
-                    cached_data['sentences'][:100] == self.corpus_sentences[:100]):
-                    self.embeddings = cached_data['embeddings']
-                    logger.info(f"Loaded cached embeddings: {self.embeddings.shape}")
-                    return self.embeddings
-            except Exception as e:
-                logger.warning(f"Error loading cached embeddings: {e}")
-        
-        # Build new embeddings
-        logger.info(f"Building embeddings for {len(self.corpus_sentences)} sentences...")
-        model = self.load_model()
-        
-        self.embeddings = model.encode(
-            self.corpus_sentences,
-            batch_size=batch_size,
-            convert_to_numpy=True,
-            show_progress_bar=True,
-            normalize_embeddings=True
-        )
-        
-        # Cache embeddings
         try:
-            with open(embeddings_file, 'wb') as f:
-                pickle.dump({
-                    'sentences': self.corpus_sentences,
-                    'embeddings': self.embeddings,
-                    'model_name': self.model_name
-                }, f)
-            logger.info(f"Cached embeddings saved: {self.embeddings.shape}")
-        except Exception as e:
-            logger.warning(f"Error saving embeddings: {e}")
-        
-        return self.embeddings
-    
-    def build_index(self, index_type: str = "flat") -> faiss.Index:
-        """
-        Build FAISS index for similarity search.
-        
-        Args:
-            index_type: Type of index ("flat", "ivf", "hnsw")
+            logger.info("Building embeddings and FAISS index...")
+            # Generate embeddings
+            self.embeddings = model.encode(self.sentences, convert_to_numpy=True)
             
-        Returns:
-            FAISS index
-        """
-        if self.embeddings is None:
-            raise ValueError("No embeddings available. Call build_embeddings() first.")
+            # Normalize embeddings
+            faiss.normalize_L2(self.embeddings)
+            
+            # Build FAISS index
+            dim = self.embeddings.shape[1]
+            self.index = faiss.IndexFlatIP(dim)  # Inner product (cosine similarity)
+            self.index.add(self.embeddings)
+            
+            logger.info(f"Built FAISS index with {self.index.ntotal} vectors")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to build FAISS index: {e}")
+            return False
+    
+    def search(self, query: str, k: int = 10) -> List[Tuple[str, float]]:
+        """Search for similar sentences."""
+        if not self.sentences:
+            return []
         
-        index_file = self.cache_dir / f"faiss_index_{index_type}_{self.model_name.replace('/', '_')}.index"
+        # If no FAISS index, use simple string matching as fallback
+        if not self.index:
+            results = []
+            query_lower = query.lower()
+            for sentence in self.sentences[:k*2]:  # Search in first k*2 sentences
+                if any(word in sentence.lower() for word in query_lower.split()):
+                    # Simple word overlap scoring
+                    score = len(set(query_lower.split()) & set(sentence.lower().split())) / max(len(query_lower.split()), 1)
+                    results.append((sentence, score))
+            results.sort(key=lambda x: x[1], reverse=True)
+            return results[:k]
         
-        # Try to load cached index
-        if index_file.exists():
-            try:
-                self.index = faiss.read_index(str(index_file))
-                if self.index.ntotal == len(self.corpus_sentences):
-                    logger.info(f"Loaded cached FAISS index: {self.index.ntotal} vectors")
-                    return self.index
-            except Exception as e:
-                logger.warning(f"Error loading cached index: {e}")
+        model = self._load_model()
+        if not model:
+            return []
         
-        # Build new index
-        logger.info(f"Building {index_type} FAISS index...")
-        d = self.embeddings.shape[1]
-        
-        if index_type == "flat":
-            # Exact search using inner product (cosine similarity with normalized vectors)
-            self.index = faiss.IndexFlatIP(d)
-        elif index_type == "ivf":
-            # Approximate search using IVF (Inverted File)
-            nlist = min(4096, max(64, len(self.corpus_sentences) // 39))
-            quantizer = faiss.IndexFlatIP(d)
-            self.index = faiss.IndexIVFFlat(quantizer, d, nlist)
-            self.index.train(self.embeddings)
-        elif index_type == "hnsw":
-            # Hierarchical Navigable Small World graphs
-            M = 16  # Number of bi-directional links for every node
-            self.index = faiss.IndexHNSWFlat(d, M)
-            self.index.hnsw.efConstruction = 200
-        else:
-            raise ValueError(f"Unsupported index type: {index_type}")
-        
-        # Add vectors to index
-        self.index.add(self.embeddings)
-        
-        # Cache index
         try:
-            faiss.write_index(self.index, str(index_file))
-            logger.info(f"Cached FAISS index saved: {self.index.ntotal} vectors")
+            # Encode query
+            query_embedding = model.encode([query], convert_to_numpy=True)
+            faiss.normalize_L2(query_embedding)
+            
+            # Search
+            scores, indices = self.index.search(query_embedding, k)
+            
+            results = []
+            for score, idx in zip(scores[0], indices[0]):
+                if idx < len(self.sentences):
+                    results.append((self.sentences[idx], float(score)))
+            
+            return results
         except Exception as e:
-            logger.warning(f"Error saving index: {e}")
-        
-        return self.index
-    
-    def search(self, query: str, top_k: int = 5) -> List[Dict]:
-        """
-        Search for similar sentences in the corpus.
-        
-        Args:
-            query: Query sentence
-            top_k: Number of results to return
-            
-        Returns:
-            List of search results with sentences and scores
-        """
-        if self.index is None:
-            raise ValueError("No index available. Call build_index() first.")
-        
-        if self.sbert_model is None:
-            self.load_model()
-        
-        # Encode query
-        query_embedding = self.sbert_model.encode([query], convert_to_numpy=True, normalize_embeddings=True)
-        
-        # Search
-        scores, indices = self.index.search(query_embedding, top_k)
-        
-        results = []
-        for score, idx in zip(scores[0], indices[0]):
-            if idx >= 0:  # Valid index
-                results.append({
-                    'sentence': self.corpus_sentences[idx],
-                    'score': float(score)
-                })
-        
-        return results
-    
-    def get_corpus_stats(self) -> Dict:
-        """Get statistics about the corpus."""
-        if not self.corpus_sentences:
-            return {}
-        
-        sentence_lengths = [len(sent) for sent in self.corpus_sentences]
-        word_counts = [len(sent.split()) for sent in self.corpus_sentences]
-        
-        return {
-            'total_sentences': len(self.corpus_sentences),
-            'avg_sentence_length': np.mean(sentence_lengths),
-            'avg_word_count': np.mean(word_counts),
-            'min_sentence_length': min(sentence_lengths),
-            'max_sentence_length': max(sentence_lengths),
-            'embedding_dimension': self.embeddings.shape[1] if self.embeddings is not None else None,
-            'index_type': type(self.index).__name__ if self.index is not None else None,
-            'index_total': self.index.ntotal if self.index is not None else None
-        }
-    
-    def build_complete_corpus(self,
-                            target_size: int = 50000,
-                            index_type: str = "flat",
-                            force_rebuild: bool = False) -> Tuple[List[str], faiss.Index]:
-        """
-        Complete corpus building pipeline.
-        
-        Args:
-            target_size: Target number of sentences
-            index_type: Type of FAISS index to build
-            force_rebuild: Force rebuilding even if cached versions exist
-            
-        Returns:
-            Tuple of (corpus_sentences, faiss_index)
-        """
-        logger.info("Starting complete corpus building pipeline...")
-        
-        # Build corpus
-        self.build_corpus(target_size=target_size, force_rebuild=force_rebuild)
-        
-        # Build embeddings
-        self.build_embeddings()
-        
-        # Build index
-        self.build_index(index_type=index_type)
-        
-        # Print stats
-        stats = self.get_corpus_stats()
-        logger.info(f"Corpus building complete: {stats}")
-        
-        return self.corpus_sentences, self.index
-
-def get_default_corpus_and_index(target_size: int = 50000, 
-                                index_type: str = "flat",
-                                force_rebuild: bool = False) -> Tuple[List[str], faiss.Index, SentenceTransformer]:
-    """
-    Convenience function to get a complete corpus, index, and model.
-    
-    Args:
-        target_size: Target number of sentences in corpus
-        index_type: Type of FAISS index ("flat", "ivf", "hnsw")
-        force_rebuild: Force rebuilding even if cached versions exist
-        
-    Returns:
-        Tuple of (corpus_sentences, faiss_index, sbert_model)
-    """
-    builder = CorpusBuilder()
-    corpus_sentences, index = builder.build_complete_corpus(
-        target_size=target_size,
-        index_type=index_type,
-        force_rebuild=force_rebuild
-    )
-    
-    return corpus_sentences, index, builder.sbert_model
+            logger.error(f"Search failed: {e}")
+            return []
