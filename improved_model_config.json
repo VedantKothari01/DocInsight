@@ -1,0 +1,17 @@
+{
+  "corpus_size": 5000,
+  "similarity_thresholds": {
+    "high_confidence": 0.75,
+    "medium_confidence": 0.55,
+    "low_confidence": 0.35
+  },
+  "fusion_weights": {
+    "semantic_weight": 0.6,
+    "cross_encoder_weight": 0.3,
+    "stylometric_weight": 0.1
+  },
+  "top_k_matches": 10,
+  "enable_cross_encoder": true,
+  "enable_stylometric": true,
+  "enable_domain_adaptation": true
+}

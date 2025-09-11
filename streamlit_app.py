@@ -40,10 +40,10 @@ def load_detector():
                     detected_size = max(int(p.stem.split("_")[1]) for p in corpus_files)
                 except Exception:
                     detected_size = None
-        # Fallback order if nothing detected
-        candidate_sizes = [s for s in [detected_size, 50000, 10000, 5000, 1000, 500] if s]
+        # Fallback order if nothing detected (prioritize larger corpora for better accuracy)
+        candidate_sizes = [s for s in [detected_size, 20000, 10000, 5000, 1000, 500] if s]
         if not candidate_sizes:
-            candidate_sizes = [10000]
+            candidate_sizes = [5000]  # Use 5000 as default since it's available
 
         # Try sizes until one is ready
         corpus_index = None

@@ -259,7 +259,7 @@ class AcademicPlagiarismDetector:
             logger.warning(f"Basic stylometry calculation failed: {e}")
             return 0.5  # neutral score
     
-    def analyze_sentence(self, sentence: str, top_k: int = 5) -> AcademicAnalysisResult:
+    def analyze_sentence(self, sentence: str, top_k: int = 12) -> AcademicAnalysisResult:
         """
         Analyze single sentence for academic plagiarism with enhanced features.
         
@@ -289,6 +289,7 @@ class AcademicPlagiarismDetector:
             semantic_norm = max(0.0, min(1.0, (sem + 1.0) / 2.0))
 
             cross_encoder_score = semantic_norm
+            # Eagerly load cross-encoder once, reuse across calls
             cross_encoder = self._load_cross_encoder()
             if cross_encoder and semantic_norm > 0.3:  # Only rerank promising matches
                 try:
@@ -302,18 +303,18 @@ class AcademicPlagiarismDetector:
             else:
                 cross_encoder_scores.append(semantic_norm)
             
-            # Combine semantic and cross-encoder scores
+            # Combine semantic and cross-encoder scores (improved weights)
             if self.use_domain_adaptation:
                 # Enhanced fusion for academic domain
-                final_score = 0.6 * semantic_norm + 0.4 * cross_encoder_score
+                final_score = 0.65 * semantic_norm + 0.35 * cross_encoder_score
             else:
                 # Standard fusion
                 final_score = 0.7 * semantic_norm + 0.3 * cross_encoder_score
             
-            # Determine confidence level
-            if final_score >= 0.8:
+            # Determine confidence level (improved thresholds for better detection)
+            if final_score >= 0.75:  # Lowered from 0.8 for better detection
                 confidence = "HIGH"
-            elif final_score >= 0.6:
+            elif final_score >= 0.55:  # Lowered from 0.6
                 confidence = "MEDIUM"
             else:
                 confidence = "LOW"
@@ -384,20 +385,6 @@ class AcademicPlagiarismDetector:
             fused_score=float(fused_score),
             confidence=overall_confidence,
             academic_indicators=academic_indicators
-        )
-        if fused_score >= 0.8:
-            overall_confidence = "HIGH"
-        elif fused_score >= 0.6:
-            overall_confidence = "MEDIUM"
-        else:
-            overall_confidence = "LOW"
-        
-        return AnalysisResult(
-            sentence=sentence,
-            matches=matches[:5],  # Keep top 5 matches
-            stylometry_score=stylometry_score,
-            fused_score=fused_score,
-            confidence=overall_confidence
         )
     
     def analyze_document(self, text: str) -> Dict[str, Any]:

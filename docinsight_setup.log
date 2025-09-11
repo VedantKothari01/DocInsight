@@ -425,3 +425,20 @@ Neutral network (uncorrelated)
 2025-09-11 12:25:03,056 - INFO -   1. Test system: python run_docinsight.py --validate
 2025-09-11 12:25:03,056 - INFO -   2. Launch web interface: streamlit run streamlit_app.py
 2025-09-11 12:25:03,056 - INFO -   3. Analyze documents: python run_docinsight.py
+2025-09-12 00:46:24,777 - INFO - ⚡ Quick mode activated - minimal academic setup
+2025-09-12 00:46:24,777 - INFO - DocInsight Academic Setup Configuration:
+2025-09-12 00:46:24,777 - INFO -   Target corpus size: 5,000 sentences
+2025-09-12 00:46:24,777 - INFO -   Domain adaptation: ENABLED
+2025-09-12 00:46:24,777 - INFO -   Force rebuild: False
+2025-09-12 00:46:24,777 - INFO -   Research mode: False
+2025-09-12 00:46:24,777 - INFO -   Quick mode: True
+2025-09-12 00:46:24,777 - INFO - Checking system requirements...
+2025-09-12 00:46:25,917 - INFO - NumExpr defaulting to 10 threads.
+2025-09-12 00:48:12,090 - INFO - DocInsight Academic Setup Configuration:
+2025-09-12 00:48:12,091 - INFO -   Target corpus size: 20,000 sentences
+2025-09-12 00:48:12,091 - INFO -   Domain adaptation: ENABLED
+2025-09-12 00:48:12,091 - INFO -   Force rebuild: True
+2025-09-12 00:48:12,091 - INFO -   Research mode: False
+2025-09-12 00:48:12,091 - INFO -   Quick mode: False
+2025-09-12 00:48:12,091 - INFO - Checking system requirements...
+2025-09-12 00:48:13,222 - INFO - NumExpr defaulting to 10 threads.
