@@ -1,0 +1,11 @@
+# Minimal requirements for testing
+streamlit
+numpy
+pandas
+nltk
+textstat
+docx2txt
+PyMuPDF
+tqdm
+requests
+beautifulsoup4
