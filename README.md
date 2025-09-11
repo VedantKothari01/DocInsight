@@ -54,17 +54,34 @@ DocInsight is an advanced document analysis system that detects potential plagia
 - Python 3.8 or higher
 - pip package manager
 
-### Quick Setup
+### 🚀 One-Command Setup & Run
 ```bash
 # Clone the repository
 git clone https://github.com/VedantKothari01/DocInsight.git
 cd DocInsight
 
+# Install dependencies and run DocInsight in one command
+bash run_docinsight.sh
+```
+
+The script automatically:
+- ✅ Verifies Python 3.8+ requirement
+- 📦 Installs all dependencies from requirements.txt
+- 📚 Downloads required NLTK data
+- 🧠 Sets up spaCy language model
+- 🔍 Tests core imports
+- 🌐 Starts the Streamlit web interface
+
+### Manual Setup (Alternative)
+```bash
 # Install dependencies
 pip install -r requirements.txt
 
 # Download NLTK data (first run only)
 python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
+
+# Download spaCy model
+python -m spacy download en_core_web_sm
 
 # Run the application
 streamlit run streamlit_app.py
@@ -80,6 +97,17 @@ streamlit run streamlit_app.py
 - **docx2txt**: DOCX text extraction
 
 ## 🎯 Usage
+
+### 🚀 Quick Start (Recommended)
+```bash
+# One command to run everything
+bash run_docinsight.sh
+```
+This will:
+1. Install all dependencies
+2. Set up required data files
+3. Start the web interface at `http://localhost:8501`
+4. Ready to analyze documents!
 
 ### Web Interface
 1. Start the Streamlit application:

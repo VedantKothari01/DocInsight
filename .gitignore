@@ -48,6 +48,12 @@ faiss_index/
 *.model
 *.bin
 
+# Phase 2+: New model directories
+models/semantic_local/*
+models/ai_likeness/*
+fine_tuning/data/*
+!fine_tuning/data/.gitkeep
+
 # Temporary files
 tmp/
 temp/

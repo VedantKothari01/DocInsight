@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocInsight - Streamlit Interface Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fafafa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: #262730;
+            border-bottom: 2px solid #ff4b4b;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9fa;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: #fff;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #262730;
+        }
+        .risk-high { color: #ff4b4b; }
+        .risk-medium { color: #ffa500; }
+        .risk-low { color: #00cc88; }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #262730;
+        }
+        .sentence-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        .sentence-high {
+            background-color: #ffebee;
+            border-left-color: #ff4b4b;
+        }
+        .sentence-medium {
+            background-color: #fff8e1;
+            border-left-color: #ffa500;
+        }
+        .sentence-low {
+            background-color: #e8f5e8;
+            border-left-color: #00cc88;
+        }
+        .sidebar {
+            background: #f0f2f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .download-btn {
+            background: #ff4b4b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            background: #e04343;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 DocInsight - Document Originality Analysis</h1>
+            <p>Upload a document to analyze its originality and detect potential plagiarism.</p>
+        </div>
+
+        <div class="upload-area">
+            <h3>Choose a document to analyze</h3>
+            <p>Supported formats: PDF, DOCX, TXT</p>
+            <p>📁 Drag and drop file here or click to browse</p>
+        </div>
+
+        <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <strong>✅ Analysis completed!</strong>
+        </div>
+
+        <div class="section">
+            <h3>📊 Originality Analysis</h3>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Originality Score</div>
+                    <div class="metric-value risk-medium">73.2%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Plagiarized Coverage</div>
+                    <div class="metric-value risk-medium">26.8%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Severity Index</div>
+                    <div class="metric-value">0.412</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total Sentences</div>
+                    <div class="metric-value">45</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+            <div class="section">
+                <h3>📈 Risk Distribution</h3>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                    <div class="metric-card">
+                        <div class="metric-label">🔴 High Risk</div>
+                        <div class="metric-value risk-high">3</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">🟡 Medium Risk</div>
+                        <div class="metric-value risk-medium">8</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">🟢 Low Risk</div>
+                        <div class="metric-value risk-low">34</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>⚠️ Top 2 Risk Spans</h3>
+                <div style="border: 1px solid #ff4b4b; border-radius: 5px; padding: 15px; margin: 10px 0;">
+                    <strong>🔴 Risk Span 1 - HIGH (Score: 0.823)</strong>
+                    <p><strong>Preview:</strong> Machine learning algorithms have revolutionized the field of artificial intelligence by enabling computers to learn patterns from data...</p>
+                    <p><strong>Details:</strong> Sentences: 3 | Token count: 127 | Position: 15-17</p>
+                </div>
+                <div style="border: 1px solid #ffa500; border-radius: 5px; padding: 15px; margin: 10px 0;">
+                    <strong>🟡 Risk Span 2 - MEDIUM (Score: 0.567)</strong>
+                    <p><strong>Preview:</strong> Deep neural networks consist of multiple layers of interconnected nodes that process information...</p>
+                    <p><strong>Details:</strong> Sentences: 5 | Token count: 203 | Position: 22-26</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📝 Sentence Analysis Details</h3>
+            <div>
+                <label>Filter by risk level: <select><option>All</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select></label>
+                <label style="margin-left: 20px;"><input type="checkbox"> Show detailed scores</label>
+            </div>
+            
+            <div class="sentence-item sentence-high">
+                <strong>🔴 Sentence 1 (HIGH)</strong><br>
+                Machine learning is a subset of artificial intelligence that focuses on algorithms capable of learning from data.
+                <br><br>
+                <strong>Most similar:</strong> Machine learning algorithms are a type of artificial intelligence that can learn patterns from large datasets.
+                <br><strong>Confidence:</strong> 0.847
+            </div>
+
+            <div class="sentence-item sentence-medium">
+                <strong>🟡 Sentence 2 (MEDIUM)</strong><br>
+                These algorithms can identify patterns and make predictions without being explicitly programmed for each task.
+                <br><br>
+                <strong>Most similar:</strong> Such algorithms can detect patterns and generate predictions without explicit programming.
+                <br><strong>Confidence:</strong> 0.623
+            </div>
+
+            <div class="sentence-item sentence-low">
+                <strong>🟢 Sentence 3 (LOW)</strong><br>
+                The implementation of our novel approach involves several innovative preprocessing steps.
+                <br><br>
+                <strong>Most similar:</strong> Data preprocessing is an important step in machine learning pipelines.
+                <br><strong>Confidence:</strong> 0.234
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📥 Download Reports</h3>
+            <div class="download-buttons">
+                <button class="download-btn">📄 Download HTML Report</button>
+                <button class="download-btn">📊 Download JSON Report</button>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <h3>ℹ️ About DocInsight</h3>
+            <p><strong>🔍 Multi-layer Analysis:</strong></p>
+            <ul>
+                <li>Semantic similarity search</li>
+                <li>Cross-encoder reranking</li>
+                <li>Stylometric feature comparison</li>
+            </ul>
+            
+            <p><strong>📊 Document-level Metrics:</strong></p>
+            <ul>
+                <li>Originality score (0-100%)</li>
+                <li>Plagiarized content coverage</li>
+                <li>Risk span clustering</li>
+                <li>Severity assessment</li>
+            </ul>
+            
+            <p><strong>🎯 Risk Classification:</strong></p>
+            <ul>
+                <li>🔴 <strong>High Risk:</strong> Likely plagiarized content</li>
+                <li>🟡 <strong>Medium Risk:</strong> Potentially similar content</li>
+                <li>🟢 <strong>Low Risk:</strong> Original content</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
