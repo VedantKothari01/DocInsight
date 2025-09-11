@@ -428,8 +428,11 @@ class AcademicPlagiarismDetector:
                 {
                     'sentence': a.sentence,
                     'fused_score': a.fused_score,
-                    'stylometry_score': a.stylometry_score,
+                    'semantic_score': a.semantic_score,
+                    'stylometry_similarity': a.stylometry_similarity,
+                    'cross_encoder_score': a.cross_encoder_score,
                     'confidence': a.confidence,
+                    'academic_indicators': a.academic_indicators,
                     'matches': [
                         {
                             'text': m.text,

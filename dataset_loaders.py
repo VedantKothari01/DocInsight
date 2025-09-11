@@ -494,7 +494,6 @@ class DatasetLoader:
             return []
     
     def load_combined_corpus(self, target_size: int = 50000) -> List[str]:
-    def load_combined_corpus(self, target_size: int = 50000) -> List[str]:
         """
         Load and combine sentences from all available sources for academic paraphrase curriculum.
         

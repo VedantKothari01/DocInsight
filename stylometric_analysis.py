@@ -429,6 +429,8 @@ class AcademicStylometricAnalyzer:
         
         # Advanced comparison with numpy
         try:
+            import numpy as np  # Import here to avoid global dependency
+            
             # Create feature vectors
             vector1 = self._features_to_vector(features1)
             vector2 = self._features_to_vector(features2)
@@ -447,10 +449,12 @@ class AcademicStylometricAnalyzer:
         
         return 0.0
     
-    def _features_to_vector(self, features: StyleFeatures) -> np.ndarray:
+    def _features_to_vector(self, features: StyleFeatures):
         """Convert StyleFeatures to numerical vector for comparison."""
         if not HAS_NUMPY:
             return []
+        
+        import numpy as np  # Import here to avoid global dependency
         
         # Create normalized feature vector
         vector_components = [

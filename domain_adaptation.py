@@ -33,6 +33,13 @@ try:
     HAS_SENTENCE_TRANSFORMERS = True
 except ImportError:
     HAS_SENTENCE_TRANSFORMERS = False
+    # Create dummy classes for type hints when imports fail
+    class SentenceTransformer:
+        pass
+    class InputExample:
+        pass
+    class DataLoader:
+        pass
 
 try:
     import torch
@@ -73,14 +80,16 @@ class AcademicDomainAdapter:
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
         
-        self.model: Optional[SentenceTransformer] = None
+        self.model: Optional[object] = None  # SentenceTransformer when available
         self.dataset_loader = DatasetLoader()
         
-    def load_base_model(self) -> SentenceTransformer:
+    def load_base_model(self):
         """Load base sentence transformer model."""
         if not HAS_SENTENCE_TRANSFORMERS:
-            raise ImportError("sentence-transformers required for domain adaptation")
+            logger.warning("sentence-transformers not available - domain adaptation disabled")
+            return None
         
+        from sentence_transformers import SentenceTransformer  # Import here for safety
         logger.info(f"Loading base model: {self.config.base_model}")
         model = SentenceTransformer(self.config.base_model)
         model.max_seq_length = self.config.max_seq_length

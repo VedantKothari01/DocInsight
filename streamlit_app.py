@@ -172,18 +172,54 @@ def display_analysis_results(results: dict):
         sentence = analysis['sentence']
         confidence = analysis['confidence']
         fused_score = analysis['fused_score']
+        semantic_score = analysis.get('semantic_score', 0.0)
+        stylometry_similarity = analysis.get('stylometry_similarity', 0.0)
+        cross_encoder_score = analysis.get('cross_encoder_score', 0.0)
+        academic_indicators = analysis.get('academic_indicators', {})
         matches = analysis['matches']
         
         # Color code based on confidence
         if confidence == "HIGH":
-            st.error(f"**Sentence {i+1}** (Score: {fused_score:.3f}) - {confidence} RISK")
+            st.error(f"**Sentence {i+1}** (Final Score: {fused_score:.3f}) - {confidence} RISK")
         elif confidence == "MEDIUM":
-            st.warning(f"**Sentence {i+1}** (Score: {fused_score:.3f}) - {confidence} RISK")
+            st.warning(f"**Sentence {i+1}** (Final Score: {fused_score:.3f}) - {confidence} RISK")
         else:
-            st.info(f"**Sentence {i+1}** (Score: {fused_score:.3f}) - {confidence} RISK")
+            st.info(f"**Sentence {i+1}** (Final Score: {fused_score:.3f}) - {confidence} RISK")
         
         st.write(f"*Text:* {sentence}")
         
+        # Display component scores (Semantic + Stylometric Analysis)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("🧠 Semantic Score", f"{semantic_score:.3f}")
+        with col2:
+            st.metric("✍️ Stylometric Score", f"{stylometry_similarity:.3f}")
+        with col3:
+            st.metric("🎯 Cross-Encoder Score", f"{cross_encoder_score:.3f}")
+        
+        # Display stylometric analysis (Academic Writing Features)
+        if academic_indicators:
+            with st.expander("📊 Stylometric Analysis (Academic Writing Features)"):
+                st.markdown("**Academic Writing Style Analysis:**")
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    if 'academic_word_ratio' in academic_indicators:
+                        st.metric("📚 Academic Vocabulary", f"{academic_indicators['academic_word_ratio']:.3f}")
+                    if 'citation_density' in academic_indicators:
+                        st.metric("📖 Citation Density", f"{academic_indicators['citation_density']:.3f}")
+                    if 'flesch_kincaid_grade' in academic_indicators:
+                        st.metric("📝 Reading Level", f"{academic_indicators['flesch_kincaid_grade']:.1f}")
+                
+                with col2:
+                    if 'passive_voice_ratio' in academic_indicators:
+                        st.metric("🔄 Passive Voice", f"{academic_indicators['passive_voice_ratio']:.3f}")
+                    if 'perplexity_estimate' in academic_indicators:
+                        st.metric("🤖 AI Perplexity", f"{academic_indicators['perplexity_estimate']:.1f}")
+                    if 'repetition_score' in academic_indicators:
+                        st.metric("🔁 Repetition Score", f"{academic_indicators['repetition_score']:.3f}")
+        
+        # Similar matches
         if matches:
             with st.expander(f"🔍 View {len(matches)} similar matches found"):
                 for j, match in enumerate(matches):
@@ -211,16 +247,19 @@ def main():
     
     **🌟 Key Features:**
     - 🚀 **One-click analysis** - just upload your document
-    - 🧠 **Advanced ML models** with semantic similarity + cross-encoder reranking
-    - 📊 **Complete document analysis** - every sentence analyzed and scored
-    - 🎯 **Confidence scoring** with detailed risk assessment (HIGH/MEDIUM/LOW)
+    - 🧠 **Semantic Analysis** - Advanced ML models with SBERT embeddings + cross-encoder reranking
+    - ✍️ **Stylometric Analysis** - 15+ academic writing features (vocabulary, citations, passive voice, AI detection)
+    - 📊 **Dual-Engine Detection** - Combines semantic similarity + writing style analysis (beats Turnitin's approach!)
+    - 🎯 **Component Scoring** - See individual semantic, stylometric, and cross-encoder scores
+    - 📝 **Academic Indicators** - Reading level, citation density, academic vocabulary usage
+    - 🤖 **AI Detection Features** - Perplexity estimation, repetition analysis, coherence scoring
     - 🌐 **Real datasets** - PAWS paraphrases, Wikipedia articles, academic papers
     - ⚡ **FAISS indexing** for sub-second similarity search
     - 📝 **Comprehensive reports** with downloadable JSON and summary formats
     - 🔒 **No hardcoded corpus** - purely data-driven detection
     """)
     
-    st.info("💡 **NEW**: Complete document review - analyzes every sentence, not just highlights!")
+    st.info("💡 **RESEARCH ADVANTAGE**: DocInsight uses both semantic similarity AND stylometric analysis - the two areas where Turnitin falls short!")
     
     # Load detector
     detector = load_detector()
