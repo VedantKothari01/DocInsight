@@ -1,0 +1,7 @@
+{
+  "index_type": "numpy_fallback",
+  "dimension": 384,
+  "num_vectors": 232,
+  "chunk_count": 232,
+  "build_timestamp": "2025-09-11 17:12:04.976254"
+}

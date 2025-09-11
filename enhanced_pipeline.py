@@ -147,6 +147,11 @@ class SemanticSearchEngine:
         self.index = None
         self.corpus_sentences = []
         self._load_models()
+        
+        # Phase 2: Try to use persistent retrieval system
+        self.use_persistent_retrieval = False
+        self.retrieval_engine = None
+        self._try_load_persistent_retrieval()
     
     def _load_models(self):
         """Load SBERT model"""
@@ -157,9 +162,30 @@ class SemanticSearchEngine:
         except Exception as e:
             logger.error(f"Error loading SBERT model: {e}")
             self.model = None
+            
+    def _try_load_persistent_retrieval(self):
+        """Try to load Phase 2 persistent retrieval system"""
+        try:
+            from retrieval import get_retrieval_engine
+            self.retrieval_engine = get_retrieval_engine()
+            
+            if self.retrieval_engine.is_ready():
+                self.use_persistent_retrieval = True
+                logger.info("Using persistent retrieval system (Phase 2)")
+            else:
+                logger.info("Persistent retrieval not ready, using in-memory system (Phase 1)")
+                
+        except ImportError:
+            logger.debug("Phase 2 retrieval system not available")
+        except Exception as e:
+            logger.debug(f"Could not load persistent retrieval: {e}")
     
     def build_index(self, corpus_sentences: List[str]):
         """Build FAISS index from corpus sentences"""
+        if self.use_persistent_retrieval:
+            logger.info("Using persistent retrieval system - skipping in-memory index build")
+            return True
+            
         if self.model is None:
             logger.error("SBERT model not loaded. Cannot build index.")
             return False
@@ -186,6 +212,28 @@ class SemanticSearchEngine:
     
     def search(self, query: str, top_k: int = DEFAULT_TOP_K) -> List[Dict]:
         """Perform semantic search"""
+        # Phase 2: Use persistent retrieval if available
+        if self.use_persistent_retrieval and self.retrieval_engine:
+            try:
+                results = self.retrieval_engine.retrieve_similar_chunks(
+                    [query], top_k=top_k
+                )
+                
+                # Convert to Phase 1 format for compatibility
+                formatted_results = []
+                for result in results:
+                    formatted_results.append({
+                        'sentence': result.text,
+                        'score': float(result.score)
+                    })
+                    
+                return formatted_results
+                
+            except Exception as e:
+                logger.warning(f"Persistent retrieval failed, falling back to in-memory: {e}")
+                # Fall through to Phase 1 implementation
+                
+        # Phase 1: In-memory search
         if self.model is None or self.index is None:
             logger.warning("Search engine not properly initialized")
             return []
