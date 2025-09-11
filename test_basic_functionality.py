@@ -29,7 +29,7 @@ def test_text_processing():
     assert len(sentences) > 0
     print(f"✅ Sentence processing works ({len(sentences)} sentences found)")
     
-    return sentences
+    # No explicit return needed for pytest
 
 def test_stylometry_basic():
     """Test basic stylometry without spaCy"""
@@ -43,7 +43,7 @@ def test_stylometry_basic():
     assert isinstance(flesch_score, (int, float))
     print(f"✅ Flesch reading ease score: {flesch_score}")
     
-    return True
+    # No explicit return needed
 
 def test_scoring_logic():
     """Test scoring logic with mock data"""
@@ -85,7 +85,7 @@ def test_scoring_logic():
     assert 0 <= metrics['originality_score'] <= 1
     print(f"✅ Document scoring works (originality: {metrics['originality_score']:.2%})")
     
-    return True
+    # No explicit return needed
 
 def test_corpus_builder():
     """Test corpus builder functionality"""
@@ -98,7 +98,7 @@ def test_corpus_builder():
     assert len(demo_corpus) > 0
     print(f"✅ Demo corpus loaded ({len(demo_corpus)} sentences)")
     
-    return True
+    # No explicit return needed
 
 def test_configuration():
     """Test configuration values"""
@@ -116,7 +116,7 @@ def test_configuration():
     assert 0.9 < total < 1.1  # Should sum to ~1
     
     print("✅ Configuration values are valid")
-    return True
+    # No explicit return needed
 
 def main():
     """Run basic functionality tests"""

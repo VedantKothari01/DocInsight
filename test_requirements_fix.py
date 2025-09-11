@@ -47,7 +47,7 @@ def test_requirements_parsing():
             return False
         else:
             print("✅ Requirements.txt looks good - no problematic patterns found")
-            return True
+            # Success path
             
     except Exception as e:
         print(f"❌ Error reading requirements.txt: {e}")
@@ -64,7 +64,7 @@ def test_pip_dry_run():
         
         if result.returncode == 0:
             print("✅ Pip dry-run completed successfully")
-            return True
+            # Success path
         else:
             print(f"❌ Pip dry-run failed: {result.stderr}")
             return False

@@ -162,3 +162,16 @@ FUNCTION_WORDS = [
 # AI-likeness detection thresholds
 AI_LIKENESS_THRESHOLD = float(os.getenv('DOCINSIGHT_AI_THRESHOLD', '0.7'))
 SUSPICIOUS_SECTION_COUNT = int(os.getenv('DOCINSIGHT_SUSPICIOUS_SECTIONS', '3'))  # Top N suspicious sections to show
+
+# Reuse / repeated match decay (post-processing) configuration
+# These control dampening of confidence for the same corpus best_match appearing
+# many times across a document. Previously hard-coded in enhanced_pipeline.
+# Allowance: first N occurrences unpenalized.
+# Decay factor: multiplicative penalty applied per occurrence beyond allowance.
+REUSE_DECAY_ALLOWANCE = int(os.getenv('DOCINSIGHT_REUSE_ALLOWANCE', '2'))
+REUSE_DECAY_FACTOR = float(os.getenv('DOCINSIGHT_REUSE_DECAY', '0.85'))
+if REUSE_DECAY_ALLOWANCE < 0:
+    REUSE_DECAY_ALLOWANCE = 0
+if not (0.0 < REUSE_DECAY_FACTOR <= 1.0):
+    # Clamp to sensible range; default if invalid
+    REUSE_DECAY_FACTOR = 0.85

@@ -580,6 +580,10 @@ class DocumentAnalysisPipeline:
                         'source': self.semantic_engine.model_source,
                         'path': self.semantic_engine.model_path,
                         'use_fine_tuned_flag': USE_FINE_TUNED_MODEL
+                    },
+                    'reuse_decay': {
+                        'allowance': REUSE_DECAY_ALLOWANCE,
+                        'decay_factor': REUSE_DECAY_FACTOR
                     }
                 }
             }
@@ -605,12 +609,12 @@ class DocumentAnalysisPipeline:
         - Add explanation tag in 'reason'.
 
         Parameters (tunable):
-        - allowance = 2 (first two occurrences unpenalized)
-        - decay_factor = 0.85 applied multiplicatively for each occurrence beyond allowance
+        - allowance = config.REUSE_DECAY_ALLOWANCE (first N unpenalized)
+        - decay_factor = config.REUSE_DECAY_FACTOR applied multiplicatively per extra occurrence
         - min_confidence_floor: don't reduce below 0 to avoid negatives
         """
-        allowance = 2
-        decay_factor = 0.85
+        allowance = REUSE_DECAY_ALLOWANCE
+        decay_factor = REUSE_DECAY_FACTOR
         match_counts: Dict[str, int] = {}
 
         for res in sentence_results:

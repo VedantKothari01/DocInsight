@@ -185,11 +185,13 @@ Key settings in `config.py`:
 | Adjust stylometry weight | `DOCINSIGHT_W_STYLO` | `0.25` | Fusion weight (stylometry) |
 | Adjust AI-likeness weight | `DOCINSIGHT_W_AI` | `0.15` | Fusion weight (AI-likeness) |
 | Min semantic raw match | `SEMANTIC_MIN_MATCH` | `0.35` (code) | Below → forced LOW risk |
+| Reuse decay allowance | `DOCINSIGHT_REUSE_ALLOWANCE` | `2` | Number of identical best_match uses before decay |
+| Reuse decay factor | `DOCINSIGHT_REUSE_DECAY` | `0.85` | Multiplier per occurrence beyond allowance |
 
 Additional risk gating floors defined in code: `SEMANTIC_HIGH_FLOOR=0.60`, `SEMANTIC_MEDIUM_FLOOR=0.40`.
 
 ### Repeated Match Decay (Post-Processing)
-Applied after per-sentence scoring: repeated reuse of the same corpus sentence beyond an allowance (currently 2) is multiplicatively decayed (factor 0.85 per extra occurrence) and can downgrade risk. Future: expose parameters via config.
+Applied after per-sentence scoring: repeated reuse of the same corpus sentence beyond an allowance (`DOCINSIGHT_REUSE_ALLOWANCE`) is multiplicatively decayed by `DOCINSIGHT_REUSE_DECAY` per extra occurrence. This can downgrade risk levels if decayed fused scores no longer satisfy gating thresholds. Configure via environment variables; defaults: allowance=2, decay=0.85.
 
 ### Outputs & Interpretability
 - Each sentence now includes: `risk_level`, `confidence_score` (fused), `match_strength`, `reason`, top match text.

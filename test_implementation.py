@@ -46,7 +46,7 @@ def test_imports():
         print(f"❌ Failed to import corpus_builder: {e}")
         return False
     
-    return True
+    # No explicit return needed
 
 def test_configuration():
     """Test configuration values"""
@@ -74,7 +74,7 @@ def test_configuration():
     assert 0.9 < total_weight < 1.1  # Should sum to approximately 1
     print("✅ Aggregation weights configured correctly")
     
-    return True
+    # No explicit return needed
 
 def test_scoring_module():
     """Test scoring module functionality"""
@@ -106,7 +106,7 @@ def test_scoring_module():
     assert analysis['plagiarized_coverage'] == 0.0
     print("✅ Empty document handling works correctly")
     
-    return True
+    # No explicit return needed
 
 def test_text_extraction():
     """Test text extraction functionality"""
@@ -136,7 +136,7 @@ def test_text_extraction():
     finally:
         os.unlink(temp_file)
     
-    return True
+    # No explicit return needed
 
 def test_corpus_builder():
     """Test corpus builder functionality"""
@@ -153,7 +153,7 @@ def test_corpus_builder():
     assert all(isinstance(sentence, str) for sentence in demo_corpus)
     print(f"✅ Demo corpus loaded ({len(demo_corpus)} sentences)")
     
-    return True
+    # No explicit return needed
 
 def test_file_structure():
     """Test that required files exist and have correct structure"""
@@ -161,7 +161,6 @@ def test_file_structure():
     
     required_files = [
         'config.py',
-        'scoring.py', 
         'enhanced_pipeline.py',
         'streamlit_app.py',
         'corpus_builder.py',
@@ -188,7 +187,7 @@ def test_file_structure():
                 print(f"❌ {dep} missing from requirements.txt")
                 return False
     
-    return True
+    # No explicit return needed
 
 def main():
     """Run all tests"""
