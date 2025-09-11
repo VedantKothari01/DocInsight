@@ -148,6 +148,10 @@ class RetrievalEngine:
     def is_ready(self) -> bool:
         """Check if retrieval system is ready for queries"""
         try:
+            # Try to load index if not already loaded
+            if not self.index_manager.index.is_available():
+                self.index_manager.index.load_index()
+                
             index_stats = self.index_manager.get_index_stats()
             return (
                 index_stats.get('available', False) and 
