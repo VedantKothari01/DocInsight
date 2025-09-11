@@ -1,0 +1,104 @@
+# DocInsight .gitignore
+
+# Cache directories
+corpus_cache/
+dataset_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Log files
+*.log
+log_*.txt
+docinsight_setup.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.env
+.venv/
+
+# Model caches and indices
+models/
+indices/
+faiss_index/
+*.index
+*.model
+*.bin
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Data files (uncomment if you want to exclude data)
+# data/
+# corpus/
+# documents/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# PyTest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Runtime artifacts
+*.pid
+*.sock
+
+# Streamlit
+.streamlit/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Large files (models, datasets)
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.pt
+*.pth
+
+# Logs and databases
+*.sqlite
+*.db
+
+# Documentation build
+docs/_build/

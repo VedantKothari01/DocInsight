@@ -1,0 +1,29 @@
+# DocInsight Requirements
+# Core ML and NLP dependencies
+sentence-transformers==2.2.2
+transformers==4.33.2
+torch>=1.13.0,<2.1.0
+faiss-cpu==1.7.4
+spacy>=3.6.0,<3.8.0
+scikit-learn==1.3.0
+numpy>=1.21.0,<1.25.0
+pandas>=1.5.0,<2.1.0
+
+# Text processing
+nltk==3.8.1
+textstat==0.7.3
+docx2txt==0.8
+PyMuPDF==1.23.5
+
+# Web framework
+streamlit>=1.25.0,<1.30.0
+
+# Utilities
+tqdm>=4.64.0
+pathlib2>=2.3.7; python_version < "3.6"
+
+# Development and logging
+typing-extensions>=4.0.0
+
+# Language model
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
