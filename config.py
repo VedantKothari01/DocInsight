@@ -88,3 +88,67 @@ MAX_CHUNK_LENGTH = 2000  # maximum characters per chunk
 # Language filtering
 SUPPORTED_LANGUAGES = ['en']  # Language codes to keep during ingestion
 LANGUAGE_DETECTION_CONFIDENCE = 0.8
+
+# Phase 2+: Additional Configuration for Fine-tuning, Stylometry, and Enhanced Scoring
+import os
+
+# Model paths and configuration
+MODEL_BASE_NAME = SBERT_MODEL_NAME  # Base model for semantic similarity
+MODEL_FINE_TUNED_PATH = 'models/semantic_local/'  # Path for fine-tuned model
+AI_LIKENESS_MODEL_PATH = 'models/ai_likeness/'  # Path for AI-likeness classifier
+
+# Document processing configuration
+CHUNK_SIZE = int(os.getenv('DOCINSIGHT_CHUNK_SIZE', '512'))  # Tokens per chunk
+OVERLAP = int(os.getenv('DOCINSIGHT_OVERLAP', '50'))  # Overlap between chunks
+SECTION_MIN_TOKENS = int(os.getenv('DOCINSIGHT_SECTION_MIN_TOKENS', '100'))  # Minimum tokens per section
+
+# Citation masking configuration
+CITATION_MASKING_ENABLED = os.getenv('DOCINSIGHT_CITATION_MASKING_ENABLED', 'true').lower() == 'true'
+
+# Scoring weights (with environment variable overrides)
+# Rationale: Semantic similarity provides the strongest signal for plagiarism detection,
+# stylometry helps identify writing pattern deviations, and AI-likeness detects
+# potential AI-generated content that may indicate sophisticated plagiarism attempts.
+WEIGHT_SEMANTIC = float(os.getenv('DOCINSIGHT_W_SEMANTIC', '0.6'))  # Semantic similarity weight
+WEIGHT_STYLO = float(os.getenv('DOCINSIGHT_W_STYLO', '0.25'))  # Stylometric deviation weight  
+WEIGHT_AI = float(os.getenv('DOCINSIGHT_W_AI', '0.15'))  # AI-likeness probability weight
+
+# Ensure weights sum to 1.0 (normalize if environment overrides don't sum to 1.0)
+_total_weight = WEIGHT_SEMANTIC + WEIGHT_STYLO + WEIGHT_AI
+if abs(_total_weight - 1.0) > 0.01:  # Allow small floating point errors
+    WEIGHT_SEMANTIC = WEIGHT_SEMANTIC / _total_weight
+    WEIGHT_STYLO = WEIGHT_STYLO / _total_weight
+    WEIGHT_AI = WEIGHT_AI / _total_weight
+
+# Academic document section patterns
+ACADEMIC_SECTIONS = {
+    'abstract': ['abstract', 'summary'],
+    'introduction': ['introduction', 'intro'],
+    'methods': ['methods', 'methodology', 'approach', 'materials and methods'],
+    'results': ['results', 'findings'],
+    'discussion': ['discussion', 'analysis'],
+    'conclusion': ['conclusion', 'conclusions', 'summary'],
+    'references': ['references', 'bibliography', 'works cited']
+}
+
+# Citation patterns for masking
+CITATION_PATTERNS = {
+    'numeric': [r'\[\d+\]', r'\(\d+\)', r'\d+\s*\)'],  # [1], (1), 1)
+    'author_year': [r'\([A-Za-z]+\s*et\s*al\.?\s*,?\s*\d{4}\)', r'\([A-Za-z]+\s*,?\s*\d{4}\)'],  # (Smith et al., 2020)
+    'footnote': [r'\d+\s*\)', r'^\d+\s'],  # Footnote numbers
+}
+
+# Fine-tuning configuration
+FINE_TUNING_EPOCHS = int(os.getenv('DOCINSIGHT_FINE_TUNING_EPOCHS', '3'))
+FINE_TUNING_BATCH_SIZE = int(os.getenv('DOCINSIGHT_FINE_TUNING_BATCH_SIZE', '16'))
+FINE_TUNING_LEARNING_RATE = float(os.getenv('DOCINSIGHT_FINE_TUNING_LR', '2e-5'))
+
+# Stylometry feature configuration
+FUNCTION_WORDS = [
+    'the', 'of', 'and', 'a', 'to', 'in', 'is', 'you', 'that', 'it', 
+    'he', 'was', 'for', 'on', 'are', 'as', 'with', 'his', 'they', 'i'
+]  # Most common function words for stylometric analysis
+
+# AI-likeness detection thresholds
+AI_LIKENESS_THRESHOLD = float(os.getenv('DOCINSIGHT_AI_THRESHOLD', '0.7'))
+SUSPICIOUS_SECTION_COUNT = int(os.getenv('DOCINSIGHT_SUSPICIOUS_SECTIONS', '3'))  # Top N suspicious sections to show
