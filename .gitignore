@@ -86,6 +86,15 @@ coverage.xml
 *.pid
 *.sock
 
+# Generated analysis reports
+docinsight_report.json
+docinsight_report.html
+report.txt
+scripts/output/
+checkpoints/
+indexes/
+docinsight.db
+
 # Streamlit
 .streamlit/
 
