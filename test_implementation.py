@@ -25,10 +25,10 @@ def test_imports():
         return False
     
     try:
-        import scoring
-        print("✅ scoring.py imported successfully")
+        from scoring import core as scoring  # noqa: F401
+        print("✅ scoring.core imported successfully")
     except Exception as e:
-        print(f"❌ Failed to import scoring: {e}")
+        print(f"❌ Failed to import scoring.core: {e}")
         return False
     
     try:
@@ -80,7 +80,7 @@ def test_scoring_module():
     """Test scoring module functionality"""
     print("\nTesting scoring module...")
     
-    from scoring import SentenceClassifier, SpanClusterer, DocumentScorer
+    from scoring.core import SentenceClassifier, SpanClusterer, DocumentScorer
     
     # Test sentence classifier
     classifier = SentenceClassifier()

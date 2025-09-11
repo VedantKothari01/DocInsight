@@ -14,6 +14,13 @@ HIGH_RISK_THRESHOLD = 0.7
 MEDIUM_RISK_THRESHOLD = 0.4
 MIN_SENTENCE_LENGTH = 3
 
+# Additional semantic similarity floors for more robust risk gating
+# A candidate must satisfy BOTH fused thresholds (above) and these semantic floors
+# to be promoted to a higher risk class. Prevents random noisy matches.
+SEMANTIC_HIGH_FLOOR = 0.60   # Minimum normalized semantic score to allow HIGH
+SEMANTIC_MEDIUM_FLOOR = 0.40 # Minimum normalized semantic score to allow MEDIUM
+SEMANTIC_MIN_MATCH = 0.35    # Below this semantic raw score => treat as LOW regardless
+
 # Aggregation weights for document-level scoring
 # Formula: Originality = 1 - f(coverage, severity, span_ratio)
 AGGREGATION_WEIGHTS = {
@@ -95,6 +102,9 @@ import os
 # Model paths and configuration
 MODEL_BASE_NAME = SBERT_MODEL_NAME  # Base model for semantic similarity
 MODEL_FINE_TUNED_PATH = 'models/semantic_local/'  # Path for fine-tuned model
+USE_FINE_TUNED_MODEL = os.getenv('DOCINSIGHT_USE_FINE_TUNED', 'true').lower() == 'true'
+FORCE_RETRAIN = os.getenv('DOCINSIGHT_FORCE_RETRAIN', 'false').lower() == 'true'
+EXTENDED_CORPUS_ENABLED = os.getenv('DOCINSIGHT_EXTENDED_CORPUS', 'true').lower() == 'true'
 AI_LIKENESS_MODEL_PATH = 'models/ai_likeness/'  # Path for AI-likeness classifier
 
 # Document processing configuration

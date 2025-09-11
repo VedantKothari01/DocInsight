@@ -15,7 +15,7 @@ import traceback
 
 # Local imports
 from enhanced_pipeline import DocumentAnalysisPipeline
-from config import MAX_SENTENCE_DISPLAY, TOP_RISK_SPANS_PREVIEW, SUPPORTED_EXTENSIONS
+from config import MAX_SENTENCE_DISPLAY, TOP_RISK_SPANS_PREVIEW, SUPPORTED_EXTENSIONS, EXTENDED_CORPUS_ENABLED
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -30,42 +30,46 @@ st.set_page_config(
 
 
 def display_originality_metrics(metrics: dict):
-    """Display document-level originality metrics"""
+    """Display document-level originality metrics including plagiarism factor breakdown."""
     st.header("📊 Originality Analysis")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
+
+    # Primary metrics
+    col1, col2, col3, col4, col5 = st.columns(5)
+
     with col1:
         originality_score = metrics.get('originality_score', 0.0)
-        st.metric(
-            label="Originality Score", 
-            value=f"{originality_score:.1%}",
-            delta=None
-        )
-    
+        st.metric(label="Originality Score", value=f"{originality_score:.1%}")
+
     with col2:
         coverage = metrics.get('plagiarized_coverage', 0.0)
-        st.metric(
-            label="Plagiarized Coverage",
-            value=f"{coverage:.1%}",
-            delta=None
-        )
-    
+        st.metric(label="Plag. Coverage", value=f"{coverage:.1%}")
+
     with col3:
         severity = metrics.get('severity_index', 0.0)
-        st.metric(
-            label="Severity Index",
-            value=f"{severity:.3f}",
-            delta=None
-        )
-    
+        st.metric(label="Severity Index", value=f"{severity:.3f}")
+
     with col4:
         total_sentences = metrics.get('total_sentences', 0)
-        st.metric(
-            label="Total Sentences",
-            value=total_sentences,
-            delta=None
-        )
+        st.metric(label="Sentences", value=total_sentences)
+
+    with col5:
+        plag_factor = metrics.get('plagiarism_factor', None)
+        if plag_factor is not None:
+            st.metric(label="Plagiarism Factor", value=f"{plag_factor:.3f}")
+        else:
+            st.metric(label="Plagiarism Factor", value="—")
+
+    # Detailed breakdown
+    if 'plagiarism_components' in metrics:
+        with st.expander("🔬 Plagiarism Factor Breakdown"):
+            comps = metrics['plagiarism_components']
+            weights = comps.get('weights', {})
+            st.write("The plagiarism factor combines weighted components: ")
+            st.write(f"- Coverage Component: {comps.get('coverage_component',0.0):.4f}")
+            st.write(f"- Severity Component: {comps.get('severity_component',0.0):.4f}")
+            st.write(f"- Span Ratio Component: {comps.get('span_ratio_component',0.0):.4f}")
+            st.write(f"Weights α={weights.get('alpha')} β={weights.get('beta')} γ={weights.get('gamma')}")
+            st.caption("Originality Score = 1 - Plagiarism Factor (clamped ≥ 0). Lower factor → higher originality.")
 
 
 def display_sentence_distribution(distribution: dict):
@@ -202,7 +206,9 @@ def display_sentence_details(sentence_results: list, max_display: int = MAX_SENT
             
             if best_match:
                 st.write(f"**Most similar:** {best_match}")
-                st.write(f"**Confidence:** {confidence:.3f}")
+                st.write(f"**Confidence (fused):** {confidence:.3f}")
+                if 'match_strength' in result:
+                    st.write(f"**Match strength:** {result.get('match_strength')} ⟶ {result.get('reason','')}")
             
             if show_details:
                 col1, col2, col3 = st.columns(3)
@@ -212,6 +218,10 @@ def display_sentence_details(sentence_results: list, max_display: int = MAX_SENT
                     st.write(f"Cross-encoder: {result.get('rerank_score', 0.0):.3f}")
                 with col3:
                     st.write(f"Stylometry: {result.get('stylometry_score', 0.0):.3f}")
+                # Component normalized contributions if available
+                components = result.get('components', {})
+                if components:
+                    st.write(f"Components (normalized): Semantic={components.get('semantic',0):.2f}, Rerank={components.get('cross_encoder',0):.2f}, Styl={components.get('stylometry',0):.2f}")
             
             st.write("---")
 
@@ -262,6 +272,32 @@ def display_processing_info(processing_info: dict):
             status = "✅" if available else "❌"
             st.write(f"{status} {name}")
 
+        # Semantic model details
+        sem_meta = processing_info.get('semantic_model') or {}
+        if sem_meta:
+            st.write("---")
+            st.write("**Semantic Model:**")
+            st.write(f"Source: {sem_meta.get('source','?')}")
+            st.write(f"Path: {sem_meta.get('path','?')}")
+            st.write(f"Fine-tuned flag: {sem_meta.get('use_fine_tuned_flag')}")
+            # Show evaluation summary link if exists
+            eval_md = Path('scripts/output/model_eval.md')
+            eval_json = Path('scripts/output/model_eval.json')
+            if eval_md.exists() and eval_json.exists():
+                with open(eval_md, 'r', encoding='utf-8') as f:
+                    if st.checkbox('Show model evaluation summary', value=False):
+                        st.markdown(f.read())
+
+
+@st.cache_resource(show_spinner=False)
+def get_cached_pipeline():
+    """Create and cache the analysis pipeline (models + indexes)."""
+    return DocumentAnalysisPipeline()
+
+@st.cache_data(show_spinner=False)
+def analyze_file_cached(temp_path: str, file_bytes_hash: str):  # hash parameter ensures cache key uniqueness
+    pipeline = get_cached_pipeline()
+    return pipeline.analyze_document(temp_path)
 
 def main():
     """Main Streamlit application"""
@@ -285,10 +321,17 @@ def main():
             # Show processing message
             with st.spinner("Analyzing document... This may take a few minutes."):
                 # Initialize pipeline and analyze document
-                pipeline = DocumentAnalysisPipeline()
-                analysis_result = pipeline.analyze_document(temp_path)
-                
-                # Generate report files
+                # Hash file bytes for caching key
+                uploaded_file.seek(0)
+                import hashlib
+                file_bytes = uploaded_file.getvalue()
+                file_hash = hashlib.md5(file_bytes).hexdigest()
+
+                # Cached analysis
+                analysis_result = analyze_file_cached(temp_path, file_hash)
+
+                # Use cached pipeline for report generation (avoid reconstruct)
+                pipeline = get_cached_pipeline()
                 report_files = pipeline.generate_report_files(analysis_result)
             
             # Display results
@@ -301,6 +344,7 @@ def main():
             sentence_results = analysis_result.get('sentence_results', [])
             sentence_distribution = originality_metrics.get('sentence_distribution', {})
             processing_info = analysis_result.get('processing_info', {})
+            citation_info = analysis_result.get('citations', {})
             
             # Display main metrics
             display_originality_metrics(originality_metrics)
@@ -320,6 +364,15 @@ def main():
             
             # Processing info
             display_processing_info(processing_info)
+
+            # Citation summary (if available)
+            if citation_info:
+                with st.expander("📚 Citation Summary"):
+                    st.write(f"Masking enabled: {citation_info.get('masking_enabled')}")
+                    summary = citation_info.get('summary', {})
+                    if summary:
+                        st.write({k: v for k, v in summary.items() if k != 'total'})
+                        st.write(f"Total citations masked: {summary.get('total',0)}")
             
         except Exception as e:
             st.error(f"❌ Error analyzing document: {str(e)}")
@@ -365,6 +418,8 @@ def main():
         - Risk span clustering
         - Processing component status
         """)
+    st.header("🧪 Configuration")
+    st.write(f"Extended demo corpus: {'Enabled ✅' if EXTENDED_CORPUS_ENABLED else 'Disabled ❌'}")
 
 
 if __name__ == "__main__":

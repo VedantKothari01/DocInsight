@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # DocInsight - One-Command Setup and Run Script
@@ -49,9 +50,8 @@ pip install --timeout 300 --retries 3 -r requirements.txt || {
 
 # Download NLTK data if not present
 echo "📚 Setting up NLTK data..."
-python -c "
+PYTHONIOENCODING=utf-8 python -c "
 import nltk
-import os
 try:
     nltk.data.find('tokenizers/punkt')
     print('✅ NLTK punkt data already available')
@@ -59,19 +59,11 @@ except LookupError:
     print('📥 Downloading NLTK punkt data...')
     nltk.download('punkt', quiet=True)
     print('✅ NLTK punkt data downloaded')
-
-try:
-    nltk.data.find('tokenizers/punkt_tab')
-    print('✅ NLTK punkt_tab data already available')
-except LookupError:
-    print('📥 Downloading NLTK punkt_tab data...')
-    nltk.download('punkt_tab', quiet=True)
-    print('✅ NLTK punkt_tab data downloaded')
 "
 
 # Download spaCy model if not present
 echo "🧠 Setting up spaCy model..."
-python -c "
+PYTHONIOENCODING=utf-8 python -c "
 import spacy
 import sys
 try:
@@ -95,7 +87,7 @@ except OSError:
 
 # Test imports
 echo "🔍 Testing core imports..."
-python -c "
+PYTHONIOENCODING=utf-8 python -c "
 import sys
 import warnings
 warnings.filterwarnings('ignore')  # Suppress warnings for cleaner output

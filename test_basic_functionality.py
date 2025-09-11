@@ -49,7 +49,7 @@ def test_scoring_logic():
     """Test scoring logic with mock data"""
     print("\n🎯 Testing scoring logic...")
     
-    from scoring import SentenceClassifier, SpanClusterer, DocumentScorer
+    from scoring.core import SentenceClassifier, SpanClusterer, DocumentScorer
     
     # Test initialization
     classifier = SentenceClassifier()

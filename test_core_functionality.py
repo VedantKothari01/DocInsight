@@ -47,7 +47,7 @@ def test_scoring_algorithms():
     
     # Import only the classes we need
     import numpy as np
-    from scoring import SentenceClassifier, SpanClusterer, DocumentScorer
+    from scoring.core import SentenceClassifier, SpanClusterer, DocumentScorer
     
     # Initialize components
     classifier = SentenceClassifier()
@@ -62,10 +62,11 @@ def test_scoring_algorithms():
         {'fused_score': 0.2}
     ]
     
-    risk_level, confidence = classifier.classify_sentence(mock_fused_results)
+    risk_level, fused_score, match_strength, reason = classifier.classify_sentence(mock_fused_results)
     assert risk_level in ['HIGH', 'MEDIUM', 'LOW']
-    assert 0 <= confidence <= 1
-    print(f"✅ Sentence classification: {risk_level} (confidence: {confidence:.3f})")
+    assert 0 <= fused_score <= 1
+    assert match_strength in ['STRONG', 'MODERATE', 'WEAK', 'VERY_WEAK']
+    print(f"✅ Sentence classification: {risk_level} (fused: {fused_score:.3f}, strength: {match_strength}, reason: {reason})")
     
     # Test span clustering with realistic data
     sentence_results = [
@@ -102,7 +103,7 @@ def test_aggregation_formula():
     """Test the originality aggregation formula"""
     print("\n📊 Testing aggregation formula...")
     
-    from scoring import DocumentScorer
+    from scoring.core import DocumentScorer
     import config
     
     scorer = DocumentScorer()
@@ -147,7 +148,7 @@ def test_risk_classification():
     """Test risk level classification thresholds"""
     print("\n🚨 Testing risk classification...")
     
-    from scoring import SentenceClassifier
+    from scoring.core import SentenceClassifier
     import config
     
     classifier = SentenceClassifier()
@@ -167,9 +168,10 @@ def test_risk_classification():
     ]
     
     for mock_result, expected_level in test_cases:
-        risk_level, _ = classifier.classify_sentence([mock_result])
+        risk_level, fused_score, match_strength, reason = classifier.classify_sentence([mock_result])
         assert risk_level == expected_level
-        print(f"✅ Score {mock_result['fused_score']:.1f} → {risk_level}")
+        assert 0 <= fused_score <= 1
+        print(f"✅ Score {mock_result['fused_score']:.1f} → {risk_level} (strength: {match_strength}, reason: {reason})")
     
     return True
 

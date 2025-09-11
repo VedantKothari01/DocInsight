@@ -9,15 +9,21 @@ import os
 import json
 import logging
 import argparse
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 import numpy as np
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from config import (
-    MODEL_BASE_NAME, MODEL_FINE_TUNED_PATH, 
-    FINE_TUNING_EPOCHS, FINE_TUNING_BATCH_SIZE, FINE_TUNING_LEARNING_RATE
+    MODEL_BASE_NAME, MODEL_FINE_TUNED_PATH,
+    FINE_TUNING_EPOCHS, FINE_TUNING_BATCH_SIZE, FINE_TUNING_LEARNING_RATE,
+    FORCE_RETRAIN
 )
 
 logger = logging.getLogger(__name__)
@@ -224,15 +230,17 @@ class SemanticModelFineTuner:
             name='test_evaluation'
         )
         
-        # Run evaluation
-        test_score = evaluator(model, output_path=self.output_path)
-        
+        # Run evaluation (catch correlation edge cases -> NaN)
+        raw_score = evaluator(model, output_path=self.output_path)
+        try:
+            display_score = float(raw_score) if raw_score == raw_score else 0.0  # NaN check
+        except Exception:
+            display_score = 0.0
         metrics = {
-            'test_score': test_score,
+            'test_score': display_score,
             'test_examples': len(test_df)
         }
-        
-        logger.info(f"Test evaluation score: {test_score:.4f}")
+        logger.info(f"Test evaluation score: {display_score:.4f}")
         return metrics
     
     def save_training_info(self, additional_metrics: Dict = None) -> None:
@@ -257,13 +265,16 @@ class SemanticModelFineTuner:
             logger.warning(f"Could not save training info: {e}")
     
     def check_model_exists(self) -> bool:
-        """Check if fine-tuned model already exists
-        
-        Returns:
-            True if model exists and is valid
-        """
+        """Check if fine-tuned model already exists and capture timestamp."""
         config_path = os.path.join(self.output_path, 'config.json')
-        return os.path.exists(config_path)
+        if os.path.exists(config_path):
+            try:
+                stat = os.stat(config_path)
+                self.training_stats['last_modified'] = stat.st_mtime
+            except OSError:
+                pass
+            return True
+        return False
 
 
 def fine_tune_semantic_model(data_path: str = "fine_tuning/data/train.csv",
@@ -302,9 +313,15 @@ def fine_tune_semantic_model(data_path: str = "fine_tuning/data/train.csv",
         fine_tuner = SemanticModelFineTuner()
         
         # Check if model already exists
-        if fine_tuner.check_model_exists():
-            logger.info("Fine-tuned model already exists, skipping training")
-            return {'status': 'already_exists', 'model_path': fine_tuner.output_path}
+        if fine_tuner.check_model_exists() and not FORCE_RETRAIN:
+            logger.info("Fine-tuned model already exists and FORCE_RETRAIN is False - skipping")
+            return {
+                'status': 'already_exists',
+                'model_path': fine_tuner.output_path,
+                'last_modified': fine_tuner.training_stats.get('last_modified')
+            }
+        elif fine_tuner.check_model_exists() and FORCE_RETRAIN:
+            logger.info("FORCE_RETRAIN=True -> retraining over existing model")
         
         # Fine-tune model
         training_stats = fine_tuner.fine_tune(data_files, epochs=epochs)
@@ -358,7 +375,11 @@ def main():
         print("✅ Fine-tuning completed successfully!")
         print(f"📁 Model saved to: {MODEL_FINE_TUNED_PATH}")
         print(f"📊 Training examples: {results.get('training_examples', 'N/A')}")
-        print(f"🎯 Test score: {results.get('test_score', 'N/A')}")
+        ts = results.get('test_score')
+        if isinstance(ts, (int, float)):
+            print(f"🎯 Test score: {ts:.4f}")
+        else:
+            print(f"🎯 Test score: {ts}")
     elif results['status'] == 'already_exists':
         print("ℹ️ Fine-tuned model already exists")
         print(f"📁 Model location: {results['model_path']}")

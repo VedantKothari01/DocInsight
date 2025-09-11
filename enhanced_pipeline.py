@@ -15,7 +15,12 @@ import html
 
 # Third-party imports
 import numpy as np
-import faiss
+try:
+    import faiss  # type: ignore
+    FAISS_AVAILABLE = True
+except Exception:  # pragma: no cover
+    faiss = None
+    FAISS_AVAILABLE = False
 from sentence_transformers import SentenceTransformer, CrossEncoder
 import spacy
 import textstat
@@ -26,7 +31,7 @@ import fitz  # PyMuPDF
 
 # Local imports
 from config import *
-from scoring import SentenceClassifier, analyze_document_originality
+from scoring.core import SentenceClassifier, analyze_document_originality
 
 # Setup logging
 logging.basicConfig(level=getattr(logging, LOG_LEVEL), format=LOG_FORMAT)
@@ -146,6 +151,8 @@ class SemanticSearchEngine:
         self.model = None
         self.index = None
         self.corpus_sentences = []
+        self.model_source = 'unloaded'
+        self.model_path = None
         self._load_models()
         
         # Phase 2: Try to use persistent retrieval system
@@ -154,14 +161,35 @@ class SemanticSearchEngine:
         self._try_load_persistent_retrieval()
     
     def _load_models(self):
-        """Load SBERT model"""
+        """Load semantic model (fine-tuned preferred if enabled)."""
         try:
-            logger.info(f"Loading SBERT model: {SBERT_MODEL_NAME}")
-            self.model = SentenceTransformer(SBERT_MODEL_NAME)
-            logger.info("SBERT model loaded successfully")
+            candidate_paths = []
+            if USE_FINE_TUNED_MODEL:
+                fine_tuned_config = os.path.join(MODEL_FINE_TUNED_PATH, 'config.json')
+                if os.path.exists(fine_tuned_config):
+                    candidate_paths.append(('fine_tuned', MODEL_FINE_TUNED_PATH))
+            # Always add base as fallback
+            candidate_paths.append(('base', SBERT_MODEL_NAME))
+
+            load_error = None
+            for source, path in candidate_paths:
+                try:
+                    logger.info(f"Attempting to load semantic model ({source}): {path}")
+                    self.model = SentenceTransformer(path)
+                    self.model_source = source
+                    self.model_path = path
+                    logger.info(f"Semantic model loaded: source={source} path={path}")
+                    return
+                except Exception as e:  # pragma: no cover
+                    load_error = e
+                    logger.warning(f"Failed loading {source} model at {path}: {e}")
+                    continue
+            if self.model is None:
+                raise RuntimeError(f"Failed to load any semantic model (last error: {load_error})")
         except Exception as e:
-            logger.error(f"Error loading SBERT model: {e}")
+            logger.error(f"Error loading semantic model: {e}")
             self.model = None
+            self.model_source = 'error'
             
     def _try_load_persistent_retrieval(self):
         """Try to load Phase 2 persistent retrieval system"""
@@ -181,34 +209,55 @@ class SemanticSearchEngine:
             logger.debug(f"Could not load persistent retrieval: {e}")
     
     def build_index(self, corpus_sentences: List[str]):
-        """Build FAISS index from corpus sentences"""
+        """Build FAISS index from corpus sentences; always retain numpy embeddings for fallback."""
         if self.use_persistent_retrieval:
             logger.info("Using persistent retrieval system - skipping in-memory index build")
             return True
-            
+
         if self.model is None:
             logger.error("SBERT model not loaded. Cannot build index.")
             return False
-        
+
         try:
-            logger.info(f"Building FAISS index for {len(corpus_sentences)} sentences")
+            logger.info(f"Building semantic structures for {len(corpus_sentences)} sentences")
             self.corpus_sentences = corpus_sentences
-            
-            # Encode corpus
+
+            # Encode corpus embeddings
             corpus_embeddings = self.model.encode(corpus_sentences, convert_to_numpy=True)
-            faiss.normalize_L2(corpus_embeddings)
-            
-            # Build index
-            d = corpus_embeddings.shape[1]
-            self.index = faiss.IndexFlatIP(d)
-            self.index.add(corpus_embeddings)
-            
-            logger.info(f"FAISS index built with {self.index.ntotal} sentences")
+            # Normalize for cosine via dot product
+            norms = np.linalg.norm(corpus_embeddings, axis=1, keepdims=True) + 1e-12
+            corpus_embeddings = corpus_embeddings / norms
+            self._corpus_embeddings = corpus_embeddings  # store for fallback
+
+            if FAISS_AVAILABLE:
+                d = corpus_embeddings.shape[1]
+                self.index = faiss.IndexFlatIP(d)  # type: ignore
+                self.index.add(corpus_embeddings)
+                logger.info(f"FAISS index built with {self.index.ntotal} sentences")
+            else:
+                logger.warning("FAISS not available; will use numpy fallback for similarity search")
             return True
-            
+
         except Exception as e:
-            logger.error(f"Error building FAISS index: {e}")
+            logger.error(f"Error building semantic index structures: {e}")
             return False
+
+    def _fallback_numpy_search(self, query: str, top_k: int) -> List[Dict]:
+        """Fallback cosine similarity search using stored numpy embeddings."""
+        if self.model is None or not hasattr(self, '_corpus_embeddings'):
+            return []
+        try:
+            q_emb = self.model.encode([query], convert_to_numpy=True)
+            q_emb = q_emb / (np.linalg.norm(q_emb, axis=1, keepdims=True) + 1e-12)
+            sims = np.dot(self._corpus_embeddings, q_emb[0])  # cosine via normalized vectors
+            top_indices = np.argsort(-sims)[:top_k]
+            results = []
+            for idx in top_indices:
+                results.append({'sentence': self.corpus_sentences[idx], 'score': float(sims[idx])})
+            return results
+        except Exception as e:
+            logger.error(f"Fallback numpy search failed: {e}")
+            return []
     
     def search(self, query: str, top_k: int = DEFAULT_TOP_K) -> List[Dict]:
         """Perform semantic search"""
@@ -234,31 +283,26 @@ class SemanticSearchEngine:
                 # Fall through to Phase 1 implementation
                 
         # Phase 1: In-memory search
-        if self.model is None or self.index is None:
-            logger.warning("Search engine not properly initialized")
+        if self.model is None:
+            logger.warning("Search engine model not loaded")
             return []
         
         try:
-            # Encode query
-            query_embedding = self.model.encode([query], convert_to_numpy=True)
-            faiss.normalize_L2(query_embedding)
-            
-            # Search
-            scores, indices = self.index.search(query_embedding, top_k)
-            
-            results = []
-            for score, idx in zip(scores[0], indices[0]):
-                if idx >= 0 and idx < len(self.corpus_sentences):
-                    results.append({
-                        'sentence': self.corpus_sentences[idx],
-                        'score': float(score)
-                    })
-            
-            return results
-            
+            if self.index is not None:  # FAISS path
+                query_embedding = self.model.encode([query], convert_to_numpy=True)
+                # normalize
+                query_embedding = query_embedding / (np.linalg.norm(query_embedding, axis=1, keepdims=True) + 1e-12)
+                scores, indices = self.index.search(query_embedding, top_k)  # type: ignore
+                results = []
+                for score, idx in zip(scores[0], indices[0]):
+                    if 0 <= idx < len(self.corpus_sentences):
+                        results.append({'sentence': self.corpus_sentences[idx], 'score': float(score)})
+                return results
+            else:
+                return self._fallback_numpy_search(query, top_k)
         except Exception as e:
-            logger.error(f"Error in semantic search: {e}")
-            return []
+            logger.warning(f"FAISS search error ({e}); attempting numpy fallback")
+            return self._fallback_numpy_search(query, top_k)
 
 
 class CrossEncoderReranker:
@@ -312,7 +356,11 @@ class DocumentAnalysisPipeline:
         
         # Use demo corpus if none provided
         if corpus_sentences is None:
-            corpus_sentences = self._get_demo_corpus()
+            if EXTENDED_CORPUS_ENABLED:
+                corpus_sentences = self._get_extended_corpus()
+                logger.info(f"Loaded extended demo corpus with {len(corpus_sentences)} sentences")
+            else:
+                corpus_sentences = self._get_demo_corpus()
         
         # Build search index
         if corpus_sentences:
@@ -332,6 +380,66 @@ class DocumentAnalysisPipeline:
             "The capital of France is Paris.",
             "SQL stands for Structured Query Language and is used to manage relational databases."
         ]
+
+    def _get_extended_corpus(self) -> List[str]:
+        """Extended demo corpus with additional technical and academic sentences.
+
+        Goal: Provide more diverse matches so a single generic sentence (e.g. the SQL definition)
+        does not dominate all database related queries. These are intentionally concise, neutral
+        factual statements spanning databases, transactions, indexing, algorithms, statistics,
+        research writing, and software engineering.
+        """
+        base = self._get_demo_corpus()
+        extended = [
+            # Database & SQL
+            "A relational database organizes data into tables consisting of rows and columns.",
+            "Database normalization reduces redundancy by organizing fields and table relationships.",
+            "A primary key uniquely identifies each record within a relational table.",
+            "Foreign keys enforce referential integrity between related tables.",
+            "ACID properties ensure reliable transaction processing in database systems.",
+            "Transaction isolation levels balance consistency with concurrency performance.",
+            "Indexes speed up data retrieval operations at the cost of additional storage and write overhead.",
+            "A query optimizer selects an efficient execution plan based on statistics and heuristics.",
+            "Denormalization can improve read performance but risks data anomalies.",
+            "SQL JOIN operations combine rows from multiple tables based on related keys.",
+            # Data engineering / systems
+            "Caching frequently accessed data reduces latency and alleviates database load.",
+            "Horizontal scaling distributes data across multiple nodes for capacity and resilience.",
+            "A message queue decouples producers and consumers enabling asynchronous processing.",
+            "Event driven architectures react to state changes published as immutable records.",
+            # Machine learning & stats
+            "Regularization techniques like L2 penalty help prevent overfitting in models.",
+            "Cross validation provides a robust estimate of model generalization performance.",
+            "Gradient descent iteratively updates parameters to minimize a loss function.",
+            "Precision measures the proportion of retrieved instances that are relevant.",
+            "Recall measures the proportion of relevant instances that were successfully retrieved.",
+            # Academic writing & methodology
+            "The methodology section details data collection and experimental procedures.",
+            "A literature review synthesizes prior research to establish context and gaps.",
+            "Empirical results should report both central tendency and variability metrics.",
+            "Limitations outline factors that may constrain the interpretation of findings.",
+            # Software engineering
+            "Unit tests verify the behavior of individual functions or classes in isolation.",
+            "Continuous integration automatically builds and tests code upon each commit.",
+            "Refactoring improves internal code structure without altering external behavior.",
+            "Version control enables collaborative development with change history tracking.",
+            # Security / reliability
+            "Input validation mitigates common injection vulnerabilities in applications.",
+            "Encryption protects data confidentiality during storage and transmission.",
+            "Monitoring key performance indicators helps detect system regressions early.",
+            # Misc general knowledge
+            "Photosynthesis converts carbon dioxide and water into glucose and oxygen using light energy.",
+            "Mitochondria generate ATP through oxidative phosphorylation in eukaryotic cells.",
+            "Neural network layers transform representations enabling hierarchical feature learning."
+        ]
+        # Ensure uniqueness while preserving order (base first then new items)
+        seen = set()
+        combined: List[str] = []
+        for s in base + extended:
+            if s not in seen:
+                combined.append(s)
+                seen.add(s)
+        return combined
     
     def analyze_sentence(self, sentence: str) -> Dict[str, Any]:
         """Analyze a single sentence for similarity and risk"""
@@ -358,8 +466,8 @@ class DocumentAnalysisPipeline:
                 query_features, candidate_features
             )
             
-            # Classify risk level
-            risk_level, confidence_score = self.sentence_classifier.classify_sentence(fused_results)
+            # Classify risk level (now returns risk_level, fused_score, match_strength, reason)
+            risk_level, confidence_score, match_strength, reason = self.sentence_classifier.classify_sentence(fused_results)
             
             # Get best match
             best_match = fused_results[0] if fused_results else {}
@@ -368,11 +476,16 @@ class DocumentAnalysisPipeline:
                 'sentence': sentence,
                 'risk_level': risk_level,
                 'confidence_score': confidence_score,
+                'match_strength': match_strength,
+                'reason': reason,
                 'best_match': best_match.get('candidate', ''),
                 'semantic_score': best_match.get('semantic_score', 0.0),
+                'semantic_norm': best_match.get('semantic_norm', 0.0),
                 'rerank_score': best_match.get('rerank_score', 0.0),
+                'rerank_norm': best_match.get('rerank_norm', 0.0),
                 'stylometry_score': best_match.get('stylometry_score', 0.0),
                 'fused_score': best_match.get('fused_score', 0.0),
+                'components': best_match.get('components', {}),
                 'stylometry_features': query_features,
                 'all_candidates': fused_results[:MAX_CANDIDATES]
             }
@@ -387,11 +500,16 @@ class DocumentAnalysisPipeline:
             'sentence': sentence,
             'risk_level': RISK_LEVELS['LOW'],
             'confidence_score': 0.0,
+            'match_strength': 'NONE',
+            'reason': 'Analysis failed',
             'best_match': '',
             'semantic_score': 0.0,
+            'semantic_norm': 0.0,
             'rerank_score': 0.0,
+            'rerank_norm': 0.0,
             'stylometry_score': 0.0,
             'fused_score': 0.0,
+            'components': {},
             'stylometry_features': {},
             'all_candidates': []
         }
@@ -405,9 +523,25 @@ class DocumentAnalysisPipeline:
             text = self.text_extractor.extract_text(file_path)
             if not text.strip():
                 raise ValueError("Empty document")
+
+            # Optional citation masking (reduces false positives on references)
+            try:
+                from ingestion.citation_mask import CitationMasker  # local import to avoid circular
+                citation_masker = CitationMasker()
+            except Exception:
+                citation_masker = type('NullMasker',(object,),{'enabled':False})()
+            masked_text, citations = text, []
+            citation_summary = {}
+            try:
+                if citation_masker.enabled:
+                    masked_text, citations = citation_masker.mask_citations(text)
+                    citation_summary = citation_masker.get_citation_summary(citations)
+                    logger.info(f"Citation masking applied: {citation_summary.get('total',0)} citations masked")
+            except Exception as ce:
+                logger.warning(f"Citation masking failed, continuing without: {ce}")
             
             # Split into sentences
-            sentences = self.sentence_processor.split_sentences(text)
+            sentences = self.sentence_processor.split_sentences(masked_text)
             if not sentences:
                 raise ValueError("No sentences found in document")
             
@@ -421,6 +555,9 @@ class DocumentAnalysisPipeline:
                 
                 result = self.analyze_sentence(sentence)
                 sentence_results.append(result)
+
+            # Post-process to dampen repeated identical best_match dominance
+            sentence_results = self._postprocess_repeated_matches(sentence_results)
             
             # Perform document-level analysis
             originality_analysis = analyze_document_originality(sentence_results)
@@ -431,10 +568,19 @@ class DocumentAnalysisPipeline:
                 'total_sentences': len(sentences),
                 'sentence_results': sentence_results,
                 'originality_analysis': originality_analysis,
+                'citations': {
+                    'masking_enabled': citation_masker.enabled,
+                    'summary': citation_summary
+                },
                 'processing_info': {
                     'semantic_engine_available': self.semantic_engine.model is not None,
                     'cross_encoder_available': self.reranker.model is not None,
-                    'stylometry_available': self.stylometry_analyzer.nlp is not None
+                    'stylometry_available': self.stylometry_analyzer.nlp is not None,
+                    'semantic_model': {
+                        'source': self.semantic_engine.model_source,
+                        'path': self.semantic_engine.model_path,
+                        'use_fine_tuned_flag': USE_FINE_TUNED_MODEL
+                    }
                 }
             }
             
@@ -444,6 +590,71 @@ class DocumentAnalysisPipeline:
         except Exception as e:
             logger.error(f"Error analyzing document {file_path}: {e}")
             raise
+
+    def _postprocess_repeated_matches(self, sentence_results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Dampen confidence/risk when the same corpus sentence is reused excessively.
+
+        Heuristic rationale: A very generic corpus fact (e.g. definition of SQL) may appear
+        as top match for many semantically nearby but distinct input sentences. After the first
+        few legitimate reuses, additional occurrences provide diminishing plagiarism evidence.
+
+        Strategy:
+        - Track frequency of each best_match among non-low sentences.
+        - Apply a decay to confidence_score and fused_score beyond an allowance threshold.
+        - Potentially downgrade risk level if decayed score drops below thresholds.
+        - Add explanation tag in 'reason'.
+
+        Parameters (tunable):
+        - allowance = 2 (first two occurrences unpenalized)
+        - decay_factor = 0.85 applied multiplicatively for each occurrence beyond allowance
+        - min_confidence_floor: don't reduce below 0 to avoid negatives
+        """
+        allowance = 2
+        decay_factor = 0.85
+        match_counts: Dict[str, int] = {}
+
+        for res in sentence_results:
+            bm = res.get('best_match') or ''
+            if not bm:
+                continue
+            match_counts[bm] = match_counts.get(bm, 0) + 1
+            occurrence = match_counts[bm]
+            if occurrence <= allowance:
+                continue  # no penalty
+            # Compute decay multiplier
+            extra = occurrence - allowance
+            multiplier = decay_factor ** extra
+            original_conf = res.get('confidence_score', 0.0)
+            new_conf = max(0.0, original_conf * multiplier)
+            res['confidence_score'] = new_conf
+            # Adjust fused_score inside best candidate details if present
+            fused = res.get('fused_score', original_conf)
+            res['fused_score'] = max(0.0, fused * multiplier)
+            # Potentially downgrade risk
+            risk = res.get('risk_level', RISK_LEVELS['LOW'])
+            sem_norm = res.get('semantic_norm', 0.0)
+            if risk == RISK_LEVELS['HIGH']:
+                if not (res['fused_score'] >= HIGH_RISK_THRESHOLD and sem_norm >= SEMANTIC_HIGH_FLOOR):
+                    # Fall back to MEDIUM or LOW depending on medium gating
+                    if res['fused_score'] >= MEDIUM_RISK_THRESHOLD and sem_norm >= SEMANTIC_MEDIUM_FLOOR:
+                        res['risk_level'] = RISK_LEVELS['MEDIUM']
+                        res['reason'] += f" | downgraded to MEDIUM due to repeated match ({occurrence} uses)"
+                    else:
+                        res['risk_level'] = RISK_LEVELS['LOW']
+                        res['reason'] += f" | downgraded to LOW due to repeated match ({occurrence} uses)"
+                else:
+                    res['reason'] += f" | high retained after repetition ({occurrence} uses)"
+            elif risk == RISK_LEVELS['MEDIUM']:
+                if not (res['fused_score'] >= MEDIUM_RISK_THRESHOLD and sem_norm >= SEMANTIC_MEDIUM_FLOOR):
+                    res['risk_level'] = RISK_LEVELS['LOW']
+                    res['reason'] += f" | downgraded to LOW due to repeated match ({occurrence} uses)"
+                else:
+                    res['reason'] += f" | medium retained after repetition ({occurrence} uses)"
+            else:
+                # LOW risk - optionally annotate if repetition heavy
+                if occurrence > allowance + 2:
+                    res['reason'] += f" | generic match reused ({occurrence} uses)"
+        return sentence_results
     
     def generate_report_files(self, analysis_result: Dict[str, Any], 
                             output_dir: str = TEMP_DIR) -> Dict[str, str]:
@@ -508,6 +719,20 @@ class DocumentAnalysisPipeline:
                 html_parts.append(f"<p><strong>Preview:</strong> {html.escape(span.get('preview_text', ''))}</p>")
                 html_parts.append("</div>")
         
+        # Plagiarism factor components (if present)
+        if 'plagiarism_components' in metrics:
+            comps = metrics['plagiarism_components']
+            html_parts.append("<h2>Plagiarism Factor Components</h2>")
+            html_parts.append("<ul>")
+            html_parts.append(f"<li>Coverage Component: {comps.get('coverage_component',0.0):.4f}</li>")
+            html_parts.append(f"<li>Severity Component: {comps.get('severity_component',0.0):.4f}</li>")
+            html_parts.append(f"<li>Span Ratio Component: {comps.get('span_ratio_component',0.0):.4f}</li>")
+            weights = comps.get('weights', {})
+            html_parts.append(f"<li>Weights: α={weights.get('alpha')}, β={weights.get('beta')}, γ={weights.get('gamma')}</li>")
+            html_parts.append("</ul>")
+            if 'plagiarism_factor' in metrics:
+                html_parts.append(f"<p><strong>Plagiarism Factor:</strong> {metrics.get('plagiarism_factor',0.0):.4f}</p>")
+
         html_parts.append("</body></html>")
         return "\n".join(html_parts)
 
