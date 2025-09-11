@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class CorpusIndex:
-    """Corpus index using real datasets only - no hardcoded fallbacks."""
+    """Production-ready corpus index using real datasets only - no hardcoded fallbacks."""
     
     def __init__(self, target_size: int = 50000, cache_dir: str = "corpus_cache"):
         self.target_size = target_size
@@ -40,22 +40,90 @@ class CorpusIndex:
         self.sentences: List[str] = []
         self.embeddings: Optional[np.ndarray] = None
         self.index: Optional[object] = None
+        self.model: Optional[object] = None
+        self._is_loaded = False
         
-        # Initialize sentence transformer model
-        if HAS_SENTENCE_TRANSFORMERS:
-            self.model = SentenceTransformer('all-MiniLM-L6-v2')
-        else:
-            self.model = None
+        # Initialize sentence transformer model (lazy loading)
+        self._init_model()
+    
+    def _init_model(self):
+        """Initialize sentence transformer model with caching."""
+        if HAS_SENTENCE_TRANSFORMERS and not self.model:
+            try:
+                logger.info("Loading sentence transformer model...")
+                self.model = SentenceTransformer('all-MiniLM-L6-v2')
+                logger.info("✅ Sentence transformer model loaded")
+            except Exception as e:
+                logger.warning(f"Failed to load sentence transformer: {e}")
+                self.model = None
+        elif not HAS_SENTENCE_TRANSFORMERS:
             logger.warning("SentenceTransformers not available - semantic search disabled")
     
+    def is_ready_for_production(self) -> bool:
+        """Check if corpus is ready for production use (all assets cached)."""
+        return (
+            self._is_fully_cached() and 
+            Path(self.cache_dir / ".docinsight_ready").exists()
+        )
+    
+    def _is_fully_cached(self) -> bool:
+        """Check if all necessary files are cached."""
+        cache_files = [
+            self.cache_dir / f"corpus_{self.target_size}.json",
+            self.cache_dir / f"embeddings_{self.target_size}.pkl",
+            self.cache_dir / f"faiss_index_{self.target_size}.bin"
+        ]
+        return all(f.exists() for f in cache_files)
+    
+    def load_for_production(self) -> bool:
+        """Fast loading for production use - assumes all assets are cached."""
+        if self._is_loaded:
+            return True
+            
+        logger.info("Loading DocInsight for production use...")
+        
+        try:
+            # Load corpus
+            if not self._load_cached_corpus():
+                logger.error("No cached corpus found - run setup first")
+                return False
+            
+            # Load embeddings
+            if not self._load_cached_embeddings():
+                logger.error("No cached embeddings found - run setup first")
+                return False
+            
+            # Load FAISS index
+            if not self._load_cached_index():
+                logger.warning("No cached FAISS index - will use fallback search")
+            
+            # Initialize model
+            self._init_model()
+            
+            self._is_loaded = True
+            logger.info(f"✅ Production ready: {len(self.sentences)} sentences loaded")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to load for production: {e}")
+            return False
     def load_or_build(self) -> bool:
         """Load existing corpus or build new one from real datasets."""
+        if self._is_loaded:
+            return True
+        
+        # Fast path: try production loading first
+        if self.is_ready_for_production():
+            logger.info("Found cached assets - loading for production...")
+            return self.load_for_production()
+        
+        # Slow path: build from scratch
+        logger.info("No cached assets found - building from real datasets...")
+        return self._build_from_scratch()
+    
+    def _build_from_scratch(self) -> bool:
+        """Build corpus from scratch (setup/training mode)."""
         try:
-            # Try loading from cache first
-            if self._load_cached_corpus():
-                logger.info(f"Loaded cached corpus with {len(self.sentences)} sentences")
-                return True
-            
             # Build new corpus using real datasets
             logger.info("Building new corpus from real datasets...")
             dataset_loader = DatasetLoader()
@@ -71,11 +139,16 @@ class CorpusIndex:
             # Cache the corpus
             self._save_cached_corpus()
             
+            # Build and cache embeddings and index
+            self.build_embeddings()
+            self.build_index()
+            
+            self._is_loaded = True
             return True
             
         except Exception as e:
-            logger.error(f"Failed to load or build corpus: {e}")
-            raise RuntimeError(f"Cannot initialize DocInsight without real datasets: {e}")
+            logger.error(f"Failed to build corpus: {e}")
+            return False
     
     def _load_cached_corpus(self) -> bool:
         """Load corpus from cache if available."""
@@ -106,6 +179,39 @@ class CorpusIndex:
         except Exception as e:
             logger.warning(f"Failed to cache corpus: {e}")
     
+    def _load_cached_embeddings(self) -> bool:
+        """Load embeddings from cache."""
+        embeddings_file = self.cache_dir / f"embeddings_{self.target_size}.pkl"
+        
+        if not embeddings_file.exists():
+            return False
+        
+        try:
+            with open(embeddings_file, 'rb') as f:
+                self.embeddings = pickle.load(f)
+            logger.info(f"Loaded cached embeddings: {self.embeddings.shape}")
+            return True
+        except Exception as e:
+            logger.warning(f"Failed to load cached embeddings: {e}")
+            return False
+    
+    def _load_cached_index(self) -> bool:
+        """Load FAISS index from cache."""
+        if not HAS_FAISS:
+            return False
+            
+        index_file = self.cache_dir / f"faiss_index_{self.target_size}.bin"
+        
+        if not index_file.exists():
+            return False
+        
+        try:
+            self.index = faiss.read_index(str(index_file))
+            logger.info(f"Loaded cached FAISS index: {self.index.ntotal} vectors")
+            return True
+        except Exception as e:
+            logger.warning(f"Failed to load cached index: {e}")
+            return False
     def build_embeddings(self) -> bool:
         """Build sentence embeddings."""
         if not self.sentences:
@@ -116,17 +222,9 @@ class CorpusIndex:
             logger.warning("No sentence transformer model available")
             return False
         
-        # Check for cached embeddings
-        embeddings_file = self.cache_dir / f"embeddings_{self.target_size}.pkl"
-        
-        if embeddings_file.exists():
-            try:
-                with open(embeddings_file, 'rb') as f:
-                    self.embeddings = pickle.load(f)
-                logger.info(f"Loaded cached embeddings: {self.embeddings.shape}")
-                return True
-            except Exception as e:
-                logger.warning(f"Failed to load cached embeddings: {e}")
+        # Check for cached embeddings first
+        if self._load_cached_embeddings():
+            return True
         
         # Generate embeddings
         logger.info(f"Generating embeddings for {len(self.sentences)} sentences...")
@@ -134,9 +232,11 @@ class CorpusIndex:
             self.embeddings = self.model.encode(self.sentences, convert_to_numpy=True)
             
             # Normalize embeddings for cosine similarity
-            faiss.normalize_L2(self.embeddings)
+            if HAS_FAISS:
+                faiss.normalize_L2(self.embeddings)
             
             # Cache embeddings
+            embeddings_file = self.cache_dir / f"embeddings_{self.target_size}.pkl"
             with open(embeddings_file, 'wb') as f:
                 pickle.dump(self.embeddings, f)
             
@@ -157,16 +257,9 @@ class CorpusIndex:
             if not self.build_embeddings():
                 return False
         
-        # Check for cached index
-        index_file = self.cache_dir / f"faiss_index_{self.target_size}.bin"
-        
-        if index_file.exists():
-            try:
-                self.index = faiss.read_index(str(index_file))
-                logger.info(f"Loaded cached FAISS index: {self.index.ntotal} vectors")
-                return True
-            except Exception as e:
-                logger.warning(f"Failed to load cached index: {e}")
+        # Check for cached index first
+        if self._load_cached_index():
+            return True
         
         # Build new index
         try:
@@ -178,6 +271,7 @@ class CorpusIndex:
             self.index.add(self.embeddings.astype('float32'))
             
             # Cache index
+            index_file = self.cache_dir / f"faiss_index_{self.target_size}.bin"
             faiss.write_index(self.index, str(index_file))
             
             logger.info(f"Built and cached FAISS index: {self.index.ntotal} vectors")
@@ -200,7 +294,8 @@ class CorpusIndex:
         try:
             # Encode query
             query_embedding = self.model.encode([query], convert_to_numpy=True)
-            faiss.normalize_L2(query_embedding)
+            if HAS_FAISS:
+                faiss.normalize_L2(query_embedding)
             
             results = []
             

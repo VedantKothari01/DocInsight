@@ -27,29 +27,54 @@ from enhanced_pipeline import PlagiarismDetector
 # Initialize detector (cached)
 @st.cache_resource
 def load_detector():
-    """Load and cache the plagiarism detector."""
+    """Load and cache the plagiarism detector for production use."""
     try:
-        st.info("Initializing DocInsight... This may take a moment.")
+        # Create corpus index
+        corpus_index = CorpusIndex(target_size=10000)  # Default production size
         
-        # Create corpus index with larger target size
-        corpus_index = CorpusIndex(target_size=5000)  # Reasonable size for web app
-        corpus_index.load_or_build()
-        
-        # Try to build FAISS index
-        if corpus_index.build_index():
-            st.success(f"✅ Loaded {len(corpus_index.sentences)} sentences with FAISS indexing from real datasets")
+        # Check if system is ready for production
+        if corpus_index.is_ready_for_production():
+            st.info("🚀 Loading DocInsight (production-ready)...")
+            success = corpus_index.load_for_production()
+            
+            if success:
+                st.success(f"✅ Ready! {len(corpus_index.sentences):,} sentences loaded from real datasets")
+                st.info("📊 **Data Sources**: PAWS paraphrase dataset, Wikipedia articles, arXiv abstracts")
+                
+                # Create detector
+                detector = PlagiarismDetector(corpus_index)
+                return detector
+            else:
+                st.error("❌ Failed to load production assets")
+                return None
         else:
-            st.warning("⚠️ Running without FAISS indexing (semantic search still available)")
-        
-        # Show data sources
-        st.info("📊 **Data Sources**: PAWS paraphrase dataset, Wikipedia articles, arXiv abstracts")
-        
-        # Create detector
-        detector = PlagiarismDetector(corpus_index)
-        
-        return detector
+            # System not set up yet
+            st.error("⚠️ **DocInsight Not Set Up Yet**")
+            st.markdown("""
+            DocInsight requires one-time setup before use. Please run:
+            
+            ```bash
+            python setup_docinsight.py
+            ```
+            
+            This will:
+            - Download real datasets (PAWS, Wikipedia, arXiv)
+            - Build semantic embeddings  
+            - Create search indices
+            - Prepare system for instant analysis
+            
+            After setup, refresh this page to use DocInsight.
+            """)
+            return None
+            
     except Exception as e:
-        st.error(f"Failed to initialize detector: {e}")
+        st.error(f"Failed to initialize DocInsight: {e}")
+        st.markdown("""
+        **Troubleshooting:**
+        1. Run setup first: `python setup_docinsight.py`
+        2. Check dependencies: `pip install -r requirements.txt`
+        3. Verify network access for dataset downloads
+        """)
         return None
 
 def extract_text_from_file(uploaded_file) -> Optional[str]:

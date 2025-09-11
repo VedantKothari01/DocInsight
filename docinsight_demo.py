@@ -94,70 +94,78 @@ def check_dependencies():
     return True
 
 
+def check_docinsight_ready() -> bool:
+    """Check if DocInsight is ready for production use."""
+    try:
+        from corpus_builder import CorpusIndex
+        corpus_index = CorpusIndex(target_size=10000)
+        return corpus_index.is_ready_for_production()
+    except Exception:
+        return False
+
 def setup_docinsight(target_size: int = 10000, quick_demo: bool = False):
-    """Set up DocInsight with real datasets."""
-    logger.info("Setting up DocInsight...")
+    """Set up DocInsight with real datasets (if needed)."""
+    # Check if already ready
+    if check_docinsight_ready():
+        logger.info("✅ DocInsight is already set up and ready!")
+        return True
+    
+    logger.info("Setting up DocInsight for first use...")
     
     # Adjust target size for quick demo
     if quick_demo:
-        target_size = min(1000, target_size)
+        target_size = min(2000, target_size)
         logger.info(f"Quick demo mode: using smaller corpus size ({target_size})")
     
     try:
-        # Import our modules
+        # Import setup functionality
+        import subprocess
+        import sys
+        
+        # Run setup script
+        setup_args = [
+            sys.executable, "setup_docinsight.py",
+            "--target-size", str(target_size)
+        ]
+        if quick_demo:
+            setup_args.append("--quick")
+        
+        logger.info("🛠️ Running setup script...")
+        result = subprocess.run(setup_args, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            logger.info("✅ Setup completed successfully!")
+            return True
+        else:
+            logger.error(f"❌ Setup failed: {result.stderr}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"❌ Setup failed: {e}")
+        return False
+
+def test_docinsight():
+    """Quick test of DocInsight functionality."""
+    try:
         from corpus_builder import CorpusIndex
         from enhanced_pipeline import PlagiarismDetector
         
-        logger.info("📊 Initializing corpus builder...")
-        corpus_index = CorpusIndex(target_size=target_size)
-        
-        logger.info("🌐 Loading real datasets (PAWS, Wikipedia, arXiv)...")
-        logger.info("   This may take a few minutes on first run...")
-        
-        start_time = time.time()
-        success = corpus_index.load_or_build()
-        build_time = time.time() - start_time
-        
-        if not success:
-            logger.error("❌ Failed to build corpus from real datasets")
+        # Load for production
+        corpus_index = CorpusIndex(target_size=10000)
+        if not corpus_index.load_for_production():
             return False
         
-        logger.info(f"✅ Built corpus with {len(corpus_index.sentences)} sentences in {build_time:.1f}s")
-        
-        # Build embeddings and search index
-        logger.info("🧠 Building semantic embeddings...")
-        start_time = time.time()
-        corpus_index.build_embeddings()
-        embed_time = time.time() - start_time
-        logger.info(f"✅ Built embeddings in {embed_time:.1f}s")
-        
-        logger.info("⚡ Building FAISS search index...")
-        start_time = time.time()
-        corpus_index.build_index()
-        index_time = time.time() - start_time
-        logger.info(f"✅ Built search index in {index_time:.1f}s")
-        
-        # Test the pipeline
-        logger.info("🔍 Testing plagiarism detector...")
+        # Test detector
         detector = PlagiarismDetector(corpus_index)
         
-        # Test with a sample sentence
-        test_sentence = "Machine learning algorithms can identify patterns in data."
-        result = detector.analyze_sentence(test_sentence)
-        logger.info(f"✅ Test analysis complete - Score: {result.fused_score:.3f}, Confidence: {result.confidence}")
-        
-        # Test document analysis
-        test_doc = "Machine learning is powerful. Neural networks can learn complex patterns."
-        doc_result = detector.analyze_document(test_doc)
-        logger.info(f"✅ Document analysis test complete - {doc_result['overall_stats']['total_sentences']} sentences analyzed")
-        
-        total_setup_time = build_time + embed_time + index_time
-        logger.info(f"🎉 DocInsight setup complete! Total time: {total_setup_time:.1f}s")
+        # Test sentence analysis
+        result = detector.analyze_sentence("Machine learning algorithms can identify patterns in data.")
+        logger.info(f"✅ Test successful - Score: {result.fused_score:.3f}, Confidence: {result.confidence}")
         
         return True
         
     except Exception as e:
-        logger.error(f"❌ Setup failed: {e}")
+        logger.error(f"❌ Test failed: {e}")
         return False
 
 
@@ -233,12 +241,23 @@ Examples:
     
     # Setup DocInsight unless skipping
     if not args.skip_setup:
-        logger.info("🛠️  Setting up DocInsight with real datasets...")
-        if not setup_docinsight(args.target_size, args.quick_demo):
-            logger.error("❌ Setup failed. Please check the logs and try again.")
-            return 1
+        if check_docinsight_ready():
+            logger.info("✅ DocInsight is already ready for production use!")
+        else:
+            logger.info("🛠️ Setting up DocInsight with real datasets...")
+            if not setup_docinsight(args.target_size, args.quick_demo):
+                logger.error("❌ Setup failed. Please check the logs and try again.")
+                return 1
     else:
-        logger.info("⏭️  Skipping setup as requested")
+        logger.info("⏭️ Skipping setup as requested")
+        if not check_docinsight_ready():
+            logger.warning("⚠️ DocInsight may not be ready - setup recommended")
+    
+    # Quick functionality test
+    logger.info("🔍 Testing DocInsight functionality...")
+    if not test_docinsight():
+        logger.error("❌ DocInsight test failed")
+        return 1
     
     # Launch Streamlit
     logger.info("🎯 Setup complete! Launching web interface...")
