@@ -1,0 +1,2295 @@
+🔍 DocInsight Enhanced - AI-Powered Plagiarism Detection
+🚀 Production-Ready with Real Dataset Integration
+
+🎉 Real Dataset Integration: Now powered by 50,000+ sentences from PAWS, Wikipedia, and arXiv!
+
+🌟 Key Features:
+
+    🚀 One-click analysis - just upload your document
+    🧠 Semantic Analysis - Advanced ML models with SBERT embeddings + cross-encoder reranking
+    ✍️ Stylometric Analysis - 15+ academic writing features (vocabulary, citations, passive voice, AI detection)
+    📊 Dual-Engine Detection - Combines semantic similarity + writing style analysis (beats Turnitin's approach!)
+    🎯 Component Scoring - See individual semantic, stylometric, and cross-encoder scores
+    📝 Academic Indicators - Reading level, citation density, academic vocabulary usage
+    🤖 AI Detection Features - Perplexity estimation, repetition analysis, coherence scoring
+    🌐 Real datasets - PAWS paraphrases, Wikipedia articles, academic papers
+    ⚡ FAISS indexing for sub-second similarity search
+    📝 Comprehensive reports with downloadable JSON and summary formats
+    🔒 No hardcoded corpus - purely data-driven detection
+
+💡 RESEARCH ADVANTAGE: DocInsight uses both semantic similarity AND stylometric analysis - the two areas where Turnitin falls short!
+
+🚀 Loading DocInsight (production-ready)...
+
+✅ Ready! 5,000 sentences loaded from real datasets
+
+📊 Data Sources: PAWS paraphrase dataset, Wikipedia articles, arXiv abstracts
+📄 Upload Your Document
+
+Choose a file
+Drag and drop file hereLimit 200MB per file • TXT, PDF, DOCX, DOC
+
+We_are_working_on_a_project_which_targets_turnitin.pdf
+325.6KB
+
+✅ File uploaded: We_are_working_on_a_project_which_targets_turnitin.pdf
+
+✅ Extracted 16756 characters
+
+📖 Document Preview
+
+Yes, Turnitin has significant shortcomings in semantic and stylometric analysis, and
+emerging technologies—including deep learning, topic-debiasing, and advanced
+feature extraction—can outperform Turnitin in detecting nuanced authorship and
+semantic similarity.
+1. Introduction
+Turnitin is widely used in academic settings as a text-matching tool to detect potential plagiarism, but research
+consistently highlights its limitations in both semantic and stylometric analysis. Specifically, Turnitin often fails to
+recognize domain-specific semantics, such as technical jargon or context-dependent phrases, leading to inflated
+similarity scores and misjudgments, as seen in agricultural extension writing in Nigeria (Emmanuel et al., 2023).
+Moreover, Turnitin's reliance on surface-level text matching makes it vulnerable to paraphrasing and stylometric
+obfuscation, where changes in writing style or structure can bypass detection (Emmanuel et al., 2023; Mphahlele &
+McKenna, 2019). Recent advances in...
+
+📖 Document Preview
+
+Yes, Turnitin has significant shortcomings in semantic and stylometric analysis, and
+emerging technologies—including deep learning, topic-debiasing, and advanced
+feature extraction—can outperform Turnitin in detecting nuanced authorship and
+semantic similarity.
+1. Introduction
+Turnitin is widely used in academic settings as a text-matching tool to detect potential plagiarism, but research
+consistently highlights its limitations in both semantic and stylometric analysis. Specifically, Turnitin often fails to
+recognize domain-specific semantics, such as technical jargon or context-dependent phrases, leading to inflated
+similarity scores and misjudgments, as seen in agricultural extension writing in Nigeria (Emmanuel et al., 2023).
+Moreover, Turnitin's reliance on surface-level text matching makes it vulnerable to paraphrasing and stylometric
+obfuscation, where changes in writing style or structure can bypass detection (Emmanuel et al., 2023; Mphahlele &
+McKenna, 2019). Recent advances in...
+
+✅ Analysis complete!
+📊 Overall Analysis
+
+Total Sentences
+105
+
+Avg Similarity Score
+-3.528
+
+Max Similarity Score
+0.259
+
+High Risk %
+0.0%
+🚨 Risk Assessment
+
+✅ LOW RISK: No high-similarity content detected.
+🔍 Detailed Sentence Analysis
+
+Sentence 1 (Final Score: -2.956) - LOW RISK
+
+Text: Yes, Turnitin has significant shortcomings in semantic and stylometric analysis, and emerging technologies—including deep learning, topic-debiasing, and advanced feature extraction—can outperform Turnitin in detecting nuanced authorship and semantic similarity.
+
+🧠 Semantic Score
+-0.979
+
+✍️ Stylometric Score
+0.369
+
+🎯 Cross-Encoder Score
+-8.469
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 2 (Final Score: -2.676) - LOW RISK
+
+Text: 1. Introduction Turnitin is widely used in academic settings as a text-matching tool to detect potential plagiarism, but research consistently highlights its limitations in both semantic and stylometric analysis.
+
+🧠 Semantic Score
+-1.016
+
+✍️ Stylometric Score
+0.320
+
+🎯 Cross-Encoder Score
+-7.439
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 3 (Final Score: -4.002) - LOW RISK
+
+Text: Specifically, Turnitin often fails to recognize domain-specific semantics, such as technical jargon or context-dependent phrases, leading to inflated similarity scores and misjudgments, as seen in agricultural extension writing in Nigeria (Emmanuel et al., 2023).
+
+🧠 Semantic Score
+-2.795
+
+✍️ Stylometric Score
+0.394
+
+🎯 Cross-Encoder Score
+-8.944
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 4 (Final Score: -4.952) - LOW RISK
+
+Text: Moreover, Turnitin's reliance on surface-level text matching makes it vulnerable to paraphrasing and stylometric obfuscation, where changes in writing style or structure can bypass detection (Emmanuel et al., 2023; Mphahlele & McKenna, 2019).
+
+🧠 Semantic Score
+-3.806
+
+✍️ Stylometric Score
+0.446
+
+🎯 Cross-Encoder Score
+-10.460
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 5 (Final Score: -2.295) - LOW RISK
+
+Text: Recent advances in machine learning, such as neural network-based stylometric representation learning (Ding et al., 2016), topic-debiasing models (Hu et al., 2023), and attention-based similarity learning (Boenninghoff et al., 2019), have demonstrated superior performance in authorship verification and semantic similarity tasks.
+
+🧠 Semantic Score
+-1.242
+
+✍️ Stylometric Score
+0.340
+
+🎯 Cross-Encoder Score
+-5.807
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 6 (Final Score: -4.546) - LOW RISK
+
+Text: These technologies leverage deep semantic features, distributed representations, and sophisticated feature extraction to capture subtle linguistic and stylistic cues that Turnitin often misses (Ding et al., 2016; Hu et al., 2023; Boenninghoff et al., 2019).
+
+🧠 Semantic Score
+-3.070
+
+✍️ Stylometric Score
+0.279
+
+🎯 Cross-Encoder Score
+-10.222
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 7 (Final Score: -2.480) - LOW RISK
+
+Text: Additionally, new methods like Latent Semantic Scaling and graph-based models further enhance the ability to analyze text across languages and domains (Watanabe, 2020; Liu et al., 2023).
+
+🧠 Semantic Score
+-1.297
+
+✍️ Stylometric Score
+0.361
+
+🎯 Cross-Encoder Score
+-6.346
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 8 (Final Score: -4.807) - LOW RISK
+
+Text: This review synthesizes the literature on Turnitin's shortcomings and explores emerging technologies that can address these gaps, offering a roadmap for more robust semantic and stylometric analysis in plagiarism detection and authorship verification (Emmanuel et al., 2023; Ding et al., 2016; Watanabe, 2020; Liu et al., 2023; Hu et al., 2023; Mphahlele & McKenna, 2019;
+
+🧠 Semantic Score
+-3.609
+
+✍️ Stylometric Score
+0.235
+
+🎯 Cross-Encoder Score
+-10.167
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 9 (Final Score: -2.492) - LOW RISK
+
+Text: Nadeem et al., 2023; Grieve, 2023; Boenninghoff et al., 2019).
+
+🧠 Semantic Score
+0.293
+
+✍️ Stylometric Score
+0.161
+
+🎯 Cross-Encoder Score
+-8.905
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 10 (Final Score: -3.367) - LOW RISK
+
+Text: Methods A comprehensive search was conducted across over 170 million research papers in Consensus, including sources from Semantic Scholar, PubMed, and other major databases.
+
+🧠 Semantic Score
+-2.121
+
+✍️ Stylometric Score
+0.375
+
+🎯 Cross-Encoder Score
+-7.938
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 11 (Final Score: -4.691) - LOW RISK
+
+Text: The search strategy involved targeted queries on Turnitin's limitations in semantic and stylometric analysis, alternative and emerging technologies, and comparative studies.
+
+🧠 Semantic Score
+-3.325
+
+✍️ Stylometric Score
+0.377
+
+🎯 Cross-Encoder Score
+-10.349
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 12 (Final Score: -3.334) - LOW RISK
+
+Text: In total, 1,045 papers were identified, 739 were screened, 497 were deemed eligible, and the top 20 most relevant papers were included in this review. 1 / 7 Search Strategy Identification N = 1045
+
+🧠 Semantic Score
+-2.364
+
+✍️ Stylometric Score
+0.317
+
+🎯 Cross-Encoder Score
+-7.387
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 13 (Final Score: -3.189) - LOW RISK
+
+Text: Identified 1041 papers that matched 20 Consensus searches 1041 identified Identified 4 papers from citation graph exploration 4 identified → Screening N = 739 Removed papers with missing abstracts Removed duplicates 306 removed → Eligibility N = 497 Removed papers with low semantic relevance to each search 242 removed → Included N = 20 Selected the top 20 highest quality papers after final ranking 477 removed FIGURE 1 Flow diagram of the search and selection process.
+
+🧠 Semantic Score
+-2.249
+
+✍️ Stylometric Score
+0.371
+
+🎯 Cross-Encoder Score
+-7.131
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 14 (Final Score: -4.631) - LOW RISK
+
+Text: Eight unique search groups were executed, focusing on Turnitin's shortcomings, advances in semantic and stylometric analysis, and novel machine learning approaches.
+
+🧠 Semantic Score
+-3.302
+
+✍️ Stylometric Score
+0.364
+
+🎯 Cross-Encoder Score
+-10.174
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 15 (Final Score: -4.616) - LOW RISK
+
+Text: 3. Results 3.1 Turnitin’s Shortcomings in Semantic and Stylometric Analysis Multiple studies highlight that Turnitin is primarily a text-matching tool, not a true plagiarism detector, and struggles with recognizing domain-specific semantics and writing styles (Emmanuel et al., 2023; Mphahlele & McKenna, 2019).
+
+🧠 Semantic Score
+-3.510
+
+✍️ Stylometric Score
+0.304
+
+🎯 Cross-Encoder Score
+-9.740
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 16 (Final Score: -3.885) - LOW RISK
+
+Text: For example, in Nigerian agricultural extension writing, Turnitin frequently misidentifies common semantic phrases as plagiarism, inflating similarity scores and leading to unreliable results (Emmanuel et al., 2023).
+
+🧠 Semantic Score
+-2.311
+
+✍️ Stylometric Score
+0.359
+
+🎯 Cross-Encoder Score
+-9.339
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 17 (Final Score: -4.772) - LOW RISK
+
+Text: Additionally, Turnitin is susceptible to paraphrasing and stylometric obfuscation, where changes in writing style or structure can evade detection (Mphahlele & McKenna, 2019; Grieve, 2023).
+
+🧠 Semantic Score
+-3.589
+
+✍️ Stylometric Score
+0.446
+
+🎯 Cross-Encoder Score
+-10.222
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 18 (Final Score: -4.228) - LOW RISK
+
+Text: 3.2 Advances in Stylometric Analysis Recent research in stylometric analysis has moved beyond manual feature engineering to neural network-based approaches that learn distributed representations of writing style, capturing topical, lexical, syntactic, and character-level features (Ding et al., 2016; Hu et al., 2023).
+
+🧠 Semantic Score
+-2.826
+
+✍️ Stylometric Score
+0.325
+
+🎯 Cross-Encoder Score
+-9.601
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 19 (Final Score: -4.430) - LOW RISK
+
+Text: Topic-debiasing models, such as TDRLM, further improve authorship verification by removing topical bias from stylometric features, resulting in higher accuracy and generalizability (Hu et al., 2023).
+
+🧠 Semantic Score
+-3.146
+
+✍️ Stylometric Score
+0.359
+
+🎯 Cross-Encoder Score
+-9.763
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 20 (Final Score: -3.267) - LOW RISK
+
+Text: Visualization and clustering techniques, including network-based consensus trees, enhance the reliability of stylometric analysis for large datasets (Eder, 2017; Grieve, 2023). 2 / 7 3.3 Advances in Semantic Analysis Emerging semantic analysis techniques leverage deep learning, attention mechanisms, and graph-based models to capture nuanced meaning and context in text (Watanabe, 2020; Liu et al., 2023; Cheng et al., 2020; Hu et al., 2020; Kim & Sohn, 2020).
+
+🧠 Semantic Score
+-1.875
+
+✍️ Stylometric Score
+0.324
+
+🎯 Cross-Encoder Score
+-7.981
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 21 (Final Score: -2.715) - LOW RISK
+
+Text: Latent Semantic Scaling (LSS) and document-to-vector methods enable flexible, domain- agnostic semantic analysis, outperforming traditional dictionary-based or surface-level approaches (Watanabe, 2020; Kim & Sohn, 2020).
+
+🧠 Semantic Score
+-1.155
+
+✍️ Stylometric Score
+0.432
+
+🎯 Cross-Encoder Score
+-7.415
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 22 (Final Score: -3.796) - LOW RISK
+
+Text: These methods are particularly effective in cross-domain and multilingual contexts, where Turnitin’s capabilities are limited (Watanabe, 2020; Liu et al., 2023).
+
+🧠 Semantic Score
+-2.391
+
+✍️ Stylometric Score
+0.352
+
+🎯 Cross-Encoder Score
+-8.902
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 23 (Final Score: -2.960) - LOW RISK
+
+Text: 3.4 Technologies to Surpass Turnitin Novel machine learning models, such as hierarchical Siamese neural networks and attention-based similarity learning, have demonstrated superior performance in authorship verification and semantic similarity detection compared to traditional stylometric features (Hu et al., 2023; Boenninghoff et al., 2019).
+
+🧠 Semantic Score
+-1.516
+
+✍️ Stylometric Score
+0.305
+
+🎯 Cross-Encoder Score
+-7.544
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 24 (Final Score: -3.188) - LOW RISK
+
+Text: Random forest classifiers and deep learning models can distinguish between human and AI-generated texts with high accuracy, even in languages like Japanese (Zaitsu & Jin, 2023).
+
+🧠 Semantic Score
+-1.854
+
+✍️ Stylometric Score
+0.427
+
+🎯 Cross-Encoder Score
+-7.823
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 25 (Final Score: -4.168) - LOW RISK
+
+Text: Multimodal approaches that combine stylometric and semantic features further enhance detection capabilities in complex environments, such as fake news detection (Nadeem et al., 2023).
+
+🧠 Semantic Score
+-2.885
+
+✍️ Stylometric Score
+0.353
+
+🎯 Cross-Encoder Score
+-9.321
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 26 (Final Score: -4.826) - LOW RISK
+
+Text: Key Papers Paper Methodology Focus Area Key Results Technology/Model (Emmanuel et al., 2023) Thematic content analysis Turnitin semantic shortcomings Turnitin misjudges domain-specific semantics, inflating similarity scores Manual recalculation, domain-specific algorithms (Ding et al., 2016)
+
+🧠 Semantic Score
+-3.623
+
+✍️ Stylometric Score
+0.401
+
+🎯 Cross-Encoder Score
+-10.314
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 27 (Final Score: -2.678) - LOW RISK
+
+Text: Neural network- based stylometric learning Authorship analysis Outperforms static stylometrics and n- gram models in style detection Distributed representations, deep learning (Hu et al., 2023) Topic-debiasing representation learning Authorship verification Achieves highest AUC, removes topical bias from stylometric features TDRLM, attention mechanism (Watanabe, 2020)
+
+🧠 Semantic Score
+-1.519
+
+✍️ Stylometric Score
+0.431
+
+🎯 Cross-Encoder Score
+-6.683
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 28 (Final Score: -3.372) - LOW RISK
+
+Text: Latent Semantic Scaling (LSS) Semantic analysis Flexible, domain- agnostic, effective in multiple languages LSS, word embeddings (Boenninghoff et al., 2019)
+
+🧠 Semantic Score
+-2.316
+
+✍️ Stylometric Score
+0.365
+
+🎯 Cross-Encoder Score
+-7.623
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 29 (Final Score: -4.871) - LOW RISK
+
+Text: Hierarchical Siamese neural network Authorship verification Outperforms stylometric baselines, provides explainable decisions Neural features, attention weights 3 / 7 FIGURE 2 Comparison of key studies on Turnitin's shortcomings and advanced semantic/stylometric technologies.
+
+🧠 Semantic Score
+-3.602
+
+✍️ Stylometric Score
+0.350
+
+🎯 Cross-Encoder Score
+-10.467
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 30 (Final Score: -4.509) - LOW RISK
+
+Text: Top Contributors Type Name Papers Author Steven H. H. Ding (Ding et al., 2016; Hu et al., 2023)
+
+🧠 Semantic Score
+-3.200
+
+✍️ Stylometric Score
+0.276
+
+🎯 Cross-Encoder Score
+-9.880
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 31 (Final Score: -4.092) - LOW RISK
+
+Text: Author Wataru Zaitsu (Zaitsu & Jin, 2023)
+
+🧠 Semantic Score
+-2.651
+
+✍️ Stylometric Score
+0.310
+
+🎯 Cross-Encoder Score
+-9.429
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 32 (Final Score: -4.524) - LOW RISK
+
+Text: Author Kohei Watanabe (Watanabe, 2020)
+
+🧠 Semantic Score
+-3.267
+
+✍️ Stylometric Score
+0.300
+
+🎯 Cross-Encoder Score
+-9.834
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 33 (Final Score: -4.475) - LOW RISK
+
+Text: Journal IEEE Transactions on Cybernetics (Ding et al., 2016) Journal Expert Syst.
+
+🧠 Semantic Score
+-2.995
+
+✍️ Stylometric Score
+0.292
+
+🎯 Cross-Encoder Score
+-10.121
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 34 (Final Score: -3.594) - LOW RISK
+
+Text: (Hu et al., 2023) Journal PLOS ONE (Zaitsu & Jin, 2023) FIGURE 3 Authors & journals that appeared most frequently in the included papers.
+
+🧠 Semantic Score
+-2.370
+
+✍️ Stylometric Score
+0.360
+
+🎯 Cross-Encoder Score
+-8.270
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 35 (Final Score: -4.135) - LOW RISK
+
+Text: Discussion The literature demonstrates that Turnitin’s reliance on surface-level text matching leads to significant shortcomings in both semantic and stylometric analysis, particularly in domain-specific or paraphrased content (Emmanuel et al., 2023; Mphahlele & McKenna, 2019).
+
+🧠 Semantic Score
+-2.925
+
+✍️ Stylometric Score
+0.413
+
+🎯 Cross-Encoder Score
+-9.183
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 36 (Final Score: -3.778) - LOW RISK
+
+Text: This limitation can result in false positives and negatives, undermining the reliability of plagiarism detection and authorship verification.
+
+🧠 Semantic Score
+-2.099
+
+✍️ Stylometric Score
+0.330
+
+🎯 Cross-Encoder Score
+-9.316
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 37 (Final Score: -3.316) - LOW RISK
+
+Text: In contrast, emerging technologies—especially those leveraging deep learning, topic-debiasing, and attention mechanisms—offer substantial improvements by capturing deeper semantic and stylistic features (Ding et al., 2016; Watanabe, 2020; Hu et al., 2023; Boenninghoff et al., 2019).
+
+🧠 Semantic Score
+-1.762
+
+✍️ Stylometric Score
+0.285
+
+🎯 Cross-Encoder Score
+-8.305
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 38 (Final Score: -4.144) - LOW RISK
+
+Text: These models are more robust to paraphrasing, cross-domain variation, and even AI-generated text, outperforming traditional approaches in accuracy and generalizability (Ding et al., 2016; Zaitsu & Jin, 2023; Hu et al., 2023; Boenninghoff et al., 2019).
+
+🧠 Semantic Score
+-2.937
+
+✍️ Stylometric Score
+0.279
+
+🎯 Cross-Encoder Score
+-9.104
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 39 (Final Score: -2.953) - LOW RISK
+
+Text: However, the adoption of these advanced methods in mainstream plagiarism detection tools remains limited, partly due to computational complexity, lack of transparency, and the need for large, labeled datasets.
+
+🧠 Semantic Score
+-1.335
+
+✍️ Stylometric Score
+0.460
+
+🎯 Cross-Encoder Score
+-7.927
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 40 (Final Score: -2.987) - LOW RISK
+
+Text: There is also a risk of overfitting to specific domains or languages if models are not properly validated (Watanabe, 2020; Hu et al., 2023).
+
+🧠 Semantic Score
+-1.716
+
+✍️ Stylometric Score
+0.366
+
+🎯 Cross-Encoder Score
+-7.342
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 41 (Final Score: -3.280) - LOW RISK
+
+Text: Nonetheless, the evidence strongly supports the integration of these technologies to address Turnitin’s current shortcomings and improve the integrity of academic writing assessment (Emmanuel et al., 2023;
+
+🧠 Semantic Score
+-1.913
+
+✍️ Stylometric Score
+0.311
+
+🎯 Cross-Encoder Score
+-7.952
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 42 (Final Score: -4.108) - LOW RISK
+
+Text: Ding et al., 2016; Watanabe, 2020; Hu et al., 2023; Boenninghoff et al., 2019). 4 / 7 Claims and Evidence Table Claim Evidence Strength Reasoning Papers Turnitin fails to recognize domain-specific semantics, leading to inflated similarity scores Strong Multiple studies show Turnitin misjudges technical or context-dependent phrases as plagiarism (Emmanuel et al., 2023; Mphahlele & McKenna, 2019)
+
+🧠 Semantic Score
+-3.142
+
+✍️ Stylometric Score
+0.276
+
+🎯 Cross-Encoder Score
+-8.638
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 43 (Final Score: -2.920) - LOW RISK
+
+Text: Deep learning-based stylometric models outperform traditional feature engineering in authorship analysis Strong Neural models capture complex writing style features, improving accuracy and generalizability (Ding et al., 2016; Hu et al., 2023; Boenninghoff et al., 2019) Topic-debiasing and attention mechanisms enhance stylometric and semantic analysis Moderate Removing topical bias and focusing on attention weights improves authorship verification (Hu et al., 2023;
+
+🧠 Semantic Score
+-1.966
+
+✍️ Stylometric Score
+0.295
+
+🎯 Cross-Encoder Score
+-6.653
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 44 (Final Score: -5.151) - LOW RISK
+
+Text: Boenninghoff et al., 2019) Turnitin is vulnerable to paraphrasing and stylometric obfuscation Moderate Surface-level matching can be bypassed by changing writing style or structure (Emmanuel et al., 2023; Mphahlele & McKenna, 2019; Grieve, 2023)
+
+🧠 Semantic Score
+-3.951
+
+✍️ Stylometric Score
+0.324
+
+🎯 Cross-Encoder Score
+-10.800
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 45 (Final Score: -3.903) - LOW RISK
+
+Text: Multimodal and graph-based models further improve semantic and stylometric detection Moderate Combining textual, visual, and structural features increases detection robustness (Watanabe, 2020; Liu et al., 2023; Nadeem et al., 2023) Manual review and recalculation are still needed to ensure reliability in certain domains Moderate Automated tools alone may not account for all semantic nuances, requiring expert intervention (Emmanuel et al., 2023; Mphahlele & McKenna, 2019)
+
+🧠 Semantic Score
+-2.790
+
+✍️ Stylometric Score
+0.359
+
+🎯 Cross-Encoder Score
+-8.600
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 46 (Final Score: -4.135) - LOW RISK
+
+Text: FIGURE 4 Key claims and support evidence identified in these papers.
+
+🧠 Semantic Score
+-2.421
+
+✍️ Stylometric Score
+0.315
+
+🎯 Cross-Encoder Score
+-9.956
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 47 (Final Score: -4.476) - LOW RISK
+
+Text: In summary, Turnitin’s shortcomings in semantic and stylometric analysis are well-documented, with significant evidence showing its limitations in detecting nuanced plagiarism and authorship obfuscation.
+
+🧠 Semantic Score
+-3.371
+
+✍️ Stylometric Score
+0.385
+
+🎯 Cross-Encoder Score
+-9.557
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 48 (Final Score: -4.716) - LOW RISK
+
+Text: Emerging technologies—particularly those based on deep learning, topic-debiasing, and advanced feature extraction—offer promising solutions that can outperform Turnitin in both semantic and stylometric tasks.
+
+🧠 Semantic Score
+-3.352
+
+✍️ Stylometric Score
+0.350
+
+🎯 Cross-Encoder Score
+-10.367
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 49 (Final Score: -3.219) - LOW RISK
+
+Text: However, further research and practical integration are needed to fully realize these advancements in mainstream academic integrity tools. 5 / 7 5.1 Research Gaps Despite progress, gaps remain in the application of advanced semantic and stylometric models across diverse domains, languages, and text types.
+
+🧠 Semantic Score
+-1.282
+
+✍️ Stylometric Score
+0.345
+
+🎯 Cross-Encoder Score
+-8.822
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 50 (Final Score: -2.867) - LOW RISK
+
+Text: There is also a need for more transparent, explainable, and computationally efficient models that can be widely adopted in educational settings.
+
+🧠 Semantic Score
+-1.785
+
+✍️ Stylometric Score
+0.350
+
+🎯 Cross-Encoder Score
+-6.815
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 51 (Final Score: -3.699) - LOW RISK
+
+Text: Research Gaps Matrix Topic/Methodology Deep Learning Models Topic- Debiasing Manual Review Multimodal Approaches Graph- Based Models Domain-specific semantics 2 1 2 GAP GAP Authorship verification 3 2 1 1 1 Paraphrasing detection 2 1 1 1 GAP Cross-lingual analysis 1 GAP GAP 1 1 AI-generated text detection 2 GAP GAP 1 GAP FIGURE 5 Heatmap of research coverage by topic and methodology.
+
+🧠 Semantic Score
+-2.674
+
+✍️ Stylometric Score
+0.377
+
+🎯 Cross-Encoder Score
+-8.126
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 52 (Final Score: -4.257) - LOW RISK
+
+Text: 5.2 Open Research Questions Future research should focus on developing explainable, scalable, and domain-adaptive models for semantic and stylometric analysis, as well as integrating these technologies into practical plagiarism detection tools.
+
+🧠 Semantic Score
+-2.957
+
+✍️ Stylometric Score
+0.342
+
+🎯 Cross-Encoder Score
+-9.492
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 53 (Final Score: -3.019) - LOW RISK
+
+Text: Why How can deep learning models for semantic and stylometric analysis be made more explainable and transparent for educational use?
+
+🧠 Semantic Score
+-1.331
+
+✍️ Stylometric Score
+0.365
+
+🎯 Cross-Encoder Score
+-8.090
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 54 (Final Score: -4.345) - LOW RISK
+
+Text: Explainability is crucial for user trust and adoption in academic settings, ensuring that decisions can be understood and challenged if necessary.
+
+🧠 Semantic Score
+-3.118
+
+✍️ Stylometric Score
+0.350
+
+🎯 Cross-Encoder Score
+-9.520
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 55 (Final Score: -4.101) - LOW RISK
+
+Text: What are the best strategies for adapting advanced semantic and stylometric models to low-resource languages and specialized domains?
+
+🧠 Semantic Score
+-2.915
+
+✍️ Stylometric Score
+0.340
+
+🎯 Cross-Encoder Score
+-9.038
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 56 (Final Score: -3.768) - LOW RISK
+
+Text: Many current models are trained on high-resource languages; extending them to diverse contexts will improve global applicability and fairness.
+
+🧠 Semantic Score
+-2.173
+
+✍️ Stylometric Score
+0.350
+
+🎯 Cross-Encoder Score
+-9.172
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 57 (Final Score: -4.624) - LOW RISK
+
+Text: How can multimodal and graph-based approaches be efficiently integrated into mainstream plagiarism detection tools?
+
+🧠 Semantic Score
+-3.033
+
+✍️ Stylometric Score
+0.300
+
+🎯 Cross-Encoder Score
+-10.559
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 58 (Final Score: -3.603) - LOW RISK
+
+Text: Combining multiple data types and structures could enhance detection, but practical integration requires addressing computational and usability challenges.
+
+🧠 Semantic Score
+-2.274
+
+✍️ Stylometric Score
+0.347
+
+🎯 Cross-Encoder Score
+-8.452
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 59 (Final Score: -5.098) - LOW RISK
+
+Text: FIGURE 6 Open research questions for future investigation.
+
+🧠 Semantic Score
+-3.811
+
+✍️ Stylometric Score
+0.305
+
+🎯 Cross-Encoder Score
+-10.845
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 60 (Final Score: -3.747) - LOW RISK
+
+Text: 6 / 7 In conclusion, while Turnitin remains a widely used tool, the literature strongly supports the adoption of advanced semantic and stylometric technologies to address its current limitations and improve the integrity of academic writing assessment.
+
+🧠 Semantic Score
+-2.479
+
+✍️ Stylometric Score
+0.367
+
+🎯 Cross-Encoder Score
+-8.602
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 61 (Final Score: -2.284) - LOW RISK
+
+Text: These papers were sourced and synthesized using Consensus, an AI-powered search engine for research.
+
+🧠 Semantic Score
+-0.818
+
+✍️ Stylometric Score
+0.320
+
+🎯 Cross-Encoder Score
+-6.462
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 62 (Final Score: -5.273) - LOW RISK
+
+Text: Try it at https://consensus.app References Emmanuel, O., Ogbonnaya, A., Christiana, I., Comfort, C., & Nsongurua, D. (2023).
+
+🧠 Semantic Score
+-3.903
+
+✍️ Stylometric Score
+0.276
+
+🎯 Cross-Encoder Score
+-11.257
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 63 (Final Score: -4.642) - LOW RISK
+
+Text: Intricacies of utilizing Turnitin tool in agricultural extension content writing in Nigeria.
+
+🧠 Semantic Score
+-3.163
+
+✍️ Stylometric Score
+0.270
+
+🎯 Cross-Encoder Score
+-10.380
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 64 (Final Score: -2.291) - LOW RISK
+
+Text: African Journal of Agricultural Research.
+
+🧠 Semantic Score
+0.091
+
+✍️ Stylometric Score
+0.260
+
+🎯 Cross-Encoder Score
+-7.963
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 65 (Final Score: -5.280) - LOW RISK
+
+Text: https://doi.org/10.5897/ajar2023.16458 Ding, S., Fung, B., Iqbal, F., & Cheung, W. (2016).
+
+🧠 Semantic Score
+-4.086
+
+✍️ Stylometric Score
+0.270
+
+🎯 Cross-Encoder Score
+-10.969
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 66 (Final Score: -5.323) - LOW RISK
+
+Text: Learning Stylometric Representations for Authorship Analysis.
+
+🧠 Semantic Score
+-3.998
+
+✍️ Stylometric Score
+0.260
+
+🎯 Cross-Encoder Score
+-11.255
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 67 (Final Score: -4.839) - LOW RISK
+
+Text: IEEE Transactions on Cybernetics, 49, 107-121.
+
+🧠 Semantic Score
+-3.269
+
+✍️ Stylometric Score
+0.220
+
+🎯 Cross-Encoder Score
+-10.830
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 68 (Final Score: -0.358) - LOW RISK
+
+Text: https://doi.org/10.1109/TCYB.2017.2766189 Watanabe, K. (2020).
+
+🧠 Semantic Score
+0.285
+
+✍️ Stylometric Score
+0.268
+
+🎯 Cross-Encoder Score
+-1.847
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 69 (Final Score: -3.397) - LOW RISK
+
+Text: Latent Semantic Scaling: A Semisupervised Text Analysis Technique for New Domains and Languages.
+
+🧠 Semantic Score
+-2.310
+
+✍️ Stylometric Score
+0.303
+
+🎯 Cross-Encoder Score
+-7.677
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 70 (Final Score: -5.183) - LOW RISK
+
+Text: Communication Methods and Measures, 15, 81 - 102.
+
+🧠 Semantic Score
+-3.747
+
+✍️ Stylometric Score
+0.220
+
+🎯 Cross-Encoder Score
+-11.178
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 71 (Final Score: -4.841) - LOW RISK
+
+Text: https://doi.org/10.1080/19312458.2020.1832976 Liu, Z., Feng, J., & Uden, L. (2023).
+
+🧠 Semantic Score
+-3.557
+
+✍️ Stylometric Score
+0.269
+
+🎯 Cross-Encoder Score
+-10.389
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 72 (Final Score: -1.600) - LOW RISK
+
+Text: Technology opportunity analysis using hierarchical semantic networks and dual link prediction.
+
+🧠 Semantic Score
+0.295
+
+✍️ Stylometric Score
+0.287
+
+🎯 Cross-Encoder Score
+-6.018
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 73 (Final Score: -1.274) - LOW RISK
+
+Text: Technovation.
+
+🧠 Semantic Score
+0.299
+
+✍️ Stylometric Score
+0.160
+
+🎯 Cross-Encoder Score
+-4.851
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 74 (Final Score: -4.953) - LOW RISK
+
+Text: https://doi.org/10.1016/j.technovation.2023.102872 Zaitsu, W., & Jin, M. (2023).
+
+🧠 Semantic Score
+-3.773
+
+✍️ Stylometric Score
+0.260
+
+🎯 Cross-Encoder Score
+-10.396
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 75 (Final Score: -3.752) - LOW RISK
+
+Text: Distinguishing ChatGPT(-3.5, -4)-generated and human-written papers through Japanese stylometric analysis.
+
+🧠 Semantic Score
+-2.042
+
+✍️ Stylometric Score
+0.241
+
+🎯 Cross-Encoder Score
+-9.265
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 76 (Final Score: -5.330) - LOW RISK
+
+Text: PLOS ONE, 18. https://doi.org/10.1371/journal.pone.0288453 Hu, X., Ou, W., Acharya, S., Ding, S., D’Gama, R., & Yu, H. (2023).
+
+🧠 Semantic Score
+-4.156
+
+✍️ Stylometric Score
+0.250
+
+🎯 Cross-Encoder Score
+-11.005
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 77 (Final Score: -4.958) - LOW RISK
+
+Text: Stylometric learning for authorship verification by Topic-Debiasing.
+
+🧠 Semantic Score
+-3.409
+
+✍️ Stylometric Score
+0.230
+
+🎯 Cross-Encoder Score
+-10.999
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 78 (Final Score: -5.315) - LOW RISK
+
+Text: Expert Syst.
+
+🧠 Semantic Score
+-3.966
+
+✍️ Stylometric Score
+0.170
+
+🎯 Cross-Encoder Score
+-11.220
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 79 (Final Score: -0.076) - LOW RISK
+
+Text: Appl., 233, 120745.
+
+🧠 Semantic Score
+0.286
+
+✍️ Stylometric Score
+0.165
+
+🎯 Cross-Encoder Score
+-0.841
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 80 (Final Score: -3.480) - LOW RISK
+
+Text: https://doi.org/10.1016/j.eswa.2023.120745 Cheng, Y., Yao, L., Xiang, G., Zhang, G., Tang, T., & Zhong, L. (2020).
+
+🧠 Semantic Score
+-2.225
+
+✍️ Stylometric Score
+0.257
+
+🎯 Cross-Encoder Score
+-8.063
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 81 (Final Score: -0.059) - LOW RISK
+
+Text: Text Sentiment Orientation Analysis Based on Multi-Channel CNN and Bidirectional GRU With Attention Mechanism.
+
+🧠 Semantic Score
+0.277
+
+✍️ Stylometric Score
+0.320
+
+🎯 Cross-Encoder Score
+-0.873
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 82 (Final Score: -4.814) - LOW RISK
+
+Text: IEEE Access, 8, 134964-134975.
+
+🧠 Semantic Score
+-3.246
+
+✍️ Stylometric Score
+0.200
+
+🎯 Cross-Encoder Score
+-10.771
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 83 (Final Score: -1.163) - LOW RISK
+
+Text: https://doi.org/10.1109/ACCESS.2020.3005823 Eder, M. (2017).
+
+🧠 Semantic Score
+0.299
+
+✍️ Stylometric Score
+0.268
+
+🎯 Cross-Encoder Score
+-4.554
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 84 (Final Score: -3.240) - LOW RISK
+
+Text: Visualization in stylometry: Cluster analysis using networks.
+
+🧠 Semantic Score
+-1.843
+
+✍️ Stylometric Score
+0.263
+
+🎯 Cross-Encoder Score
+-7.905
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 85 (Final Score: -4.999) - LOW RISK
+
+Text: Humanit., 32, 50-64.
+
+🧠 Semantic Score
+-3.726
+
+✍️ Stylometric Score
+0.170
+
+🎯 Cross-Encoder Score
+-10.566
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 86 (Final Score: -0.049) - LOW RISK
+
+Text: https://doi.org/10.1093/llc/fqv061 Mphahlele, A., & McKenna, S. (2019).
+
+🧠 Semantic Score
+0.299
+
+✍️ Stylometric Score
+0.274
+
+🎯 Cross-Encoder Score
+-0.843
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 87 (Final Score: -0.936) - LOW RISK
+
+Text: The use of turnitin in the higher education sector: Decoding the myth.
+
+🧠 Semantic Score
+0.297
+
+✍️ Stylometric Score
+0.270
+
+🎯 Cross-Encoder Score
+-3.795
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 88 (Final Score: -4.514) - LOW RISK
+
+Text: Assessment & Evaluation in Higher Education, 44, 1079 - 1089.
+
+🧠 Semantic Score
+-2.859
+
+✍️ Stylometric Score
+0.305
+
+🎯 Cross-Encoder Score
+-10.483
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 89 (Final Score: -4.971) - LOW RISK
+
+Text: https://doi.org/10.1080/02602938.2019.1573971 Hu, G., Lu, G., & Zhao, Y. (2020).
+
+🧠 Semantic Score
+-3.782
+
+✍️ Stylometric Score
+0.267
+
+🎯 Cross-Encoder Score
+-10.445
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 90 (Final Score: -0.378) - LOW RISK
+
+Text: FSS-GCN: A graph convolutional networks with fusion of semantic and structure for emotion cause analysis.
+
+🧠 Semantic Score
+0.297
+
+✍️ Stylometric Score
+0.348
+
+🎯 Cross-Encoder Score
+-1.986
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 91 (Final Score: -0.084) - LOW RISK
+
+Text: Based Syst., 212, 106584.
+
+🧠 Semantic Score
+0.298
+
+✍️ Stylometric Score
+0.170
+
+🎯 Cross-Encoder Score
+-0.889
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 92 (Final Score: -5.084) - LOW RISK
+
+Text: https://doi.org/10.1016/j.knosys.2020.106584 Nadeem, M., Ahmed, K., Zheng, Z., Li, D., Assam, M., Ghadi, Y., Alghamedy, F., & Tag-Eldin, E. (2023).
+
+🧠 Semantic Score
+-3.899
+
+✍️ Stylometric Score
+0.243
+
+🎯 Cross-Encoder Score
+-10.610
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 93 (Final Score: -0.824) - LOW RISK
+
+Text: SSM: Stylometric and semantic similarity oriented multimodal fake news detection.
+
+🧠 Semantic Score
+0.298
+
+✍️ Stylometric Score
+0.250
+
+🎯 Cross-Encoder Score
+-3.408
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 94 (Final Score: -2.324) - LOW RISK
+
+Text: J. King Saud Univ.
+
+🧠 Semantic Score
+0.302
+
+✍️ Stylometric Score
+0.170
+
+🎯 Cross-Encoder Score
+-8.363
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 95 (Final Score: 0.254) - LOW RISK
+
+Text: Sci., 35, 101559.
+
+🧠 Semantic Score
+0.286
+
+✍️ Stylometric Score
+0.165
+
+🎯 Cross-Encoder Score
+0.258
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 96 (Final Score: -2.033) - LOW RISK
+
+Text: https://doi.org/10.1016/j.jksuci.2023.101559 Kim, T., & Sohn, S. (2020).
+
+🧠 Semantic Score
+0.298
+
+✍️ Stylometric Score
+0.268
+
+🎯 Cross-Encoder Score
+-7.453
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 97 (Final Score: -2.532) - LOW RISK
+
+Text: Machine-learning-based deep semantic analysis approach for forecasting new technology convergence.
+
+🧠 Semantic Score
+-1.188
+
+✍️ Stylometric Score
+0.320
+
+🎯 Cross-Encoder Score
+-6.672
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 98 (Final Score: -5.306) - LOW RISK
+
+Text: Technological Forecasting and Social Change, 157, 120095.
+
+🧠 Semantic Score
+-4.040
+
+✍️ Stylometric Score
+0.220
+
+🎯 Cross-Encoder Score
+-11.099
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 99 (Final Score: -5.178) - LOW RISK
+
+Text: https://doi.org/10.1016/j.techfore.2020.120095 Grieve, J. (2023).
+
+🧠 Semantic Score
+-4.025
+
+✍️ Stylometric Score
+0.265
+
+🎯 Cross-Encoder Score
+-10.730
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 100 (Final Score: -5.075) - LOW RISK
+
+Text: Register variation explains stylometric authorship analysis.
+
+🧠 Semantic Score
+-3.536
+
+✍️ Stylometric Score
+0.260
+
+🎯 Cross-Encoder Score
+-11.195
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 101 (Final Score: -2.929) - LOW RISK
+
+Text: Corpus Linguistics and Linguistic Theory, 19, 47 - 77.
+
+🧠 Semantic Score
+-0.869
+
+✍️ Stylometric Score
+0.268
+
+🎯 Cross-Encoder Score
+-8.494
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 102 (Final Score: -2.077) - LOW RISK
+
+Text: https://doi.org/10.1515/cllt-2022-0040 Boenninghoff, B., Hessler, S., Kolossa, D., & Nickel, R. (2019).
+
+🧠 Semantic Score
+0.295
+
+✍️ Stylometric Score
+0.274
+
+🎯 Cross-Encoder Score
+-7.598
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 103 (Final Score: -4.796) - LOW RISK
+
+Text: Explainable Authorship Verification in Social Media via Attention-based Similarity Learning.
+
+🧠 Semantic Score
+-3.270
+
+✍️ Stylometric Score
+0.260
+
+🎯 Cross-Encoder Score
+-10.712
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 104 (Final Score: -3.398) - LOW RISK
+
+Text: 2019 IEEE International Conference on Big Data (Big Data), 36-45.
+
+🧠 Semantic Score
+-1.853
+
+✍️ Stylometric Score
+0.315
+
+🎯 Cross-Encoder Score
+-8.448
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+Sentence 105 (Final Score: 0.259) - LOW RISK
+
+Text: https://doi.org/10.1109/BigData47090.2019.9005650 7 / 7
+
+🧠 Semantic Score
+0.290
+
+✍️ Stylometric Score
+0.170
+
+🎯 Cross-Encoder Score
+0.267
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+📊 Stylometric Analysis (Academic Writing Features)
+
+🔍 View 5 similar matches found
+
+🔍 View 5 similar matches found
+
+💾 Export Results
+
+❌ Analysis failed: Object of type float32 is not JSON serializable

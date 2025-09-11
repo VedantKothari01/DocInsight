@@ -1,0 +1,21 @@
+[
+  "Finally, the paper concludes with a comparison to related work and a discussion of the design tradeoffs in hierarchical reinforcement learning.",
+  "The paper evaluates the MAXQ representation and MAXQ-Q through a series of experiments in three domains and shows experimentally that MAXQ-Q (with state abstractions) converges to a recursively optimal policy much faster than flat Q learning",
+  "The central idea is to obtain shift invariance by averaging the aligned wavelet transform projections over all circular shifts of the signal",
+  "It is shown how the same transform can be obtained by a linear filter bank.",
+  "We present a new method for discovering a segmental discourse structure of a document while categorizing segment function",
+  "We demonstrate how retrieval of noun phrases and pronominal forms, along with a zero-sum weighting scheme, determines topicalized segmentation",
+  "In this paper, we present a method by which backtrack points can be moved deeper in the search space, thereby avoiding this difficulty",
+  "This paper presents the MAXQ approach to hierarchical reinforcement learning based on decomposing the target Markov decision process (MDP) into a hierarchy of smaller MDPs and decomposing the value function of the target MDP into an additive combination of the value functions of the smaller MDPs",
+  "The paper demonstrates the effectiveness of this non-hierarchical execution experimentally",
+  "Because of their occasional need to return to shallow points in a search tree, existing backtracking methods can sometimes erase meaningful progress toward solving a search problem",
+  "Finally, we present results of evaluation in terms of precision and recall which surpass earlier approaches.",
+  "Futhermore, we use term distribution to aid in identifying the role that the segment performs in the document",
+  "The paper defines the MAXQ hierarchy, proves formal results on its representational power, and establishes five conditions for the safe use of state abstractions",
+  "The technique developed is a variant of dependency-directed backtracking that uses only polynomial space while still providing useful control information and retaining the completeness guarantees provided by earlier approaches.",
+  "We present a simple proof for the oracle inequality for the excess risk of structural risk minimizers using a lasso type penalty.",
+  "The fact that MAXQ learns a representation of the value function has an important benefit: it makes it possible to compute and execute an improved, non-hierarchical policy via a procedure similar to the policy improvement step of policy iteration",
+  "We consider the problem of binary classification where one can, for a particular cost, choose not to classify an observation",
+  "Unlike standard wavelet transforms, the proposed operator is both linear and shift invariant",
+  "The paper presents an online model-free learning algorithm, MAXQ-Q, and proves that it converges wih probability 1 to a kind of locally-optimal policy known as a recursively optimal policy, even in the presence of the five kinds of state abstraction"
+]

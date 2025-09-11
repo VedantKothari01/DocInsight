@@ -1,0 +1,8 @@
+{
+  "timestamp": 1757573703.0561678,
+  "target_size": 5000,
+  "actual_size": 5000,
+  "domain_adaptation": true,
+  "avg_analysis_time": 1.7077610492706299,
+  "version": "SRS_v0.2"
+}

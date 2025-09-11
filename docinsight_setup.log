@@ -1,0 +1,427 @@
+2025-09-11 04:55:18,896 - INFO - DocInsight Setup Configuration:
+2025-09-11 04:55:18,896 - INFO -   Target corpus size: 200 sentences
+2025-09-11 04:55:18,896 - INFO -   Force rebuild: False
+2025-09-11 04:55:18,896 - INFO -   Quick mode: True
+2025-09-11 04:55:18,897 - INFO - Checking system requirements...
+2025-09-11 04:55:23,165 - INFO - ✅ sentence_transformers available
+2025-09-11 04:55:23,165 - INFO - Loading faiss with AVX2 support.
+2025-09-11 04:55:23,183 - INFO - Successfully loaded faiss with AVX2 support.
+2025-09-11 04:55:23,186 - INFO - ✅ faiss available
+2025-09-11 04:55:23,186 - INFO - ✅ datasets available
+2025-09-11 04:55:23,244 - INFO - ✅ wikipedia available
+2025-09-11 04:55:23,244 - INFO - ✅ requests available
+2025-09-11 04:55:23,244 - INFO - ✅ numpy available
+2025-09-11 04:55:23,245 - INFO - ✅ All system requirements satisfied
+2025-09-11 04:55:23,245 - INFO - 🚀 Starting DocInsight setup process...
+2025-09-11 04:55:23,245 - INFO - Starting DocInsight setup with target size: 200
+2025-09-11 04:55:23,877 - INFO - Loading sentence transformer model...
+2025-09-11 04:55:23,879 - INFO - Use pytorch device_name: cpu
+2025-09-11 04:55:23,879 - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-09-11 04:55:24,625 - INFO - ✅ Sentence transformer model loaded
+2025-09-11 04:55:24,625 - INFO - 📊 STEP 1: Building corpus from real datasets...
+2025-09-11 04:55:24,625 - INFO -    This downloads PAWS, Wikipedia, and arXiv data
+2025-09-11 04:55:24,625 - INFO - No cached assets found - building from real datasets...
+2025-09-11 04:55:24,625 - INFO - Building new corpus from real datasets...
+2025-09-11 04:55:24,625 - INFO - Building combined corpus with target size: 200
+2025-09-11 04:55:24,625 - INFO - Loading PAWS dataset (split: train, max_samples: 66)
+2025-09-11 04:55:24,625 - INFO - Downloading PAWS dataset...
+2025-09-11 04:55:26,229 - INFO - Loaded 132 unique sentences from PAWS
+2025-09-11 04:55:26,229 - INFO - Added 132 sentences from PAWS
+2025-09-11 04:55:26,229 - INFO - Loading Wikipedia articles for 24 topics
+2025-09-11 04:55:26,230 - INFO - Loading Wikipedia content from cache...
+2025-09-11 04:55:26,230 - INFO - Added 812 sentences from Wikipedia
+2025-09-11 04:55:26,230 - INFO - Loading arXiv abstracts from 7 categories
+2025-09-11 04:55:26,230 - INFO - Fetching arXiv papers from category: cs.AI
+2025-09-11 04:55:26,466 - INFO - Added 7 sentences from 2 papers in cs.AI
+2025-09-11 04:55:29,467 - INFO - Fetching arXiv papers from category: cs.CL
+2025-09-11 04:55:29,675 - INFO - Added 10 sentences from 2 papers in cs.CL
+2025-09-11 04:55:32,675 - INFO - Fetching arXiv papers from category: cs.LG
+2025-09-11 04:55:32,882 - INFO - Added 12 sentences from 2 papers in cs.LG
+2025-09-11 04:55:35,883 - INFO - Fetching arXiv papers from category: cs.CV
+2025-09-11 04:55:36,090 - INFO - Added 5 sentences from 2 papers in cs.CV
+2025-09-11 04:55:39,090 - INFO - Fetching arXiv papers from category: stat.ML
+2025-09-11 04:55:39,301 - INFO - Added 8 sentences from 2 papers in stat.ML
+2025-09-11 04:55:42,302 - INFO - Fetching arXiv papers from category: physics
+2025-09-11 04:55:42,534 - INFO - Added 0 sentences from 0 papers in physics
+2025-09-11 04:55:45,535 - INFO - Fetching arXiv papers from category: math
+2025-09-11 04:55:45,734 - INFO - Added 0 sentences from 0 papers in math
+2025-09-11 04:55:48,735 - INFO - Loaded 41 unique sentences from arXiv
+2025-09-11 04:55:48,737 - INFO - Added 41 sentences from arXiv
+2025-09-11 04:55:48,737 - INFO - Final corpus size: 200 sentences
+2025-09-11 04:55:48,737 - INFO - Built corpus with 200 sentences from real datasets
+2025-09-11 04:55:48,738 - INFO - Cached corpus to corpus_cache/corpus_200.json
+2025-09-11 04:55:48,738 - INFO - Generating embeddings for 200 sentences...
+2025-09-11 04:55:51,059 - INFO - Generated and cached embeddings: (200, 384)
+2025-09-11 04:55:51,059 - INFO - Building FAISS index...
+2025-09-11 04:55:51,060 - INFO - Built and cached FAISS index: 200 vectors
+2025-09-11 04:55:51,060 - INFO - ✅ Corpus built: 200 sentences in 26.4s
+2025-09-11 04:55:51,060 - INFO - 🧠 STEP 2: Generating sentence embeddings...
+2025-09-11 04:55:51,060 - INFO -    This creates semantic vectors for all sentences
+2025-09-11 04:55:51,060 - INFO - Loaded cached embeddings: (200, 384)
+2025-09-11 04:55:51,061 - INFO - ✅ Embeddings built: (200, 384) in 0.0s
+2025-09-11 04:55:51,061 - INFO - ⚡ STEP 3: Building FAISS search index...
+2025-09-11 04:55:51,061 - INFO -    This creates fast similarity search capability
+2025-09-11 04:55:51,061 - INFO - Loaded cached FAISS index: 200 vectors
+2025-09-11 04:55:51,061 - INFO - ✅ FAISS index built: 200 vectors in 0.0s
+2025-09-11 04:55:51,061 - INFO - 🔍 STEP 4: Validating complete system...
+2025-09-11 04:55:51,074 - INFO - Loading cross-encoder model...
+2025-09-11 04:55:51,465 - INFO - Use pytorch device: cpu
+2025-09-11 04:55:52,527 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,528 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,528 - INFO - ✅ Sentence analysis test: Score -0.225, Confidence LOW
+2025-09-11 04:55:52,528 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,528 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,710 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,710 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,783 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,784 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,784 - INFO - ✅ Document analysis test: 2 sentences processed
+2025-09-11 04:55:52,784 - INFO - 🎉 SETUP COMPLETE! Total time: 26.4s
+2025-09-11 04:55:52,784 - INFO - ✅ DocInsight is now ready for production use!
+2025-09-11 04:55:52,784 - INFO - 
+2025-09-11 04:55:52,784 - INFO - ======================================================================
+2025-09-11 04:55:52,784 - INFO - 🎉 DOCINSIGHT SETUP SUCCESSFUL!
+2025-09-11 04:55:52,784 - INFO - ======================================================================
+2025-09-11 04:55:52,784 - INFO - 
+2025-09-11 04:55:52,785 - INFO - Your DocInsight system is now ready for production use!
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO - Next steps:
+2025-09-11 04:55:52,785 - INFO -   1. Launch the web interface:
+2025-09-11 04:55:52,785 - INFO -      streamlit run streamlit_app.py
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO -   2. Or run the demo script:
+2025-09-11 04:55:52,785 - INFO -      python docinsight_demo.py --skip-setup
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO -   3. Upload documents and get instant plagiarism analysis!
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO - Features available:
+2025-09-11 04:55:52,785 - INFO -   ✅ Instant document analysis (no setup required)
+2025-09-11 04:55:52,785 - INFO -   ✅ Large corpus (200 real sentences)
+2025-09-11 04:55:52,785 - INFO -   ✅ Real datasets (PAWS, Wikipedia, arXiv)
+2025-09-11 04:55:52,786 - INFO -   ✅ Advanced ML pipeline with confidence scoring
+2025-09-11 04:55:52,786 - INFO -   ✅ Production-ready performance
+2025-09-11 04:55:52,786 - INFO - ======================================================================
+2025-09-11 12:16:12,423 - INFO - DocInsight Academic Setup Configuration:
+2025-09-11 12:16:12,423 - INFO -   Target corpus size: 20,000 sentences
+2025-09-11 12:16:12,423 - INFO -   Domain adaptation: ENABLED
+2025-09-11 12:16:12,423 - INFO -   Force rebuild: False
+2025-09-11 12:16:12,423 - INFO -   Research mode: False
+2025-09-11 12:16:12,423 - INFO -   Quick mode: False
+2025-09-11 12:16:12,423 - INFO - Checking system requirements...
+2025-09-11 12:16:14,724 - INFO - ✅ sentence_transformers available
+2025-09-11 12:16:14,725 - INFO - Loading faiss.
+2025-09-11 12:16:14,735 - INFO - Successfully loaded faiss.
+2025-09-11 12:16:14,737 - INFO - ✅ faiss available
+2025-09-11 12:16:14,737 - INFO - ✅ datasets available
+2025-09-11 12:16:14,771 - INFO - ✅ wikipedia available
+2025-09-11 12:16:14,771 - INFO - ✅ requests available
+2025-09-11 12:16:14,771 - INFO - ✅ numpy available
+2025-09-11 12:16:14,771 - INFO - ✅ All system requirements satisfied
+2025-09-11 12:16:14,771 - INFO - 🚀 Starting DocInsight Academic setup process...
+2025-09-11 12:16:14,771 - INFO - Starting DocInsight Academic setup with target size: 20000
+2025-09-11 12:16:14,771 - INFO - Domain adaptation: ENABLED
+2025-09-11 12:16:15,389 - INFO - Initializing academic domain adaptation...
+2025-09-11 12:16:15,389 - INFO - Loading domain-adapted academic model...
+2025-09-11 12:16:15,389 - INFO - Loading existing fine-tuned academic model from models/docinsight_academic_sbert_v2
+2025-09-11 12:16:15,390 - INFO - Use pytorch device_name: mps
+2025-09-11 12:16:15,390 - INFO - Load pretrained SentenceTransformer: models/docinsight_academic_sbert_v2
+2025-09-11 12:16:15,762 - WARNING - No sentence-transformers model found with name models/docinsight_academic_sbert_v2. Creating a new one with mean pooling.
+2025-09-11 12:16:15,802 - WARNING - Failed to load fine-tuned model: Error no file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt.index or flax_model.msgpack found in directory models/docinsight_academic_sbert_v2.
+2025-09-11 12:16:15,802 - INFO - Training new academic domain-adapted model...
+2025-09-11 12:16:15,802 - INFO - Starting academic domain adaptation fine-tuning...
+2025-09-11 12:16:15,802 - INFO - Fine-tuned model already exists at models/docinsight_academic_sbert_v2
+2025-09-11 12:16:15,803 - INFO - Use pytorch device_name: mps
+2025-09-11 12:16:15,803 - INFO - Load pretrained SentenceTransformer: models/docinsight_academic_sbert_v2
+2025-09-11 12:16:16,193 - WARNING - No sentence-transformers model found with name models/docinsight_academic_sbert_v2. Creating a new one with mean pooling.
+2025-09-11 12:16:16,196 - WARNING - Failed to load newly trained model: Error no file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt.index or flax_model.msgpack found in directory models/docinsight_academic_sbert_v2.
+2025-09-11 12:16:16,196 - INFO - Using base model as fallback
+2025-09-11 12:16:16,196 - INFO - Loading base model: all-MiniLM-L6-v2
+2025-09-11 12:16:16,198 - INFO - Use pytorch device_name: mps
+2025-09-11 12:16:16,198 - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-09-11 12:16:20,677 - INFO - ✅ Academic domain-adapted sentence transformer loaded
+2025-09-11 12:16:20,677 - INFO - 📊 STEP 1: Building academic corpus from enhanced datasets...
+2025-09-11 12:16:20,677 - INFO -    • PAWS paraphrase dataset
+2025-09-11 12:16:20,677 - INFO -    • Quora question pairs
+2025-09-11 12:16:20,677 - INFO -    • Academic Wikipedia articles
+2025-09-11 12:16:20,677 - INFO -    • arXiv research abstracts
+2025-09-11 12:16:20,677 - INFO -    • Synthetic academic paraphrases
+2025-09-11 12:16:20,677 - INFO - No cached assets found - building from real datasets...
+2025-09-11 12:16:20,677 - INFO - Building new corpus from real datasets...
+2025-09-11 12:16:20,677 - INFO - Building academic paraphrase curriculum with target size: 20000
+2025-09-11 12:16:20,678 - INFO - Loading PAWS dataset (split: train, max_samples: 8000)
+2025-09-11 12:16:20,678 - INFO - Downloading PAWS dataset...
+2025-09-11 12:16:29,501 - INFO - Loaded 13712 unique sentences from PAWS
+2025-09-11 12:16:29,507 - INFO - Added 13712 sentences from PAWS dataset
+2025-09-11 12:16:29,507 - INFO - Loading Quora Question Pairs dataset (max_samples: 4000)
+2025-09-11 12:16:29,507 - INFO - Downloading Quora Question Pairs dataset...
+2025-09-11 12:16:30,178 - ERROR - Failed to load Quora dataset: Dataset scripts are no longer supported, but found quora.py
+2025-09-11 12:16:30,178 - INFO - Attempting alternative Quora data source...
+2025-09-11 12:16:30,179 - INFO - Using 45 academic question samples as Quora fallback
+2025-09-11 12:16:30,179 - INFO - Added 45 sentences from Quora dataset
+2025-09-11 12:16:30,180 - INFO - Loading Wikipedia articles for 20 topics
+2025-09-11 12:16:30,180 - INFO - Fetching Wikipedia article: Machine learning
+2025-09-11 12:16:32,282 - WARNING - Failed to load Wikipedia article for Machine learning: Page id "machine ;earning" does not match any pages. Try another id!
+2025-09-11 12:16:32,282 - INFO - Fetching Wikipedia article: Artificial intelligence
+2025-09-11 12:16:34,892 - INFO - Added 200 sentences from Artificial intelligence
+2025-09-11 12:16:34,997 - INFO - Fetching Wikipedia article: Natural language processing
+2025-09-11 12:16:36,426 - WARNING - Failed to load Wikipedia article for Natural language processing: Page id "natural language processings" does not match any pages. Try another id!
+2025-09-11 12:16:36,426 - INFO - Fetching Wikipedia article: Computer vision
+2025-09-11 12:16:38,017 - WARNING - Failed to load Wikipedia article for Computer vision: Page id "computer version" does not match any pages. Try another id!
+2025-09-11 12:16:38,017 - INFO - Fetching Wikipedia article: Deep learning
+2025-09-11 12:16:41,488 - WARNING - Failed to load Wikipedia article for Deep learning: Page id "deep learnning" does not match any pages. Try another id!
+2025-09-11 12:16:41,488 - INFO - Fetching Wikipedia article: Neural network
+2025-09-11 12:16:43,846 - WARNING - Failed to load Wikipedia article for Neural network: "neutral network" may refer to: 
+Net neutrality
+Neutral network (evolution)
+Neutral network (robust)
+Neutral network (uncorrelated)
+2025-09-11 12:16:43,846 - INFO - Fetching Wikipedia article: Data science
+2025-09-11 12:16:46,203 - INFO - Added 49 sentences from Data science
+2025-09-11 12:16:46,308 - INFO - Fetching Wikipedia article: Research methodology
+2025-09-11 12:16:48,907 - INFO - Added 200 sentences from Research methodology
+2025-09-11 12:16:49,010 - INFO - Fetching Wikipedia article: Academic writing
+2025-09-11 12:16:51,343 - INFO - Added 123 sentences from Academic writing
+2025-09-11 12:16:51,444 - INFO - Fetching Wikipedia article: Scientific method
+2025-09-11 12:16:54,106 - INFO - Added 200 sentences from Scientific method
+2025-09-11 12:16:54,210 - INFO - Fetching Wikipedia article: Statistics
+2025-09-11 12:16:56,278 - INFO - Added 200 sentences from Statistics
+2025-09-11 12:16:56,383 - INFO - Fetching Wikipedia article: Mathematics
+2025-09-11 12:17:00,954 - INFO - Added 200 sentences from Mathematics
+2025-09-11 12:17:01,056 - INFO - Fetching Wikipedia article: Computer science
+2025-09-11 12:17:03,405 - INFO - Added 175 sentences from Computer science
+2025-09-11 12:17:03,510 - INFO - Fetching Wikipedia article: Algorithms
+2025-09-11 12:17:06,586 - INFO - Added 186 sentences from Algorithms
+2025-09-11 12:17:06,692 - INFO - Fetching Wikipedia article: Software engineering
+2025-09-11 12:17:12,378 - INFO - Added 160 sentences from Software engineering
+2025-09-11 12:17:12,479 - INFO - Fetching Wikipedia article: Database systems
+2025-09-11 12:17:16,944 - INFO - Added 200 sentences from Database systems
+2025-09-11 12:17:17,051 - INFO - Fetching Wikipedia article: Information retrieval
+2025-09-11 12:17:18,505 - WARNING - Failed to load Wikipedia article for Information retrieval: Page id "information retrieve" does not match any pages. Try another id!
+2025-09-11 12:17:18,505 - INFO - Fetching Wikipedia article: Human-computer interaction
+2025-09-11 12:17:20,925 - INFO - Added 200 sentences from Human-computer interaction
+2025-09-11 12:17:21,030 - INFO - Fetching Wikipedia article: Computational linguistics
+2025-09-11 12:17:27,262 - INFO - Added 20 sentences from Computational linguistics
+2025-09-11 12:17:27,367 - INFO - Fetching Wikipedia article: Data mining
+2025-09-11 12:17:29,802 - WARNING - Failed to load Wikipedia article for Data mining: Page id "data maining" does not match any pages. Try another id!
+2025-09-11 12:17:29,803 - INFO - Loaded 2110 unique sentences from Wikipedia
+2025-09-11 12:17:29,806 - INFO - Added 2110 sentences from academic Wikipedia
+2025-09-11 12:17:29,807 - INFO - Loading arXiv abstracts from 7 categories
+2025-09-11 12:17:29,807 - INFO - Fetching arXiv papers from category: cs.AI
+2025-09-11 12:17:30,699 - INFO - Added 568 sentences from 85 papers in cs.AI
+2025-09-11 12:17:33,704 - INFO - Fetching arXiv papers from category: cs.CL
+2025-09-11 12:17:34,565 - INFO - Added 427 sentences from 85 papers in cs.CL
+2025-09-11 12:17:37,570 - INFO - Fetching arXiv papers from category: cs.LG
+2025-09-11 12:17:39,634 - INFO - Added 481 sentences from 85 papers in cs.LG
+2025-09-11 12:17:42,640 - INFO - Fetching arXiv papers from category: cs.CV
+2025-09-11 12:17:43,171 - INFO - Added 36 sentences from 10 papers in cs.CV
+2025-09-11 12:17:46,175 - INFO - Fetching arXiv papers from category: stat.ML
+2025-09-11 12:17:47,078 - INFO - Added 483 sentences from 85 papers in stat.ML
+2025-09-11 12:17:50,084 - INFO - Fetching arXiv papers from category: physics
+2025-09-11 12:17:50,660 - INFO - Added 0 sentences from 0 papers in physics
+2025-09-11 12:17:53,666 - INFO - Fetching arXiv papers from category: math
+2025-09-11 12:17:56,245 - INFO - Added 0 sentences from 0 papers in math
+2025-09-11 12:17:59,256 - INFO - Loaded 1955 unique sentences from arXiv
+2025-09-11 12:17:59,265 - INFO - Added 1955 sentences from arXiv research
+2025-09-11 12:17:59,265 - INFO - Generating synthetic academic paraphrases (target: 1000)
+2025-09-11 12:17:59,268 - INFO - Generated 1 synthetic academic paraphrases
+2025-09-11 12:17:59,269 - INFO - Added 1 synthetic academic paraphrases
+2025-09-11 12:17:59,277 - INFO - Final academic corpus size: 17810 sentences
+2025-09-11 12:17:59,277 - INFO - Academic paraphrase curriculum composition:
+2025-09-11 12:17:59,277 - INFO -   - PAWS paraphrases: ~13712 sentences
+2025-09-11 12:17:59,277 - INFO -   - Quora questions: ~45 sentences
+2025-09-11 12:17:59,277 - INFO -   - Academic Wikipedia: ~2110 sentences
+2025-09-11 12:17:59,277 - INFO -   - Research abstracts: ~1955 sentences
+2025-09-11 12:17:59,277 - INFO -   - Synthetic paraphrases: ~1 sentences
+2025-09-11 12:17:59,278 - INFO - Built corpus with 17810 sentences from real datasets
+2025-09-11 12:17:59,292 - INFO - Cached corpus to corpus_cache/corpus_20000.json
+2025-09-11 12:17:59,293 - INFO - Generating embeddings for 17810 sentences...
+2025-09-11 12:23:10,007 - INFO - ⚡ Quick mode activated - minimal academic setup
+2025-09-11 12:23:10,007 - INFO - DocInsight Academic Setup Configuration:
+2025-09-11 12:23:10,007 - INFO -   Target corpus size: 5,000 sentences
+2025-09-11 12:23:10,007 - INFO -   Domain adaptation: ENABLED
+2025-09-11 12:23:10,007 - INFO -   Force rebuild: False
+2025-09-11 12:23:10,007 - INFO -   Research mode: False
+2025-09-11 12:23:10,007 - INFO -   Quick mode: True
+2025-09-11 12:23:10,007 - INFO - Checking system requirements...
+2025-09-11 12:23:16,048 - INFO - ✅ sentence_transformers available
+2025-09-11 12:23:16,048 - INFO - Loading faiss.
+2025-09-11 12:23:16,324 - INFO - Successfully loaded faiss.
+2025-09-11 12:23:16,326 - INFO - ✅ faiss available
+2025-09-11 12:23:16,326 - INFO - ✅ datasets available
+2025-09-11 12:23:16,626 - INFO - ✅ wikipedia available
+2025-09-11 12:23:16,626 - INFO - ✅ requests available
+2025-09-11 12:23:16,626 - INFO - ✅ numpy available
+2025-09-11 12:23:16,626 - INFO - ✅ All system requirements satisfied
+2025-09-11 12:23:16,626 - INFO - 🚀 Starting DocInsight Academic setup process...
+2025-09-11 12:23:16,626 - INFO - Starting DocInsight Academic setup with target size: 5000
+2025-09-11 12:23:16,626 - INFO - Domain adaptation: ENABLED
+2025-09-11 12:23:17,341 - INFO - Initializing academic domain adaptation...
+2025-09-11 12:23:17,341 - INFO - Loading domain-adapted academic model...
+2025-09-11 12:23:17,341 - INFO - Loading existing fine-tuned academic model from models/docinsight_academic_sbert_v2
+2025-09-11 12:23:17,342 - INFO - Use pytorch device_name: mps
+2025-09-11 12:23:17,342 - INFO - Load pretrained SentenceTransformer: models/docinsight_academic_sbert_v2
+2025-09-11 12:23:17,736 - WARNING - No sentence-transformers model found with name models/docinsight_academic_sbert_v2. Creating a new one with mean pooling.
+2025-09-11 12:23:17,770 - WARNING - Failed to load fine-tuned model: Error no file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt.index or flax_model.msgpack found in directory models/docinsight_academic_sbert_v2.
+2025-09-11 12:23:17,770 - INFO - Training new academic domain-adapted model...
+2025-09-11 12:23:17,770 - INFO - Starting academic domain adaptation fine-tuning...
+2025-09-11 12:23:17,770 - INFO - Fine-tuned model already exists at models/docinsight_academic_sbert_v2
+2025-09-11 12:23:17,771 - INFO - Use pytorch device_name: mps
+2025-09-11 12:23:17,771 - INFO - Load pretrained SentenceTransformer: models/docinsight_academic_sbert_v2
+2025-09-11 12:23:18,083 - WARNING - No sentence-transformers model found with name models/docinsight_academic_sbert_v2. Creating a new one with mean pooling.
+2025-09-11 12:23:18,085 - WARNING - Failed to load newly trained model: Error no file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt.index or flax_model.msgpack found in directory models/docinsight_academic_sbert_v2.
+2025-09-11 12:23:18,085 - INFO - Using base model as fallback
+2025-09-11 12:23:18,085 - INFO - Loading base model: all-MiniLM-L6-v2
+2025-09-11 12:23:18,087 - INFO - Use pytorch device_name: mps
+2025-09-11 12:23:18,087 - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-09-11 12:23:22,708 - INFO - ✅ Academic domain-adapted sentence transformer loaded
+2025-09-11 12:23:22,710 - INFO - 📊 STEP 1: Building academic corpus from enhanced datasets...
+2025-09-11 12:23:22,710 - INFO -    • PAWS paraphrase dataset
+2025-09-11 12:23:22,710 - INFO -    • Quora question pairs
+2025-09-11 12:23:22,710 - INFO -    • Academic Wikipedia articles
+2025-09-11 12:23:22,710 - INFO -    • arXiv research abstracts
+2025-09-11 12:23:22,710 - INFO -    • Synthetic academic paraphrases
+2025-09-11 12:23:22,710 - INFO - No cached assets found - building from real datasets...
+2025-09-11 12:23:22,710 - INFO - Building new corpus from real datasets...
+2025-09-11 12:23:22,710 - INFO - Building academic paraphrase curriculum with target size: 5000
+2025-09-11 12:23:22,710 - INFO - Loading PAWS dataset (split: train, max_samples: 2000)
+2025-09-11 12:23:22,710 - INFO - Downloading PAWS dataset...
+2025-09-11 12:23:30,665 - INFO - Loaded 3834 unique sentences from PAWS
+2025-09-11 12:23:30,667 - INFO - Added 3834 sentences from PAWS dataset
+2025-09-11 12:23:30,667 - INFO - Loading Quora Question Pairs dataset (max_samples: 1000)
+2025-09-11 12:23:30,668 - INFO - Downloading Quora Question Pairs dataset...
+2025-09-11 12:23:31,325 - ERROR - Failed to load Quora dataset: Dataset scripts are no longer supported, but found quora.py
+2025-09-11 12:23:31,325 - INFO - Attempting alternative Quora data source...
+2025-09-11 12:23:31,326 - INFO - Using 45 academic question samples as Quora fallback
+2025-09-11 12:23:31,326 - INFO - Added 45 sentences from Quora dataset
+2025-09-11 12:23:31,326 - INFO - Loading Wikipedia articles for 20 topics
+2025-09-11 12:23:31,327 - INFO - Fetching Wikipedia article: Machine learning
+2025-09-11 12:23:34,945 - WARNING - Failed to load Wikipedia article for Machine learning: Page id "machine ;earning" does not match any pages. Try another id!
+2025-09-11 12:23:34,945 - INFO - Fetching Wikipedia article: Artificial intelligence
+2025-09-11 12:23:37,873 - INFO - Added 50 sentences from Artificial intelligence
+2025-09-11 12:23:37,978 - INFO - Fetching Wikipedia article: Natural language processing
+2025-09-11 12:23:39,379 - WARNING - Failed to load Wikipedia article for Natural language processing: Page id "natural language processings" does not match any pages. Try another id!
+2025-09-11 12:23:39,379 - INFO - Fetching Wikipedia article: Computer vision
+2025-09-11 12:23:40,833 - WARNING - Failed to load Wikipedia article for Computer vision: Page id "computer version" does not match any pages. Try another id!
+2025-09-11 12:23:40,833 - INFO - Fetching Wikipedia article: Deep learning
+2025-09-11 12:23:42,272 - WARNING - Failed to load Wikipedia article for Deep learning: Page id "deep learnning" does not match any pages. Try another id!
+2025-09-11 12:23:42,272 - INFO - Fetching Wikipedia article: Neural network
+2025-09-11 12:23:44,634 - WARNING - Failed to load Wikipedia article for Neural network: "neutral network" may refer to: 
+Net neutrality
+Neutral network (evolution)
+Neutral network (robust)
+Neutral network (uncorrelated)
+2025-09-11 12:23:44,635 - INFO - Fetching Wikipedia article: Data science
+2025-09-11 12:23:46,862 - INFO - Added 49 sentences from Data science
+2025-09-11 12:23:46,968 - INFO - Fetching Wikipedia article: Research methodology
+2025-09-11 12:23:49,939 - INFO - Added 50 sentences from Research methodology
+2025-09-11 12:23:50,043 - INFO - Fetching Wikipedia article: Academic writing
+2025-09-11 12:23:52,508 - INFO - Added 50 sentences from Academic writing
+2025-09-11 12:23:52,612 - INFO - Fetching Wikipedia article: Scientific method
+2025-09-11 12:23:55,958 - INFO - Added 50 sentences from Scientific method
+2025-09-11 12:23:56,065 - INFO - Fetching Wikipedia article: Statistics
+2025-09-11 12:23:59,508 - INFO - Added 50 sentences from Statistics
+2025-09-11 12:23:59,609 - INFO - Fetching Wikipedia article: Mathematics
+2025-09-11 12:24:05,121 - INFO - Added 50 sentences from Mathematics
+2025-09-11 12:24:05,226 - INFO - Fetching Wikipedia article: Computer science
+2025-09-11 12:24:07,562 - INFO - Added 50 sentences from Computer science
+2025-09-11 12:24:07,668 - INFO - Fetching Wikipedia article: Algorithms
+2025-09-11 12:24:09,937 - INFO - Added 50 sentences from Algorithms
+2025-09-11 12:24:10,038 - INFO - Fetching Wikipedia article: Software engineering
+2025-09-11 12:24:13,420 - INFO - Added 50 sentences from Software engineering
+2025-09-11 12:24:13,525 - INFO - Fetching Wikipedia article: Database systems
+2025-09-11 12:24:17,043 - INFO - Added 50 sentences from Database systems
+2025-09-11 12:24:17,148 - INFO - Fetching Wikipedia article: Information retrieval
+2025-09-11 12:24:18,603 - WARNING - Failed to load Wikipedia article for Information retrieval: Page id "information retrieve" does not match any pages. Try another id!
+2025-09-11 12:24:18,603 - INFO - Fetching Wikipedia article: Human-computer interaction
+2025-09-11 12:24:20,995 - INFO - Added 50 sentences from Human-computer interaction
+2025-09-11 12:24:21,097 - INFO - Fetching Wikipedia article: Computational linguistics
+2025-09-11 12:24:23,341 - INFO - Added 20 sentences from Computational linguistics
+2025-09-11 12:24:23,447 - INFO - Fetching Wikipedia article: Data mining
+2025-09-11 12:24:27,007 - WARNING - Failed to load Wikipedia article for Data mining: Page id "data maining" does not match any pages. Try another id!
+2025-09-11 12:24:27,007 - INFO - Loaded 619 unique sentences from Wikipedia
+2025-09-11 12:24:27,009 - INFO - Added 619 sentences from academic Wikipedia
+2025-09-11 12:24:27,009 - INFO - Loading arXiv abstracts from 7 categories
+2025-09-11 12:24:27,009 - INFO - Fetching arXiv papers from category: cs.AI
+2025-09-11 12:24:27,623 - INFO - Added 147 sentences from 21 papers in cs.AI
+2025-09-11 12:24:30,629 - INFO - Fetching arXiv papers from category: cs.CL
+2025-09-11 12:24:31,375 - INFO - Added 103 sentences from 21 papers in cs.CL
+2025-09-11 12:24:34,380 - INFO - Fetching arXiv papers from category: cs.LG
+2025-09-11 12:24:36,014 - INFO - Added 129 sentences from 21 papers in cs.LG
+2025-09-11 12:24:39,019 - INFO - Fetching arXiv papers from category: cs.CV
+2025-09-11 12:24:39,527 - INFO - Added 91 sentences from 21 papers in cs.CV
+2025-09-11 12:24:42,532 - INFO - Fetching arXiv papers from category: stat.ML
+2025-09-11 12:24:43,049 - INFO - Added 112 sentences from 21 papers in stat.ML
+2025-09-11 12:24:46,053 - INFO - Fetching arXiv papers from category: physics
+2025-09-11 12:24:46,491 - INFO - Added 0 sentences from 0 papers in physics
+2025-09-11 12:24:49,496 - INFO - Fetching arXiv papers from category: math
+2025-09-11 12:24:49,953 - INFO - Added 0 sentences from 0 papers in math
+2025-09-11 12:24:52,959 - INFO - Loaded 567 unique sentences from arXiv
+2025-09-11 12:24:52,963 - INFO - Added 567 sentences from arXiv research
+2025-09-11 12:24:52,963 - INFO - Generating synthetic academic paraphrases (target: 250)
+2025-09-11 12:24:52,964 - INFO - Generated 1 synthetic academic paraphrases
+2025-09-11 12:24:52,964 - INFO - Added 1 synthetic academic paraphrases
+2025-09-11 12:24:52,968 - INFO - Final academic corpus size: 5000 sentences
+2025-09-11 12:24:52,968 - INFO - Academic paraphrase curriculum composition:
+2025-09-11 12:24:52,968 - INFO -   - PAWS paraphrases: ~3834 sentences
+2025-09-11 12:24:52,968 - INFO -   - Quora questions: ~45 sentences
+2025-09-11 12:24:52,968 - INFO -   - Academic Wikipedia: ~619 sentences
+2025-09-11 12:24:52,968 - INFO -   - Research abstracts: ~567 sentences
+2025-09-11 12:24:52,968 - INFO -   - Synthetic paraphrases: ~1 sentences
+2025-09-11 12:24:52,969 - INFO - Built corpus with 5000 sentences from real datasets
+2025-09-11 12:24:52,976 - INFO - Cached corpus to corpus_cache/corpus_5000.json
+2025-09-11 12:24:52,976 - INFO - Generating embeddings for 5000 sentences...
+2025-09-11 12:24:57,618 - INFO - Generated and cached embeddings: (5000, 384)
+2025-09-11 12:24:57,619 - INFO - Building FAISS index...
+2025-09-11 12:24:57,627 - INFO - Built and cached FAISS index: 5000 vectors
+2025-09-11 12:24:57,627 - INFO - ✅ Academic corpus built in 94.9 seconds
+2025-09-11 12:24:57,628 - INFO -    📈 Corpus size: 5000 sentences
+2025-09-11 12:24:57,628 - INFO - 🧠 STEP 2: Academic domain adaptation training...
+2025-09-11 12:24:57,628 - INFO -    Fine-tuning SBERT on academic paraphrase curriculum
+2025-09-11 12:24:57,628 - INFO - ✅ Domain-adapted model successfully loaded
+2025-09-11 12:24:57,628 - INFO - 🔍 STEP 3: Academic system validation...
+2025-09-11 12:24:57,932 - INFO - ✅ spaCy model loaded for stylometric analysis
+2025-09-11 12:24:57,932 - INFO - ✅ Academic stylometric analyzer initialized
+2025-09-11 12:24:58,029 - INFO - Loading cross-encoder model...
+2025-09-11 12:25:00,932 - INFO - Use pytorch device: mps
+2025-09-11 12:25:02,526 - WARNING - Readability analysis failed: module 'textstat' has no attribute 'flesch_kincaid'
+2025-09-11 12:25:02,526 - INFO -    Test 1: Score -1.562 (4.594s)
+2025-09-11 12:25:02,526 - INFO -      - Semantic: 0.455
+2025-09-11 12:25:02,526 - INFO -      - Stylometric: 0.307
+2025-09-11 12:25:02,526 - INFO -      - Cross-encoder: -6.170
+2025-09-11 12:25:02,526 - INFO -      - Confidence: LOW
+2025-09-11 12:25:02,526 - INFO -      - Academic word ratio: 0.222
+2025-09-11 12:25:02,526 - INFO -      - Citation density: 0.000
+2025-09-11 12:25:02,824 - WARNING - Readability analysis failed: module 'textstat' has no attribute 'flesch_kincaid'
+2025-09-11 12:25:02,824 - INFO -    Test 2: Score -3.294 (0.298s)
+2025-09-11 12:25:02,824 - INFO -      - Semantic: -1.695
+2025-09-11 12:25:02,824 - INFO -      - Stylometric: 0.260
+2025-09-11 12:25:02,824 - INFO -      - Cross-encoder: -8.329
+2025-09-11 12:25:02,824 - INFO -      - Confidence: LOW
+2025-09-11 12:25:02,824 - INFO -      - Academic word ratio: 0.000
+2025-09-11 12:25:02,824 - INFO -      - Citation density: 0.000
+2025-09-11 12:25:03,055 - WARNING - Readability analysis failed: module 'textstat' has no attribute 'flesch_kincaid'
+2025-09-11 12:25:03,055 - INFO -    Test 3: Score -1.103 (0.231s)
+2025-09-11 12:25:03,055 - INFO -      - Semantic: -0.095
+2025-09-11 12:25:03,055 - INFO -      - Stylometric: 0.370
+2025-09-11 12:25:03,055 - INFO -      - Cross-encoder: -3.766
+2025-09-11 12:25:03,055 - INFO -      - Confidence: LOW
+2025-09-11 12:25:03,055 - INFO -      - Academic word ratio: 0.400
+2025-09-11 12:25:03,055 - INFO -      - Citation density: 0.000
+2025-09-11 12:25:03,055 - INFO - ✅ Academic validation passed - Avg analysis time: 1.708s
+2025-09-11 12:25:03,056 - INFO - 💾 STEP 4: Finalizing academic system...
+2025-09-11 12:25:03,056 - INFO - 🎉 DocInsight Academic setup completed in 100.3 seconds!
+2025-09-11 12:25:03,056 - INFO - 📋 Setup Summary:
+2025-09-11 12:25:03,056 - INFO -    • Academic corpus: 5000 sentences
+2025-09-11 12:25:03,056 - INFO -    • Domain adaptation: ✅
+2025-09-11 12:25:03,056 - INFO -    • Average analysis time: 1.708s
+2025-09-11 12:25:03,056 - INFO -    • Cache location: corpus_cache
+2025-09-11 12:25:03,056 - INFO - 
+2025-09-11 12:25:03,056 - INFO - 🚀 Ready for academic plagiarism detection!
+2025-09-11 12:25:03,056 - INFO -    Run: python run_docinsight.py
+2025-09-11 12:25:03,056 - INFO -    Or:  streamlit run streamlit_app.py
+2025-09-11 12:25:03,056 - INFO - 🎉 SUCCESS: DocInsight Academic is ready for research!
+2025-09-11 12:25:03,056 - INFO - 
+📋 Recommended next steps:
+2025-09-11 12:25:03,056 - INFO -   1. Test system: python run_docinsight.py --validate
+2025-09-11 12:25:03,056 - INFO -   2. Launch web interface: streamlit run streamlit_app.py
+2025-09-11 12:25:03,056 - INFO -   3. Analyze documents: python run_docinsight.py
