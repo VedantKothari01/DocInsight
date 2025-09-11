@@ -281,6 +281,10 @@ class CorpusIndex:
             logger.error(f"Failed to build FAISS index: {e}")
             return False
     
+    def search(self, query: str, k: int = 10) -> List[Tuple[str, float]]:
+        """Search for similar sentences (alias for search_similar)."""
+        return self.search_similar(query, k)
+    
     def search_similar(self, query: str, top_k: int = 10) -> List[Tuple[str, float]]:
         """Search for similar sentences."""
         if not self.sentences:

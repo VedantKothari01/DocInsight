@@ -1,0 +1,103 @@
+2025-09-11 04:55:18,896 - INFO - DocInsight Setup Configuration:
+2025-09-11 04:55:18,896 - INFO -   Target corpus size: 200 sentences
+2025-09-11 04:55:18,896 - INFO -   Force rebuild: False
+2025-09-11 04:55:18,896 - INFO -   Quick mode: True
+2025-09-11 04:55:18,897 - INFO - Checking system requirements...
+2025-09-11 04:55:23,165 - INFO - ✅ sentence_transformers available
+2025-09-11 04:55:23,165 - INFO - Loading faiss with AVX2 support.
+2025-09-11 04:55:23,183 - INFO - Successfully loaded faiss with AVX2 support.
+2025-09-11 04:55:23,186 - INFO - ✅ faiss available
+2025-09-11 04:55:23,186 - INFO - ✅ datasets available
+2025-09-11 04:55:23,244 - INFO - ✅ wikipedia available
+2025-09-11 04:55:23,244 - INFO - ✅ requests available
+2025-09-11 04:55:23,244 - INFO - ✅ numpy available
+2025-09-11 04:55:23,245 - INFO - ✅ All system requirements satisfied
+2025-09-11 04:55:23,245 - INFO - 🚀 Starting DocInsight setup process...
+2025-09-11 04:55:23,245 - INFO - Starting DocInsight setup with target size: 200
+2025-09-11 04:55:23,877 - INFO - Loading sentence transformer model...
+2025-09-11 04:55:23,879 - INFO - Use pytorch device_name: cpu
+2025-09-11 04:55:23,879 - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-09-11 04:55:24,625 - INFO - ✅ Sentence transformer model loaded
+2025-09-11 04:55:24,625 - INFO - 📊 STEP 1: Building corpus from real datasets...
+2025-09-11 04:55:24,625 - INFO -    This downloads PAWS, Wikipedia, and arXiv data
+2025-09-11 04:55:24,625 - INFO - No cached assets found - building from real datasets...
+2025-09-11 04:55:24,625 - INFO - Building new corpus from real datasets...
+2025-09-11 04:55:24,625 - INFO - Building combined corpus with target size: 200
+2025-09-11 04:55:24,625 - INFO - Loading PAWS dataset (split: train, max_samples: 66)
+2025-09-11 04:55:24,625 - INFO - Downloading PAWS dataset...
+2025-09-11 04:55:26,229 - INFO - Loaded 132 unique sentences from PAWS
+2025-09-11 04:55:26,229 - INFO - Added 132 sentences from PAWS
+2025-09-11 04:55:26,229 - INFO - Loading Wikipedia articles for 24 topics
+2025-09-11 04:55:26,230 - INFO - Loading Wikipedia content from cache...
+2025-09-11 04:55:26,230 - INFO - Added 812 sentences from Wikipedia
+2025-09-11 04:55:26,230 - INFO - Loading arXiv abstracts from 7 categories
+2025-09-11 04:55:26,230 - INFO - Fetching arXiv papers from category: cs.AI
+2025-09-11 04:55:26,466 - INFO - Added 7 sentences from 2 papers in cs.AI
+2025-09-11 04:55:29,467 - INFO - Fetching arXiv papers from category: cs.CL
+2025-09-11 04:55:29,675 - INFO - Added 10 sentences from 2 papers in cs.CL
+2025-09-11 04:55:32,675 - INFO - Fetching arXiv papers from category: cs.LG
+2025-09-11 04:55:32,882 - INFO - Added 12 sentences from 2 papers in cs.LG
+2025-09-11 04:55:35,883 - INFO - Fetching arXiv papers from category: cs.CV
+2025-09-11 04:55:36,090 - INFO - Added 5 sentences from 2 papers in cs.CV
+2025-09-11 04:55:39,090 - INFO - Fetching arXiv papers from category: stat.ML
+2025-09-11 04:55:39,301 - INFO - Added 8 sentences from 2 papers in stat.ML
+2025-09-11 04:55:42,302 - INFO - Fetching arXiv papers from category: physics
+2025-09-11 04:55:42,534 - INFO - Added 0 sentences from 0 papers in physics
+2025-09-11 04:55:45,535 - INFO - Fetching arXiv papers from category: math
+2025-09-11 04:55:45,734 - INFO - Added 0 sentences from 0 papers in math
+2025-09-11 04:55:48,735 - INFO - Loaded 41 unique sentences from arXiv
+2025-09-11 04:55:48,737 - INFO - Added 41 sentences from arXiv
+2025-09-11 04:55:48,737 - INFO - Final corpus size: 200 sentences
+2025-09-11 04:55:48,737 - INFO - Built corpus with 200 sentences from real datasets
+2025-09-11 04:55:48,738 - INFO - Cached corpus to corpus_cache/corpus_200.json
+2025-09-11 04:55:48,738 - INFO - Generating embeddings for 200 sentences...
+2025-09-11 04:55:51,059 - INFO - Generated and cached embeddings: (200, 384)
+2025-09-11 04:55:51,059 - INFO - Building FAISS index...
+2025-09-11 04:55:51,060 - INFO - Built and cached FAISS index: 200 vectors
+2025-09-11 04:55:51,060 - INFO - ✅ Corpus built: 200 sentences in 26.4s
+2025-09-11 04:55:51,060 - INFO - 🧠 STEP 2: Generating sentence embeddings...
+2025-09-11 04:55:51,060 - INFO -    This creates semantic vectors for all sentences
+2025-09-11 04:55:51,060 - INFO - Loaded cached embeddings: (200, 384)
+2025-09-11 04:55:51,061 - INFO - ✅ Embeddings built: (200, 384) in 0.0s
+2025-09-11 04:55:51,061 - INFO - ⚡ STEP 3: Building FAISS search index...
+2025-09-11 04:55:51,061 - INFO -    This creates fast similarity search capability
+2025-09-11 04:55:51,061 - INFO - Loaded cached FAISS index: 200 vectors
+2025-09-11 04:55:51,061 - INFO - ✅ FAISS index built: 200 vectors in 0.0s
+2025-09-11 04:55:51,061 - INFO - 🔍 STEP 4: Validating complete system...
+2025-09-11 04:55:51,074 - INFO - Loading cross-encoder model...
+2025-09-11 04:55:51,465 - INFO - Use pytorch device: cpu
+2025-09-11 04:55:52,527 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,528 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,528 - INFO - ✅ Sentence analysis test: Score -0.225, Confidence LOW
+2025-09-11 04:55:52,528 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,528 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,710 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,710 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,783 - INFO - Loading spaCy model...
+2025-09-11 04:55:52,784 - WARNING - Failed to load spaCy model: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-09-11 04:55:52,784 - INFO - ✅ Document analysis test: 2 sentences processed
+2025-09-11 04:55:52,784 - INFO - 🎉 SETUP COMPLETE! Total time: 26.4s
+2025-09-11 04:55:52,784 - INFO - ✅ DocInsight is now ready for production use!
+2025-09-11 04:55:52,784 - INFO - 
+2025-09-11 04:55:52,784 - INFO - ======================================================================
+2025-09-11 04:55:52,784 - INFO - 🎉 DOCINSIGHT SETUP SUCCESSFUL!
+2025-09-11 04:55:52,784 - INFO - ======================================================================
+2025-09-11 04:55:52,784 - INFO - 
+2025-09-11 04:55:52,785 - INFO - Your DocInsight system is now ready for production use!
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO - Next steps:
+2025-09-11 04:55:52,785 - INFO -   1. Launch the web interface:
+2025-09-11 04:55:52,785 - INFO -      streamlit run streamlit_app.py
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO -   2. Or run the demo script:
+2025-09-11 04:55:52,785 - INFO -      python docinsight_demo.py --skip-setup
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO -   3. Upload documents and get instant plagiarism analysis!
+2025-09-11 04:55:52,785 - INFO - 
+2025-09-11 04:55:52,785 - INFO - Features available:
+2025-09-11 04:55:52,785 - INFO -   ✅ Instant document analysis (no setup required)
+2025-09-11 04:55:52,785 - INFO -   ✅ Large corpus (200 real sentences)
+2025-09-11 04:55:52,785 - INFO -   ✅ Real datasets (PAWS, Wikipedia, arXiv)
+2025-09-11 04:55:52,786 - INFO -   ✅ Advanced ML pipeline with confidence scoring
+2025-09-11 04:55:52,786 - INFO -   ✅ Production-ready performance
+2025-09-11 04:55:52,786 - INFO - ======================================================================

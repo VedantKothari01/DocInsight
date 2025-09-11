@@ -114,6 +114,7 @@ class DatasetLoader:
             for topic in topics:
                 try:
                     logger.info(f"Fetching Wikipedia article: {topic}")
+                    # Try to get the page with auto-suggest to handle typos
                     page = wikipedia.page(topic, auto_suggest=True)
                     content = page.content
                     
@@ -187,7 +188,7 @@ class DatasetLoader:
                     logger.info(f"Fetching arXiv papers from category: {category}")
                     
                     # arXiv API query
-                    papers_per_category = max_papers // len(categories)
+                    papers_per_category = max(1, max_papers // len(categories))  # Ensure at least 1 paper per category
                     url = f"http://export.arxiv.org/api/query?search_query=cat:{category}&start=0&max_results={papers_per_category}"
                     
                     response = requests.get(url, timeout=30)
@@ -199,15 +200,18 @@ class DatasetLoader:
                         ns = {'atom': 'http://www.w3.org/2005/Atom'}
                         entries = root.findall('atom:entry', ns)
                         
+                        category_sentences = []
                         for entry in entries:
                             summary = entry.find('atom:summary', ns)
                             if summary is not None and summary.text:
                                 abstract = summary.text.strip()
-                                # Split abstract into sentences
-                                abstract_sentences = self._extract_sentences(abstract)
-                                sentences.extend(abstract_sentences)
+                                if abstract:  # Make sure abstract is not empty
+                                    # Split abstract into sentences
+                                    abstract_sentences = self._extract_sentences(abstract)
+                                    category_sentences.extend(abstract_sentences)
                         
-                        logger.info(f"Added abstracts from {len(entries)} papers in {category}")
+                        sentences.extend(category_sentences)
+                        logger.info(f"Added {len(category_sentences)} sentences from {len(entries)} papers in {category}")
                     
                     # Rate limiting for arXiv API
                     time.sleep(3)

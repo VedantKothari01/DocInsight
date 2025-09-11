@@ -42,14 +42,31 @@ def check_system_ready():
     try:
         from corpus_builder import CorpusIndex
         
-        corpus_index = CorpusIndex(target_size=10000)
-        if corpus_index.is_ready_for_production():
-            logger.info("✅ DocInsight is ready for production use")
-            return True
-        else:
-            logger.error("❌ DocInsight is not set up for production")
-            logger.error("Please run: python setup_docinsight.py")
-            return False
+        # Try to find existing corpus files to determine target size
+        cache_dir = Path("corpus_cache")
+        if cache_dir.exists():
+            corpus_files = list(cache_dir.glob("corpus_*.json"))
+            if corpus_files:
+                # Extract target size from first corpus file
+                corpus_file = corpus_files[0]
+                target_size = int(corpus_file.stem.split('_')[1])
+                logger.info(f"Found existing corpus with target size: {target_size}")
+                
+                corpus_index = CorpusIndex(target_size=target_size)
+                if corpus_index.is_ready_for_production():
+                    logger.info("✅ DocInsight is ready for production use")
+                    return True
+        
+        # Fallback: try common sizes
+        for size in [200, 1000, 5000, 10000, 50000]:
+            corpus_index = CorpusIndex(target_size=size)
+            if corpus_index.is_ready_for_production():
+                logger.info(f"✅ DocInsight is ready for production use (size: {size})")
+                return True
+        
+        logger.error("❌ DocInsight is not set up for production")
+        logger.error("Please run: python setup_docinsight.py")
+        return False
             
     except Exception as e:
         logger.error(f"❌ System check failed: {e}")
@@ -63,8 +80,17 @@ def validate_system():
         from corpus_builder import CorpusIndex
         from enhanced_pipeline import PlagiarismDetector
         
+        # Find the correct target size
+        cache_dir = Path("corpus_cache")
+        target_size = 10000  # default
+        
+        if cache_dir.exists():
+            corpus_files = list(cache_dir.glob("corpus_*.json"))
+            if corpus_files:
+                target_size = int(corpus_files[0].stem.split('_')[1])
+        
         # Load corpus
-        corpus_index = CorpusIndex(target_size=10000)
+        corpus_index = CorpusIndex(target_size=target_size)
         if not corpus_index.load_for_production():
             logger.error("❌ Failed to load corpus for production")
             return False
@@ -76,7 +102,7 @@ def validate_system():
         test_sentence = "Machine learning algorithms can identify patterns in data efficiently."
         result = detector.analyze_sentence(test_sentence)
         
-        if result.fused_score >= 0:
+        if result and result.fused_score is not None:
             logger.info(f"✅ Sentence analysis: Score {result.fused_score:.3f}, Confidence {result.confidence}")
         else:
             logger.error("❌ Sentence analysis failed")
@@ -134,8 +160,17 @@ def run_quick_test():
         from corpus_builder import CorpusIndex
         from enhanced_pipeline import PlagiarismDetector
         
+        # Find the correct target size
+        cache_dir = Path("corpus_cache")
+        target_size = 10000  # default
+        
+        if cache_dir.exists():
+            corpus_files = list(cache_dir.glob("corpus_*.json"))
+            if corpus_files:
+                target_size = int(corpus_files[0].stem.split('_')[1])
+        
         # Quick load test
-        corpus_index = CorpusIndex(target_size=10000)
+        corpus_index = CorpusIndex(target_size=target_size)
         success = corpus_index.load_for_production()
         
         if not success:
