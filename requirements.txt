@@ -25,5 +25,14 @@ pathlib2>=2.3.7; python_version < "3.6"
 # Development and logging
 typing-extensions>=4.0.0
 
+# Phase 2: Additional dependencies for ingestion
+requests>=2.28.0
+langdetect>=1.0.9
+beautifulsoup4>=4.11.0
+
+# Optional dependencies for better web content extraction
+readability-lxml>=0.8.1; extra == "web"
+newspaper3k>=0.2.8; extra == "web"
+
 # Language model
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl

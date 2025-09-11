@@ -58,3 +58,33 @@ RISK_LEVELS = {
 # Logging configuration
 LOG_LEVEL = 'INFO'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+# Phase 2: Database and Indexing Configuration
+DB_PATH = 'docinsight.db'
+INDEX_PATH = 'indexes/'
+EMBEDDING_MODEL = SBERT_MODEL_NAME  # Reuse existing SBERT model
+MAX_CHUNKS_PER_DOC = 100
+CHUNK_SIZE_TOKENS = 512
+CHUNK_OVERLAP = 50
+RETRIEVAL_TOP_K = 10
+MIN_SIM_THRESHOLD = 0.3
+INDEX_TYPE = 'IndexFlatIP'  # FAISS index type
+INGEST_BATCH_SIZE = 32
+
+# Ingestion source limits
+ARXIV_RATE_LIMIT = 1.0  # seconds between requests
+WIKI_MAX_PAGES = 50
+MAX_WEB_CONCURRENCY = 5
+
+# File processing
+PDF_MAX_PAGES = 100
+DOCX_MAX_PARAGRAPHS = 500
+
+# Chunking strategy
+CHUNKING_STRATEGY = 'sentence'  # 'sentence' or 'sliding_window'
+MIN_CHUNK_LENGTH = 50  # minimum characters per chunk
+MAX_CHUNK_LENGTH = 2000  # maximum characters per chunk
+
+# Language filtering
+SUPPORTED_LANGUAGES = ['en']  # Language codes to keep during ingestion
+LANGUAGE_DETECTION_CONFIDENCE = 0.8
