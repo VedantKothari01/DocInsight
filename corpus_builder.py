@@ -1,5 +1,15 @@
 """
-Real dataset corpus builder for DocInsight - Production-ready with online datasets only
+Academic Corpus Builder for DocInsight - Research-Focused Implementation
+======================================================================
+
+Implements SRS v0.2 requirements for academic paraphrase corpus with domain adaptation:
+- Academic paraphrase curriculum (PAWS + Quora + synthetic)
+- Domain-adapted SBERT embeddings
+- Research-quality corpus management
+- Production-ready caching and indexing
+
+This module supports the research goal of creating conference-submission quality
+improvements over baseline semantic-only systems.
 """
 import os
 import json
@@ -22,37 +32,62 @@ try:
 except ImportError:
     HAS_SENTENCE_TRANSFORMERS = False
 
-# Import our real dataset loader
+# Import our real dataset loader and domain adaptation
 from dataset_loaders import DatasetLoader
+try:
+    from domain_adaptation import AcademicDomainAdapter, create_academic_domain_adapter
+    HAS_DOMAIN_ADAPTATION = True
+except ImportError:
+    HAS_DOMAIN_ADAPTATION = False
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class CorpusIndex:
-    """Production-ready corpus index using real datasets only - no hardcoded fallbacks."""
+    """
+    Academic Corpus Index for Research-Focused Plagiarism Detection
     
-    def __init__(self, target_size: int = 50000, cache_dir: str = "corpus_cache"):
+    Implements SRS v0.2 requirements:
+    - Academic paraphrase curriculum (PAWS + Quora + synthetic)  
+    - Domain-adapted SBERT embeddings for academic writing
+    - Research-quality semantic similarity and stylometric analysis
+    - Production-ready caching for conference demonstrations
+    """
+    
+    def __init__(self, target_size: int = 50000, cache_dir: str = "corpus_cache", use_domain_adaptation: bool = True):
         self.target_size = target_size
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
+        self.use_domain_adaptation = use_domain_adaptation and HAS_DOMAIN_ADAPTATION
         
         self.sentences: List[str] = []
         self.embeddings: Optional[np.ndarray] = None
         self.index: Optional[object] = None
         self.model: Optional[object] = None
+        self.domain_adapter: Optional[object] = None
         self._is_loaded = False
         
-        # Initialize sentence transformer model (lazy loading)
+        # Initialize domain adaptation for academic focus
+        if self.use_domain_adaptation:
+            logger.info("Initializing academic domain adaptation...")
+            self.domain_adapter = create_academic_domain_adapter(target_size)
+        
+        # Initialize sentence transformer model (with domain adaptation)
         self._init_model()
     
     def _init_model(self):
-        """Initialize sentence transformer model with caching."""
+        """Initialize sentence transformer model with domain adaptation for academic focus."""
         if HAS_SENTENCE_TRANSFORMERS and not self.model:
             try:
-                logger.info("Loading sentence transformer model...")
-                self.model = SentenceTransformer('all-MiniLM-L6-v2')
-                logger.info("✅ Sentence transformer model loaded")
+                if self.use_domain_adaptation and self.domain_adapter:
+                    logger.info("Loading domain-adapted academic model...")
+                    self.model = self.domain_adapter.load_or_train_academic_model(self.target_size)
+                    logger.info("✅ Academic domain-adapted sentence transformer loaded")
+                else:
+                    logger.info("Loading base sentence transformer model...")
+                    self.model = SentenceTransformer('all-MiniLM-L6-v2')
+                    logger.info("✅ Base sentence transformer model loaded")
             except Exception as e:
                 logger.warning(f"Failed to load sentence transformer: {e}")
                 self.model = None

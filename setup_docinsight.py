@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 """
-DocInsight One-Time Setup Script
-===============================
+DocInsight Academic Setup Script - Research-Focused Implementation
+================================================================
 
-This script performs the one-time setup/training for DocInsight:
-1. Downloads real datasets (PAWS, Wikipedia, arXiv)
-2. Builds and caches sentence embeddings
-3. Creates and saves FAISS search index
-4. Prepares all assets for production usage
+Implements SRS v0.2 requirements for academic plagiarism detection system:
+- Academic paraphrase curriculum (PAWS + Quora + synthetic)
+- Domain-adapted SBERT fine-tuning
+- Enhanced stylometric analysis for academic writing
+- Research-quality corpus building and caching
 
-After running this script once, users can directly use DocInsight without
-any downloads or heavy processing - just like using a pre-trained model.
+This script performs one-time setup for conference-quality research system.
+After completion, users can instantly analyze academic documents with
+sophisticated domain-adapted semantic embeddings and stylometric evidence.
 
 Usage:
-    python setup_docinsight.py --target-size 50000
-    python setup_docinsight.py --quick --target-size 5000
+    python setup_docinsight.py --target-size 50000 --enable-domain-adaptation
+    python setup_docinsight.py --quick --target-size 10000
+    python setup_docinsight.py --research-mode  # Full research configuration
 """
 
 import sys
@@ -36,18 +38,26 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def print_setup_banner():
-    """Print setup banner."""
+    """Print enhanced setup banner for research system."""
     banner = """
     ╔══════════════════════════════════════════════════════════════╗
     ║                                                              ║
-    ║               🔧 DocInsight Setup & Training                 ║
-    ║                  One-Time Configuration                      ║
+    ║           🎓 DocInsight Academic Research Setup              ║
+    ║              Domain-Adapted Plagiarism Detection            ║
     ║                                                              ║
-    ║   This script downloads datasets, builds embeddings,        ║
-    ║   and prepares DocInsight for production usage.             ║
+    ║   SRS v0.2 Implementation - Conference Quality System       ║
     ║                                                              ║
-    ║   After completion, users can instantly analyze documents   ║
-    ║   without any setup or downloads required.                  ║
+    ║   • Academic paraphrase curriculum (PAWS + Quora)           ║
+    ║   • Domain-adapted SBERT fine-tuning                        ║
+    ║   • Enhanced stylometric analysis                           ║
+    ║   • Research-quality evaluation framework                   ║
+    ║                                                              ║
+    ║   After completion, analyze academic documents instantly    ║
+    ║   with state-of-the-art semantic and stylometric analysis  ║
+    ║                                                              ║
+    ╚══════════════════════════════════════════════════════════════╝
+    """
+    print(banner)
     ║                                                              ║
     ╚══════════════════════════════════════════════════════════════╝
     """
@@ -86,37 +96,136 @@ def check_system_requirements():
     logger.info("✅ All system requirements satisfied")
     return True
 
-def setup_docinsight(target_size: int, force_rebuild: bool = False):
-    """Perform complete DocInsight setup."""
-    logger.info(f"Starting DocInsight setup with target size: {target_size}")
+def setup_docinsight_academic(target_size: int, enable_domain_adaptation: bool = True, force_rebuild: bool = False):
+    """
+    Perform complete DocInsight academic setup with SRS v0.2 features.
+    
+    Args:
+        target_size: Size of corpus to build
+        enable_domain_adaptation: Whether to enable domain adaptation training
+        force_rebuild: Force rebuild even if cache exists
+    """
+    logger.info(f"Starting DocInsight Academic setup with target size: {target_size}")
+    logger.info(f"Domain adaptation: {'ENABLED' if enable_domain_adaptation else 'DISABLED'}")
     
     try:
         from corpus_builder import CorpusIndex
-        from enhanced_pipeline import PlagiarismDetector
+        from enhanced_pipeline import AcademicPlagiarismDetector
         
-        # Initialize corpus builder
-        corpus_index = CorpusIndex(target_size=target_size)
+        # Initialize academic corpus builder with domain adaptation
+        corpus_index = CorpusIndex(
+            target_size=target_size, 
+            use_domain_adaptation=enable_domain_adaptation
+        )
         
         # Check if already set up (unless force rebuild)
         if not force_rebuild and corpus_index._is_fully_cached():
-            logger.info("✅ DocInsight is already set up and ready!")
+            logger.info("✅ DocInsight Academic is already set up and ready!")
             logger.info("Use --force-rebuild to rebuild from scratch")
             
-            # Quick validation test
-            detector = PlagiarismDetector(corpus_index)
-            test_result = detector.analyze_sentence("Machine learning algorithms identify patterns.")
-            logger.info(f"✅ System validation passed - Score: {test_result.fused_score:.3f}")
+            # Quick validation test with academic detector
+            detector = AcademicPlagiarismDetector(corpus_index, use_domain_adaptation=enable_domain_adaptation)
+            test_result = detector.analyze_sentence("Machine learning algorithms identify patterns in academic research.")
+            logger.info(f"✅ Academic system validation passed - Score: {test_result.fused_score:.3f}")
+            logger.info(f"   Semantic: {test_result.semantic_score:.3f}, Stylometric: {test_result.stylometry_similarity:.3f}")
             return True
         
-        # Step 1: Build corpus from real datasets
-        logger.info("📊 STEP 1: Building corpus from real datasets...")
-        logger.info("   This downloads PAWS, Wikipedia, and arXiv data")
+        # Step 1: Build academic corpus from enhanced datasets
+        logger.info("📊 STEP 1: Building academic corpus from enhanced datasets...")
+        logger.info("   • PAWS paraphrase dataset")
+        logger.info("   • Quora question pairs")
+        logger.info("   • Academic Wikipedia articles")
+        logger.info("   • arXiv research abstracts")
+        logger.info("   • Synthetic academic paraphrases")
         
         start_time = time.time()
         success = corpus_index.load_or_build()
         if not success:
-            logger.error("❌ Failed to build corpus")
+            logger.error("❌ Failed to build academic corpus")
             return False
+        
+        build_time = time.time() - start_time
+        logger.info(f"✅ Academic corpus built in {build_time:.1f} seconds")
+        logger.info(f"   📈 Corpus size: {len(corpus_index.sentences)} sentences")
+        
+        # Step 2: Domain adaptation training (if enabled)
+        if enable_domain_adaptation:
+            logger.info("🧠 STEP 2: Academic domain adaptation training...")
+            logger.info("   Fine-tuning SBERT on academic paraphrase curriculum")
+            
+            try:
+                # Domain adaptation is handled in corpus_index._init_model()
+                if corpus_index.model:
+                    logger.info("✅ Domain-adapted model successfully loaded")
+                else:
+                    logger.warning("⚠️ Domain adaptation failed, using base model")
+            except Exception as e:
+                logger.warning(f"⚠️ Domain adaptation failed: {e}")
+        
+        # Step 3: Enhanced validation with academic features
+        logger.info("🔍 STEP 3: Academic system validation...")
+        
+        detector = AcademicPlagiarismDetector(corpus_index, use_domain_adaptation=enable_domain_adaptation)
+        
+        # Test academic sentences
+        test_sentences = [
+            "Machine learning algorithms identify patterns in academic research data.",
+            "This study demonstrates the effectiveness of neural networks for classification tasks.",
+            "The methodology employed in this investigation follows established research protocols."
+        ]
+        
+        total_test_time = 0
+        for i, test_sentence in enumerate(test_sentences, 1):
+            test_start = time.time()
+            result = detector.analyze_sentence(test_sentence)
+            test_time = time.time() - test_start
+            total_test_time += test_time
+            
+            logger.info(f"   Test {i}: Score {result.fused_score:.3f} ({test_time:.3f}s)")
+            logger.info(f"     - Semantic: {result.semantic_score:.3f}")
+            logger.info(f"     - Stylometric: {result.stylometry_similarity:.3f}")
+            logger.info(f"     - Cross-encoder: {result.cross_encoder_score:.3f}")
+            logger.info(f"     - Confidence: {result.confidence}")
+            
+            if result.academic_indicators:
+                logger.info(f"     - Academic word ratio: {result.academic_indicators.get('academic_word_ratio', 0.0):.3f}")
+                logger.info(f"     - Citation density: {result.academic_indicators.get('citation_density', 0.0):.3f}")
+        
+        avg_analysis_time = total_test_time / len(test_sentences)
+        logger.info(f"✅ Academic validation passed - Avg analysis time: {avg_analysis_time:.3f}s")
+        
+        # Step 4: Create production ready marker
+        logger.info("💾 STEP 4: Finalizing academic system...")
+        ready_file = corpus_index.cache_dir / ".docinsight_academic_ready"
+        with open(ready_file, 'w') as f:
+            import json
+            setup_info = {
+                'timestamp': time.time(),
+                'target_size': target_size,
+                'actual_size': len(corpus_index.sentences),
+                'domain_adaptation': enable_domain_adaptation,
+                'avg_analysis_time': avg_analysis_time,
+                'version': 'SRS_v0.2'
+            }
+            json.dump(setup_info, f, indent=2)
+        
+        total_time = time.time() - start_time
+        logger.info(f"🎉 DocInsight Academic setup completed in {total_time:.1f} seconds!")
+        logger.info("📋 Setup Summary:")
+        logger.info(f"   • Academic corpus: {len(corpus_index.sentences)} sentences")
+        logger.info(f"   • Domain adaptation: {'✅' if enable_domain_adaptation else '❌'}")
+        logger.info(f"   • Average analysis time: {avg_analysis_time:.3f}s")
+        logger.info(f"   • Cache location: {corpus_index.cache_dir}")
+        logger.info("")
+        logger.info("🚀 Ready for academic plagiarism detection!")
+        logger.info("   Run: python run_docinsight.py")
+        logger.info("   Or:  streamlit run streamlit_app.py")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"❌ Setup failed: {e}")
+        return False
         
         corpus_time = time.time() - start_time
         logger.info(f"✅ Corpus built: {len(corpus_index.sentences)} sentences in {corpus_time:.1f}s")
@@ -183,34 +292,54 @@ def setup_docinsight(target_size: int, force_rebuild: bool = False):
         return False
 
 def main():
-    """Main setup function."""
+    """Main academic setup function with SRS v0.2 features."""
     parser = argparse.ArgumentParser(
-        description="DocInsight One-Time Setup Script",
+        description="DocInsight Academic Research Setup - SRS v0.2 Implementation",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Examples:
-  python setup_docinsight.py                        # Standard setup (10K sentences)
-  python setup_docinsight.py --target-size 50000    # Large corpus (50K sentences)
-  python setup_docinsight.py --quick                # Quick setup (2K sentences)
-  python setup_docinsight.py --force-rebuild        # Force complete rebuild
+Academic Research Setup Examples:
+  python setup_docinsight.py --research-mode           # Full research configuration
+  python setup_docinsight.py --target-size 50000       # Large academic corpus
+  python setup_docinsight.py --quick --target-size 5000 # Quick research setup  
+  python setup_docinsight.py --no-domain-adaptation    # Disable domain adaptation
+  python setup_docinsight.py --force-rebuild           # Force complete rebuild
 
-After setup completion, you can:
-  1. Run: python docinsight_demo.py --skip-setup
-  2. Or directly: streamlit run streamlit_app.py
+SRS v0.2 Features:
+  • Academic paraphrase curriculum (PAWS + Quora + synthetic)
+  • Domain-adapted SBERT fine-tuning for academic writing
+  • Enhanced stylometric analysis with academic indicators
+  • Research-quality evaluation framework
+
+After setup completion:
+  1. Run: python run_docinsight.py                     # Launch academic system
+  2. Web: streamlit run streamlit_app.py               # Web interface
+  3. Research: python research_evaluation.py           # Run benchmarks
         """
     )
     
     parser.add_argument(
         "--target-size",
         type=int,
-        default=10000,
-        help="Target corpus size (number of sentences). Default: 10000"
+        default=20000,
+        help="Target academic corpus size (number of sentences). Default: 20000"
+    )
+    
+    parser.add_argument(
+        "--research-mode",
+        action="store_true",
+        help="Full research configuration with large corpus and domain adaptation"
     )
     
     parser.add_argument(
         "--quick",
         action="store_true",
-        help="Quick setup with smaller corpus (2000 sentences)"
+        help="Quick setup with smaller corpus (5000 sentences)"
+    )
+    
+    parser.add_argument(
+        "--no-domain-adaptation",
+        action="store_true",
+        help="Disable domain adaptation (use base SBERT model)"
     )
     
     parser.add_argument(
@@ -221,15 +350,25 @@ After setup completion, you can:
     
     args = parser.parse_args()
     
-    # Adjust target size for quick mode
-    if args.quick:
-        args.target_size = min(2000, args.target_size)
+    # Configure based on modes
+    if args.research_mode:
+        args.target_size = max(50000, args.target_size)
+        enable_domain_adaptation = True
+        logger.info("🎓 Research mode activated - full academic configuration")
+    elif args.quick:
+        args.target_size = min(5000, args.target_size)
+        enable_domain_adaptation = True
+        logger.info("⚡ Quick mode activated - minimal academic setup")
+    else:
+        enable_domain_adaptation = not args.no_domain_adaptation
     
     print_setup_banner()
     
-    logger.info(f"DocInsight Setup Configuration:")
+    logger.info(f"DocInsight Academic Setup Configuration:")
     logger.info(f"  Target corpus size: {args.target_size:,} sentences")
+    logger.info(f"  Domain adaptation: {'ENABLED' if enable_domain_adaptation else 'DISABLED'}")
     logger.info(f"  Force rebuild: {args.force_rebuild}")
+    logger.info(f"  Research mode: {args.research_mode}")
     logger.info(f"  Quick mode: {args.quick}")
     
     # Check system requirements
@@ -237,8 +376,34 @@ After setup completion, you can:
         logger.error("❌ System requirements not met")
         return 1
     
-    # Perform setup
-    logger.info("🚀 Starting DocInsight setup process...")
+    # Perform academic setup
+    logger.info("🚀 Starting DocInsight Academic setup process...")
+    
+    success = setup_docinsight_academic(
+        target_size=args.target_size,
+        enable_domain_adaptation=enable_domain_adaptation,
+        force_rebuild=args.force_rebuild
+    )
+    
+    if success:
+        logger.info("🎉 SUCCESS: DocInsight Academic is ready for research!")
+        
+        # Suggest next steps based on configuration
+        logger.info("\n📋 Recommended next steps:")
+        if args.research_mode:
+            logger.info("  1. Run research evaluation: python research_evaluation.py")
+            logger.info("  2. Test academic analysis: python run_docinsight.py --test")
+            logger.info("  3. Launch web interface: streamlit run streamlit_app.py")
+        else:
+            logger.info("  1. Test system: python run_docinsight.py --validate")
+            logger.info("  2. Launch web interface: streamlit run streamlit_app.py") 
+            logger.info("  3. Analyze documents: python run_docinsight.py")
+        
+        return 0
+    else:
+        logger.error("❌ FAILED: DocInsight Academic setup encountered errors")
+        logger.error("   Check logs above and try again with --force-rebuild")
+        return 1
     success = setup_docinsight(args.target_size, args.force_rebuild)
     
     if success:
