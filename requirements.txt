@@ -21,7 +21,6 @@ streamlit>=1.25.0
 # Utilities
 tqdm>=4.64.0
 
-<<<<<<< Updated upstream
 # Development and logging
 typing-extensions>=4.0.0
 
@@ -33,10 +32,8 @@ beautifulsoup4>=4.11.0
 # Optional dependencies for better web content extraction
 readability-lxml>=0.8.1; extra == "web"
 newspaper3k>=0.2.8; extra == "web"
-=======
 # Web interface
 streamlit>=1.20.0
 
 #UVICORN
 uvicorn>=0.22.0
->>>>>>> Stashed changes
