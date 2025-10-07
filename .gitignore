@@ -1,4 +1,8 @@
 # DocInsight .gitignore
+# .gitignore
+.DS_Store
+corpus_cache/
+*.log
 
 # Cache directories
 corpus_cache/
