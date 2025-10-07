@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+.git
+.env
+*.ipynb
+cache/
+dataset_cache/
+corpus_cache/
+models/
+Docs/
+Reports/
+.venv/
+docinsight-docker/

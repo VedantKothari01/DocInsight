@@ -32,3 +32,8 @@ beautifulsoup4>=4.11.0
 # Optional dependencies for better web content extraction
 readability-lxml>=0.8.1; extra == "web"
 newspaper3k>=0.2.8; extra == "web"
+# Web interface
+streamlit>=1.20.0
+
+#UVICORN
+uvicorn>=0.22.0
