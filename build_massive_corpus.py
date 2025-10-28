@@ -131,9 +131,6 @@ ACADEMIC_DOMAINS = {
     }
 }
 
-MAX_TOTAL_DOCUMENTS = 500
-
-
 def build_massive_corpus():
     """Build a massive academic corpus from multiple domains"""
     
@@ -170,10 +167,7 @@ def build_massive_corpus():
             logger.info(f"Processing {len(domain_config['wiki_topics'])} Wikipedia topics...")
             for topic in domain_config['wiki_topics']:
                 try:
-                    if total_stats['documents_processed'] >= MAX_TOTAL_DOCUMENTS:
-                        break
-                    # Request fewer results to favor depth across domains
-                    source = create_wiki_search_source(topic, max_results=8)
+                    source = create_wiki_search_source(topic, max_results=15)  # More docs per topic
                     stats = pipeline.ingest_source(source)
                     domain_stats['wiki_documents'] += stats['documents_processed']
                     domain_stats['wiki_chunks'] += stats['chunks_created']
@@ -183,17 +177,12 @@ def build_massive_corpus():
                     domain_stats['errors'].append(error_msg)
                     logger.error(error_msg)
                     continue
-                if total_stats['documents_processed'] + domain_stats['wiki_documents'] + domain_stats['arxiv_documents'] >= MAX_TOTAL_DOCUMENTS:
-                    break
             
             # Process arXiv categories
             logger.info(f"Processing {len(domain_config['arxiv_categories'])} arXiv categories...")
             for category in domain_config['arxiv_categories']:
                 try:
-                    if total_stats['documents_processed'] >= MAX_TOTAL_DOCUMENTS:
-                        break
-                    # 10 per category to spread coverage
-                    source = create_arxiv_category_source(category, max_results=10)
+                    source = create_arxiv_category_source(category, max_results=20)  # More papers per category
                     stats = pipeline.ingest_source(source)
                     domain_stats['arxiv_documents'] += stats['documents_processed']
                     domain_stats['arxiv_chunks'] += stats['chunks_created']
@@ -203,8 +192,6 @@ def build_massive_corpus():
                     domain_stats['errors'].append(error_msg)
                     logger.error(error_msg)
                     continue
-                if total_stats['documents_processed'] + domain_stats['wiki_documents'] + domain_stats['arxiv_documents'] >= MAX_TOTAL_DOCUMENTS:
-                    break
             
             domain_time = time.time() - domain_start
             logger.info(f"Completed domain '{domain_name}' in {domain_time:.1f}s: "
@@ -221,10 +208,6 @@ def build_massive_corpus():
             total_stats['errors'].append(error_msg)
             logger.error(error_msg)
             continue
-
-        if total_stats['documents_processed'] >= MAX_TOTAL_DOCUMENTS:
-            logger.info(f"Reached MAX_TOTAL_DOCUMENTS={MAX_TOTAL_DOCUMENTS}. Stopping domain processing.")
-            break
     
     # Generate embeddings for all chunks
     logger.info("Generating embeddings for all chunks...")

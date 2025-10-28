@@ -31,7 +31,7 @@ def print_production_banner():
     ║               🚀 DocInsight Production Runner                ║
     ║                  Ready for Document Analysis                 ║
     ║                                                              ║
-    ║   Fast startup • No setup required • Production ready       ║
+    ║   Fast startup • No setup required • Production ready        ║
     ║                                                              ║
     ╚══════════════════════════════════════════════════════════════╝
     """
