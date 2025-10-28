@@ -1,9 +1,0 @@
-This is a sample document for testing DocInsight.
-
-Climate change is a critical global issue that affects agriculture and health. Rising temperatures lead to more frequent droughts and extreme weather events.
-
-Machine learning has revolutionized many fields including image recognition and natural language processing. Neural networks can approximate complex functions and learn from large datasets.
-
-The capital of France is Paris, which is known for its rich history and cultural heritage. Many tourists visit the Eiffel Tower each year.
-
-Photosynthesis is the process by which plants convert sunlight into chemical energy. This process is essential for life on Earth as it produces oxygen.

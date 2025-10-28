@@ -401,93 +401,28 @@ class DocumentAnalysisPipeline:
         self.reranker = CrossEncoderReranker()
         self.sentence_classifier = SentenceClassifier()
         
-        # Use demo corpus if none provided
-        if corpus_sentences is None:
-            if EXTENDED_CORPUS_ENABLED:
-                corpus_sentences = self._get_extended_corpus()
-                logger.info(f"Loaded extended demo corpus with {len(corpus_sentences)} sentences")
-            else:
-                corpus_sentences = self._get_demo_corpus()
-        
-        # Build search index
-        if corpus_sentences:
-            self.semantic_engine.build_index(corpus_sentences)
+        # Use persistent retrieval system (Phase 2)
+        self.persistent_retrieval = self._try_load_persistent_retrieval()
+        if self.persistent_retrieval:
+            logger.info("Using persistent retrieval system (Phase 2)")
+            # Skip in-memory index build - use persistent system
+            logger.info("Using persistent retrieval system - skipping in-memory index build")
+        else:
+            logger.warning("Persistent retrieval system not available - using fallback")
+            # Fallback to in-memory system if persistent not available
+            if corpus_sentences is None:
+                corpus_sentences = self._get_fallback_corpus()
+            if corpus_sentences:
+                self.semantic_engine.build_index(corpus_sentences)
     
-    def _get_demo_corpus(self) -> List[str]:
-        """Get demo corpus for testing"""
+    def _get_fallback_corpus(self) -> List[str]:
+        """Minimal fallback corpus when persistent retrieval is unavailable"""
         return [
-            "Climate change is a critical global issue that affects agriculture and health.",
-            "The effects of global warming include rising sea levels and more extreme weather.",
-            "Machine learning improves many real world tasks such as image recognition and language modeling.",
-            "Neural networks can approximate complex functions and are widely used in deep learning.",
-            "The French Revolution began in 1789 and led to major political changes in Europe.",
-            "Photosynthesis is the process by which green plants convert sunlight into energy.",
-            "The mitochondrion is the powerhouse of the cell.",
-            "In 1969, Neil Armstrong became the first person to walk on the Moon.",
-            "The capital of France is Paris.",
-            "SQL stands for Structured Query Language and is used to manage relational databases."
+            "This is a minimal fallback corpus for when the persistent retrieval system is unavailable.",
+            "The system should use the pre-built academic corpus for proper analysis.",
+            "Please ensure the corpus has been built using the build_massive_corpus.py script."
         ]
 
-    def _get_extended_corpus(self) -> List[str]:
-        """Extended demo corpus with additional technical and academic sentences.
-
-        Goal: Provide more diverse matches so a single generic sentence (e.g. the SQL definition)
-        does not dominate all database related queries. These are intentionally concise, neutral
-        factual statements spanning databases, transactions, indexing, algorithms, statistics,
-        research writing, and software engineering.
-        """
-        base = self._get_demo_corpus()
-        extended = [
-            # Database & SQL
-            "A relational database organizes data into tables consisting of rows and columns.",
-            "Database normalization reduces redundancy by organizing fields and table relationships.",
-            "A primary key uniquely identifies each record within a relational table.",
-            "Foreign keys enforce referential integrity between related tables.",
-            "ACID properties ensure reliable transaction processing in database systems.",
-            "Transaction isolation levels balance consistency with concurrency performance.",
-            "Indexes speed up data retrieval operations at the cost of additional storage and write overhead.",
-            "A query optimizer selects an efficient execution plan based on statistics and heuristics.",
-            "Denormalization can improve read performance but risks data anomalies.",
-            "SQL JOIN operations combine rows from multiple tables based on related keys.",
-            # Data engineering / systems
-            "Caching frequently accessed data reduces latency and alleviates database load.",
-            "Horizontal scaling distributes data across multiple nodes for capacity and resilience.",
-            "A message queue decouples producers and consumers enabling asynchronous processing.",
-            "Event driven architectures react to state changes published as immutable records.",
-            # Machine learning & stats
-            "Regularization techniques like L2 penalty help prevent overfitting in models.",
-            "Cross validation provides a robust estimate of model generalization performance.",
-            "Gradient descent iteratively updates parameters to minimize a loss function.",
-            "Precision measures the proportion of retrieved instances that are relevant.",
-            "Recall measures the proportion of relevant instances that were successfully retrieved.",
-            # Academic writing & methodology
-            "The methodology section details data collection and experimental procedures.",
-            "A literature review synthesizes prior research to establish context and gaps.",
-            "Empirical results should report both central tendency and variability metrics.",
-            "Limitations outline factors that may constrain the interpretation of findings.",
-            # Software engineering
-            "Unit tests verify the behavior of individual functions or classes in isolation.",
-            "Continuous integration automatically builds and tests code upon each commit.",
-            "Refactoring improves internal code structure without altering external behavior.",
-            "Version control enables collaborative development with change history tracking.",
-            # Security / reliability
-            "Input validation mitigates common injection vulnerabilities in applications.",
-            "Encryption protects data confidentiality during storage and transmission.",
-            "Monitoring key performance indicators helps detect system regressions early.",
-            # Misc general knowledge
-            "Photosynthesis converts carbon dioxide and water into glucose and oxygen using light energy.",
-            "Mitochondria generate ATP through oxidative phosphorylation in eukaryotic cells.",
-            "Neural network layers transform representations enabling hierarchical feature learning."
-        ]
-        # Ensure uniqueness while preserving order (base first then new items)
-        seen = set()
-        combined: List[str] = []
-        for s in base + extended:
-            if s not in seen:
-                combined.append(s)
-                seen.add(s)
-        return combined
-    
     def analyze_sentence(self, sentence: str) -> Dict[str, Any]:
         """Analyze a single sentence for similarity and risk"""
         try:

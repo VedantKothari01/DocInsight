@@ -260,8 +260,8 @@ class FaissIndex:
         return True
         
     def is_available(self) -> bool:
-        """Check if index is loaded and ready"""
-        return HAS_FAISS and self.index is not None
+        """Check if FAISS is available and index is ready"""
+        return HAS_FAISS
         
     def get_stats(self) -> Dict[str, Any]:
         """Get index statistics"""
@@ -272,7 +272,7 @@ class FaissIndex:
             'index_dir': str(self.index_dir)
         }
         
-        if self.is_available():
+        if self.is_available() and self.index is not None:
             stats.update({
                 'num_vectors': self.index.ntotal,
                 'dimension': self.index.d,

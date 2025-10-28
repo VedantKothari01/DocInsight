@@ -8,10 +8,13 @@ import requests
 import xml.etree.ElementTree as ET
 import time
 from typing import List, Dict, Any, Optional
+import tempfile
+from pathlib import Path
 from datetime import datetime, timedelta
 import logging
 
 from .base_loader import AbstractLoader, Document, Source
+from enhanced_pipeline import TextExtractor
 from config import ARXIV_RATE_LIMIT
 
 logger = logging.getLogger(__name__)
@@ -29,6 +32,7 @@ class ArxivLoader(AbstractLoader):
         
         self.api_url = "http://export.arxiv.org/api/query"
         self.rate_limit = ARXIV_RATE_LIMIT
+        self.text_extractor = TextExtractor()
         
         # Parse search parameters from source locator
         self.search_params = self._parse_search_params(source.locator)
@@ -72,8 +76,14 @@ class ArxivLoader(AbstractLoader):
             for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
                 id_elem = entry.find('{http://www.w3.org/2005/Atom}id')
                 if id_elem is not None:
-                    arxiv_id = id_elem.text.split('/')[-1]  # Extract ID from URL
-                    paper_ids.append(arxiv_id)
+                    # Extract ID from URL like "http://arxiv.org/abs/2301.12345v1"
+                    arxiv_url = id_elem.text
+                    if '/abs/' in arxiv_url:
+                        arxiv_id = arxiv_url.split('/abs/')[-1]
+                        # Remove version suffix if present (e.g., "v1", "v2")
+                        if '.' in arxiv_id and arxiv_id.split('.')[-1].startswith('v'):
+                            arxiv_id = '.'.join(arxiv_id.split('.')[:-1])
+                        paper_ids.append(arxiv_id)
                     
             self.logger.info(f"Discovered {len(paper_ids)} arXiv papers")
             return paper_ids
@@ -104,11 +114,20 @@ class ArxivLoader(AbstractLoader):
             # Extract paper data
             paper_data = self._extract_paper_data(entry)
             
-            # Create document from abstract
-            content = self._build_content(paper_data)
+            # Prefer full-text PDF content when available; fall back to abstract
+            content = None
+            try:
+                content = self._try_fetch_fulltext_pdf(arxiv_id)
+            except Exception as pdf_err:
+                self.logger.warning(f"PDF fetch failed for {arxiv_id}: {pdf_err}. Falling back to abstract.")
+                content = None
+
+            if not content:
+                # Create document from metadata + abstract
+                content = self._build_content(paper_data)
             
-            if len(content.strip()) < 100:
-                raise ValueError("Abstract too short")
+            if len(content.strip()) < 200:
+                raise ValueError("Content too short")
                 
             metadata = {
                 'arxiv_id': arxiv_id,
@@ -138,6 +157,26 @@ class ArxivLoader(AbstractLoader):
         except Exception as e:
             self.logger.error(f"Failed to load arXiv paper {arxiv_id}: {e}")
             raise
+
+    def _try_fetch_fulltext_pdf(self, arxiv_id: str) -> Optional[str]:
+        """Attempt to download and extract full-text PDF for the arXiv paper.
+
+        Returns extracted text or None if unavailable.
+        """
+        # Normalize id: arXiv API sometimes returns IDs without version; PDFs accept both
+        pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pdf_path = Path(tmpdir) / f"{arxiv_id}.pdf"
+            resp = self.session.get(pdf_url, timeout=60)
+            if resp.status_code != 200 or not resp.content:
+                raise ValueError(f"PDF not accessible ({resp.status_code})")
+            pdf_path.write_bytes(resp.content)
+            # Extract text via shared extractor (handles PDF limits via config)
+            text = self.text_extractor.extract_text(str(pdf_path))
+            # Basic sanity: must be substantial text
+            if not text or len(text.strip()) < 2000:
+                raise ValueError("Extracted PDF text too short")
+            return text
             
     def _extract_paper_data(self, entry) -> Dict[str, Any]:
         """Extract data from arXiv API entry"""

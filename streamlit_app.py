@@ -17,6 +17,10 @@ import traceback
 # Local imports
 from enhanced_pipeline import DocumentAnalysisPipeline
 from config import MAX_SENTENCE_DISPLAY, TOP_RISK_SPANS_PREVIEW, SUPPORTED_EXTENSIONS, EXTENDED_CORPUS_ENABLED
+from db import get_db_manager
+from ingestion import IngestionPipeline, create_wiki_search_source, create_arxiv_source, create_arxiv_category_source
+from index import IndexManager
+from retrieval import RetrievalEngine
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -419,6 +423,54 @@ def main():
         - Risk span clustering
         - Processing component status
         """)
+        st.header("📚 Corpus Management")
+        st.caption("Build and manage your academic corpus for document analysis.")
+        # Starter corpus (multi-domain, one-click) — idempotent via DB flag
+        try:
+            _dbm_flag = get_db_manager()
+            starter_done = bool(_dbm_flag.get_setting('starter_corpus_built', False))
+        except Exception:
+            starter_done = False
+        starter_label = "Academic Corpus Built ✔" if starter_done else "Build Academic Corpus (~20 docs)"
+        starter_disabled = starter_done
+        starter_btn = st.button(starter_label, disabled=starter_disabled, use_container_width=True)
+
+        if starter_btn and not starter_done:
+            try:
+                with st.spinner("Building academic corpus across multiple domains (first run only)..."):
+                    dbm = get_db_manager()
+                    pipeline = IngestionPipeline(dbm)
+                    # Wikipedia topics (broad academic domains)
+                    wiki_topics = [
+                        "Machine learning", "Climate change", "Photosynthesis", "French Revolution",
+                        "Neural network", "Quantum computing", "Econometrics", "Genetics", "Cybersecurity", "Data structures"
+                    ]
+                    for topic in wiki_topics:
+                        src = create_wiki_search_source(topic)
+                        pipeline.ingest_source(src)
+
+                    # arXiv categories (academic papers)
+                    arxiv_categories = ["cs.AI", "cs.CL", "stat.ML", "math.OC", "physics.comp-ph"]
+                    for cat in arxiv_categories:
+                        src = create_arxiv_category_source(cat, max_results=3)
+                        pipeline.ingest_source(src)
+
+                    # Build or load index (idempotent)
+                    idx = IndexManager(dbm)
+                    build_stats = idx.build_index(force_rebuild=False)
+                    # Mark as built
+                    dbm.set_setting('starter_corpus_built', True, 'Prebuilt multi-domain academic corpus')
+                st.success("Academic corpus ready and indexed ✔")
+                st.write({
+                    "index_type": build_stats.get("index_type"),
+                    "chunks_indexed": build_stats.get("chunks_indexed", 0),
+                    "embeddings_generated": build_stats.get("embeddings_generated", 0),
+                    "build_successful": build_stats.get("build_successful", False)
+                })
+            except Exception as e:
+                st.error(f"Academic corpus build failed: {e}")
+
+
     st.header("🧪 Configuration")
     st.write(f"Extended demo corpus: {'Enabled ✅' if EXTENDED_CORPUS_ENABLED else 'Disabled ❌'}")
 
