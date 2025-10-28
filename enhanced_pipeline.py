@@ -403,25 +403,22 @@ class DocumentAnalysisPipeline:
         
         # Use persistent retrieval system (Phase 2)
         self.persistent_retrieval = self._try_load_persistent_retrieval()
-        if self.persistent_retrieval:
-            logger.info("Using persistent retrieval system (Phase 2)")
-            # Skip in-memory index build - use persistent system
-            logger.info("Using persistent retrieval system - skipping in-memory index build")
-        else:
-            logger.warning("Persistent retrieval system not available - using fallback")
-            # Fallback to in-memory system if persistent not available
-            if corpus_sentences is None:
-                corpus_sentences = self._get_fallback_corpus()
-            if corpus_sentences:
-                self.semantic_engine.build_index(corpus_sentences)
     
-    def _get_fallback_corpus(self) -> List[str]:
-        """Minimal fallback corpus when persistent retrieval is unavailable"""
-        return [
-            "This is a minimal fallback corpus for when the persistent retrieval system is unavailable.",
-            "The system should use the pre-built academic corpus for proper analysis.",
-            "Please ensure the corpus has been built using the build_massive_corpus.py script."
-        ]
+    if self.persistent_retrieval:
+        logger.info("Using persistent retrieval system (Phase 2)")
+        if not self.semantic_engine.retrieval_engine.is_ready():
+            raise RuntimeError(
+                "Persistent retrieval system loaded but not ready. "
+                "Please build the corpus first using: python build_massive_corpus.py"
+            )
+    else:
+        # REMOVE FALLBACK - FORCE ERROR INSTEAD
+        raise RuntimeError(
+            "No corpus available. Build corpus first:\n"
+            "1. Run: python build_massive_corpus.py\n"
+            "2. Or click 'Build Corpus' in Streamlit interface"
+        )
+
 
     def analyze_sentence(self, sentence: str) -> Dict[str, Any]:
         """Analyze a single sentence for similarity and risk"""
@@ -736,4 +733,5 @@ def analyze_document_file(file_path: str, corpus_sentences: Optional[List[str]] 
         Complete analysis results
     """
     pipeline = DocumentAnalysisPipeline(corpus_sentences)
+
     return pipeline.analyze_document(file_path)
