@@ -308,6 +308,7 @@ def main():
     """Main Streamlit application"""
     st.title("📄 DocInsight - Document Originality Analysis")
     st.markdown("Upload a document to analyze its originality and detect potential plagiarism.")
+    
     # CHECK IF CORPUS IS READY
     corpus_ready = False
     try:

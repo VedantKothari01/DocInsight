@@ -404,20 +404,20 @@ class DocumentAnalysisPipeline:
         # Use persistent retrieval system (Phase 2)
         self.persistent_retrieval = self._try_load_persistent_retrieval()
     
-    if self.persistent_retrieval:
-        logger.info("Using persistent retrieval system (Phase 2)")
-        if not self.semantic_engine.retrieval_engine.is_ready():
+        if self.persistent_retrieval:
+            logger.info("Using persistent retrieval system (Phase 2)")
+            if not self.semantic_engine.retrieval_engine.is_ready():
+                raise RuntimeError(
+                    "Persistent retrieval system loaded but not ready. "
+                    "Please build the corpus first using: python build_massive_corpus.py"
+                )
+        else:
+            # REMOVE FALLBACK - FORCE ERROR INSTEAD
             raise RuntimeError(
-                "Persistent retrieval system loaded but not ready. "
-                "Please build the corpus first using: python build_massive_corpus.py"
+                "No corpus available. Build corpus first:\n"
+                "1. Run: python build_massive_corpus.py\n"
+                "2. Or click 'Build Corpus' in Streamlit interface"
             )
-    else:
-        # REMOVE FALLBACK - FORCE ERROR INSTEAD
-        raise RuntimeError(
-            "No corpus available. Build corpus first:\n"
-            "1. Run: python build_massive_corpus.py\n"
-            "2. Or click 'Build Corpus' in Streamlit interface"
-        )
 
 
     def analyze_sentence(self, sentence: str) -> Dict[str, Any]:
