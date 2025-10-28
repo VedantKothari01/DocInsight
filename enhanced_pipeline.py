@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 import tempfile
 import html
+import math
 
 # Third-party imports
 import numpy as np
@@ -26,6 +27,7 @@ import spacy
 import textstat
 import nltk
 from nltk.tokenize import sent_tokenize
+from nltk.corpus import stopwords
 import docx2txt
 import fitz  # PyMuPDF
 
@@ -93,19 +95,24 @@ class SentenceProcessor:
             return []
 
 
-class StylemetryAnalyzer:
+class StylometryAnalyzer:
     """Handles stylometry feature extraction"""
     
     def __init__(self):
         try:
+            nltk.data.find('corpora/stopwords')
+        except Exception as e:
+            nltk.download('stopwords', quiet=True)
+
+        try:
             self.nlp = spacy.load(SPACY_MODEL_NAME)
             logger.info(f"Loaded spaCy model: {SPACY_MODEL_NAME}")
-        except OSError:
+        except OSError: 
             logger.warning(f"spaCy model {SPACY_MODEL_NAME} not found. Stylometry features will be limited.")
             self.nlp = None
     
     def extract_features(self, sentence: str) -> Dict[str, float]:
-        """Extract stylometry features from sentence"""
+        """Extract comprehensive stylometry features from sentence"""
         if self.nlp is None:
             return {'flesch_reading_ease': 0.0}
         
@@ -136,13 +143,53 @@ class StylemetryAnalyzer:
             
             features['noun_ratio'] = pos_counts.get('NOUN', 0) / max(1, len(doc))
             features['verb_ratio'] = pos_counts.get('VERB', 0) / max(1, len(doc))
+            features['adj_ratio'] = pos_counts.get('ADJ', 0) / max(1, len(doc))
+            features['adv_ratio'] = pos_counts.get('ADV', 0) / max(1, len(doc))
+            
+            # Function words using NLTK's stopwords
+            english_stopwords = set(stopwords.words('english'))
+            func_word_count = sum(1 for w in words if w in english_stopwords)
+            features['function_word_ratio'] = func_word_count / max(1, len(words))
+            
+            # Stopword ratio using spaCy's stopwords (more comprehensive)
+            stopword_count = sum(1 for t in alpha_tokens if t.is_stop)
+            features['stopword_ratio'] = stopword_count / max(1, len(alpha_tokens))
+            
+            # N-gram entropy (measure of predictability)
+            features['bigram_entropy'] = self._calculate_ngram_entropy(words, n=2)
+            features['trigram_entropy'] = self._calculate_ngram_entropy(words, n=3)
             
             return features
             
         except Exception as e:
             logger.error(f"Error extracting stylometry features: {e}")
             return {'flesch_reading_ease': 0.0}
-
+        
+    def _calculate_ngram_entropy(self, words: List[str], n: int) -> float:
+        """Calculate entropy of n-grams in text"""
+        if len(words) < n:
+            return 0.0
+        
+        # Generate n-grams
+        ngrams = [tuple(words[i:i+n]) for i in range(len(words) - n + 1)]
+        
+        if not ngrams:
+            return 0.0
+        
+        # Calculate frequency distribution
+        ngram_counts = {}
+        for ng in ngrams:
+            ngram_counts[ng] = ngram_counts.get(ng, 0) + 1
+        
+        # Calculate entropy
+        total = len(ngrams)
+        entropy = 0.0
+        for count in ngram_counts.values():
+            prob = count / total
+            if prob > 0:
+                entropy -= prob * math.log2(prob)
+        
+        return entropy
 
 class SemanticSearchEngine:
     """Handles semantic search using SBERT and FAISS"""
@@ -349,7 +396,7 @@ class DocumentAnalysisPipeline:
     def __init__(self, corpus_sentences: Optional[List[str]] = None):
         self.text_extractor = TextExtractor()
         self.sentence_processor = SentenceProcessor()
-        self.stylometry_analyzer = StylemetryAnalyzer()
+        self.stylometry_analyzer = StylometryAnalyzer()
         self.semantic_engine = SemanticSearchEngine()
         self.reranker = CrossEncoderReranker()
         self.sentence_classifier = SentenceClassifier()

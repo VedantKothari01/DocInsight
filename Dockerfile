@@ -1,5 +1,5 @@
 # Use stable Python
-FROM python:3.10-slim
+FROM python:3.12
 
 # Working directory
 WORKDIR /app
