@@ -308,6 +308,27 @@ def main():
     """Main Streamlit application"""
     st.title("📄 DocInsight - Document Originality Analysis")
     st.markdown("Upload a document to analyze its originality and detect potential plagiarism.")
+    # CHECK IF CORPUS IS READY
+    corpus_ready = False
+    try:
+        dbm = get_db_manager()
+        stats = dbm.get_corpus_stats()
+        # Require at least 1000 chunks
+        corpus_ready = stats.get('total_chunks', 0) >= 1000
+    except:
+        corpus_ready = False
+    
+    if not corpus_ready:
+        st.warning("⚠️ Academic corpus must be built first")
+        
+        if st.button("Build Academic Corpus Now"):
+            # Your build_academic_corpus() code here
+            pass
+        
+        st.stop()  # CRITICAL: Don't proceed without corpus
+    
+    # Only reach here if corpus exists
+    st.success("✅ Corpus ready")
     
     # File upload
     uploaded_file = st.file_uploader(
@@ -476,4 +497,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
