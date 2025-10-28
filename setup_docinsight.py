@@ -229,71 +229,68 @@ def setup_docinsight_academic(target_size: int, enable_domain_adaptation: bool =
         
     except Exception as e:
         logger.error(f"❌ Setup failed: {e}")
-        return False
-        
-        corpus_time = time.time() - start_time
-        logger.info(f"✅ Corpus built: {len(corpus_index.sentences)} sentences in {corpus_time:.1f}s")
-        
-        # Step 2: Build embeddings
-        logger.info("🧠 STEP 2: Generating sentence embeddings...")
-        logger.info("   This creates semantic vectors for all sentences")
-        
-        start_time = time.time()
-        success = corpus_index.build_embeddings()
-        if not success:
-            logger.error("❌ Failed to build embeddings")
-            return False
-        
-        embed_time = time.time() - start_time
-        logger.info(f"✅ Embeddings built: {corpus_index.embeddings.shape} in {embed_time:.1f}s")
-        
-        # Step 3: Build FAISS index
-        logger.info("⚡ STEP 3: Building FAISS search index...")
-        logger.info("   This creates fast similarity search capability")
-        
-        start_time = time.time()
-        success = corpus_index.build_index()
-        if not success:
-            logger.warning("⚠️ FAISS index building failed - will use fallback search")
-        else:
-            index_time = time.time() - start_time
-            logger.info(f"✅ FAISS index built: {corpus_index.index.ntotal} vectors in {index_time:.1f}s")
-        
-        # Step 4: Validate complete system
-        logger.info("🔍 STEP 4: Validating complete system...")
-        
-        detector = PlagiarismDetector(corpus_index)
-        
-        # Test sentence analysis
-        test_sentence = "Machine learning algorithms can identify patterns in data."
-        result = detector.analyze_sentence(test_sentence)
-        logger.info(f"✅ Sentence analysis test: Score {result.fused_score:.3f}, Confidence {result.confidence}")
-        
-        # Test document analysis
-        test_doc = "Artificial intelligence is transforming industries. Machine learning enables pattern recognition."
-        doc_result = detector.analyze_document(test_doc)
-        logger.info(f"✅ Document analysis test: {doc_result['overall_stats']['total_sentences']} sentences processed")
-        
-        total_time = corpus_time + embed_time + (index_time if 'index_time' in locals() else 0)
-        logger.info(f"🎉 SETUP COMPLETE! Total time: {total_time:.1f}s")
-        
-        # Create ready flag
-        ready_file = Path("corpus_cache/.docinsight_ready")
-        ready_file.parent.mkdir(exist_ok=True)
-        with open(ready_file, 'w') as f:
-            f.write(f"DocInsight setup completed at {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write(f"Target size: {target_size}\n")
-            f.write(f"Corpus sentences: {len(corpus_index.sentences)}\n")
-            f.write(f"Setup time: {total_time:.1f}s\n")
-        
-        logger.info("✅ DocInsight is now ready for production use!")
-        return True
-        
-    except Exception as e:
-        logger.error(f"❌ Setup failed: {e}")
         import traceback
         logger.error(traceback.format_exc())
         return False
+
+    # finally:
+    #     corpus_time = time.time() - start_time
+    #     logger.info(f"✅ Corpus built: {len(corpus_index.sentences)} sentences in {corpus_time:.1f}s")
+        
+    #     # Step 2: Build embeddings
+    #     logger.info("🧠 STEP 2: Generating sentence embeddings...")
+    #     logger.info("   This creates semantic vectors for all sentences")
+        
+    #     start_time = time.time()
+    #     success = corpus_index.build_embeddings()
+    #     if not success:
+    #         logger.error("❌ Failed to build embeddings")
+    #         return False
+        
+    #     embed_time = time.time() - start_time
+    #     logger.info(f"✅ Embeddings built: {corpus_index.embeddings.shape} in {embed_time:.1f}s")
+        
+    #     # Step 3: Build FAISS index
+    #     logger.info("⚡ STEP 3: Building FAISS search index...")
+    #     logger.info("   This creates fast similarity search capability")
+        
+    #     start_time = time.time()
+    #     success = corpus_index.build_index()
+    #     if not success:
+    #         logger.warning("⚠️ FAISS index building failed - will use fallback search")
+    #     else:
+    #         index_time = time.time() - start_time
+    #         logger.info(f"✅ FAISS index built: {corpus_index.index.ntotal} vectors in {index_time:.1f}s")
+        
+    #     # Step 4: Validate complete system
+    #     logger.info("🔍 STEP 4: Validating complete system...")
+        
+    #     detector = PlagiarismDetector(corpus_index)
+        
+    #     # Test sentence analysis
+    #     test_sentence = "Machine learning algorithms can identify patterns in data."
+    #     result = detector.analyze_sentence(test_sentence)
+    #     logger.info(f"✅ Sentence analysis test: Score {result.fused_score:.3f}, Confidence {result.confidence}")
+        
+    #     # Test document analysis
+    #     test_doc = "Artificial intelligence is transforming industries. Machine learning enables pattern recognition."
+    #     doc_result = detector.analyze_document(test_doc)
+    #     logger.info(f"✅ Document analysis test: {doc_result['overall_stats']['total_sentences']} sentences processed")
+        
+    #     total_time = corpus_time + embed_time + (index_time if 'index_time' in locals() else 0)
+    #     logger.info(f"🎉 SETUP COMPLETE! Total time: {total_time:.1f}s")
+        
+    #     # Create ready flag
+    #     ready_file = Path("corpus_cache/.docinsight_ready")
+    #     ready_file.parent.mkdir(exist_ok=True)
+    #     with open(ready_file, 'w') as f:
+    #         f.write(f"DocInsight setup completed at {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+    #         f.write(f"Target size: {target_size}\n")
+    #         f.write(f"Corpus sentences: {len(corpus_index.sentences)}\n")
+    #         f.write(f"Setup time: {total_time:.1f}s\n")
+        
+    #     logger.info("✅ DocInsight is now ready for production use!")
+    #     return True
 
 def main():
     """Main academic setup function with SRS v0.2 features."""

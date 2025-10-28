@@ -154,10 +154,12 @@ FINE_TUNING_BATCH_SIZE = int(os.getenv('DOCINSIGHT_FINE_TUNING_BATCH_SIZE', '16'
 FINE_TUNING_LEARNING_RATE = float(os.getenv('DOCINSIGHT_FINE_TUNING_LR', '2e-5'))
 
 # Stylometry feature configuration
-FUNCTION_WORDS = [
-    'the', 'of', 'and', 'a', 'to', 'in', 'is', 'you', 'that', 'it', 
-    'he', 'was', 'for', 'on', 'are', 'as', 'with', 'his', 'they', 'i'
-]  # Most common function words for stylometric analysis
+function_words = {
+                'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i',
+                'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at',
+                'this', 'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she',
+                'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what'
+            } # Most common function words for stylometric analysis
 
 # AI-likeness detection thresholds
 AI_LIKENESS_THRESHOLD = float(os.getenv('DOCINSIGHT_AI_THRESHOLD', '0.7'))

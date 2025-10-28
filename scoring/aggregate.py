@@ -178,7 +178,7 @@ class UnifiedDocumentScorer:
         
         # Average deviation with sigmoid normalization
         avg_deviation = np.mean(deviations)
-        normalized_deviation = 2 / (1 + np.exp(-avg_deviation)) - 1  # Sigmoid to [0,1]
+        normalized_deviation = 2 / (1 + np.exp(-avg_deviation)) - 1  
         
         return float(normalized_deviation)
     
