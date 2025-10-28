@@ -1,5 +1,12 @@
 # DocInsight .gitignore
 # .gitignore
+
+!docinsight.db
+!indexes/
+!indexes/faiss.index
+!indexes/chunk_mapping.pkl
+!indexes/metadata.json
+
 .DS_Store
 corpus_cache/
 *.log
