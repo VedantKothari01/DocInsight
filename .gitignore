@@ -96,8 +96,10 @@ docinsight_report.html
 report.txt
 scripts/output/
 checkpoints/
-indexes/
-docinsight.db
+
+# Pre-built corpus (COMMENT OUT to commit corpus to GitHub)
+# indexes/
+# docinsight.db
 
 # Streamlit
 .streamlit/
