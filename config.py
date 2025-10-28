@@ -3,6 +3,10 @@ Configuration module for DocInsight
 
 Centralized constants for model names, thresholds, paths, and aggregation weights.
 """
+from pathlib import Path
+
+
+CACHE_DIR = Path("corpus_cache")
 
 # Model configurations
 SBERT_MODEL_NAME = 'all-MiniLM-L6-v2'
