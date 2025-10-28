@@ -26,12 +26,18 @@ class IndexManager:
         
         # Choose index implementation
         if prefer_faiss:
-            self.index = FaissIndex()
-            if not self.index.is_available():
-                logger.warning("FAISS not available, falling back to numpy index")
+            # Import HAS_FAISS flag directly from faiss_index
+            from .faiss_index import HAS_FAISS
+            
+            if HAS_FAISS:
+                self.index = FaissIndex()
+                logger.info("Using FAISS index (faiss-cpu detected).")
+            else:
+                logger.warning("FAISS not available — using numpy fallback.")
                 self.index = FallbackIndex()
         else:
             self.index = FallbackIndex()
+
             
         self.index_type = type(self.index).__name__
         
@@ -299,6 +305,27 @@ class IndexManager:
             stats['index_coverage'] = 0.0
             
         return stats
+    
+    def load_index(self) -> bool:
+        """ Load the FAISS or fallback index from disk.Returns True if successfully loaded. """
+        try:
+            if hasattr(self.index, "load_index"):
+                success = self.index.load_index()
+                if success:
+                    logger.info(f"Index loaded successfully ({type(self.index).__name__})")
+                    return True
+                else:
+                    logger.warning("Index load_index() returned False")
+                    return False
+            else:
+                logger.warning("This index type does not support load_index()")
+                return False
+        except Exception as e:
+            logger.error(f"Failed to load index: {e}")
+            return False
+
+
+
         
     def clear_index(self):
         """Clear the search index"""

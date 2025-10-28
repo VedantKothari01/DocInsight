@@ -1,7 +1,7 @@
 {
   "index_type": "IndexFlatIP",
   "dimension": 384,
-  "num_vectors": 4427,
-  "chunk_count": 4427,
-  "build_timestamp": "2025-10-28 23:05:27.958245"
+  "num_vectors": 6716,
+  "chunk_count": 6716,
+  "build_timestamp": "2025-10-29 01:21:43.354388"
 }

@@ -1,31 +1,14 @@
+# ===============================
 # DocInsight .gitignore
-# .gitignore
+# ===============================
 
+# --- CRITICAL KEEP FILES ---
 !docinsight.db
 !indexes/
 !indexes/faiss.index
-!indexes/chunk_mapping.pkl
 !indexes/metadata.json
 
-.DS_Store
-corpus_cache/
-*.log
-
-# Cache directories
-corpus_cache/
-dataset_cache/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-
-# Log files
-*.log
-log_*.txt
-docinsight_setup.log
-
-# OS generated files
+# --- OS / IDE junk ---
 .DS_Store
 .DS_Store?
 ._*
@@ -33,90 +16,45 @@ docinsight_setup.log
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
+# --- Python cache ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 
-# Python virtual environments
+# --- Virtual environments ---
 venv/
 env/
 ENV/
 .env
 .venv/
 
-# Model caches and indices
-models/
-indices/
-faiss_index/
-*.index
-*.model
-*.bin
-
-# Phase 2+: New model directories
-models/semantic_local/*
-models/ai_likeness/*
-fine_tuning/data/*
-!fine_tuning/data/.gitkeep
-
-# Temporary files
+# --- Cache directories ---
+corpus_cache/
+dataset_cache/
 tmp/
 temp/
 *.tmp
 *.temp
 
-# Data files (uncomment if you want to exclude data)
-# data/
-# corpus/
-# documents/
+# --- Logs ---
+*.log
+log_*.txt
+docinsight_setup.log
 
-# Build artifacts
-build/
-dist/
-*.egg-info/
-
-# Coverage reports
-htmlcov/
-.coverage
-.coverage.*
-coverage.xml
-
-# PyTest
-.pytest_cache/
-
-# mypy
-.mypy_cache/
-
-# Runtime artifacts
-*.pid
-*.sock
-
-# Generated analysis reports
-docinsight_report.json
-docinsight_report.html
-report.txt
-scripts/output/
-checkpoints/
-
-# Pre-built corpus (COMMENT OUT to commit corpus to GitHub)
-# indexes/
-# docinsight.db
-
-# Streamlit
-.streamlit/
-
-# Backup files
-*.bak
-*.backup
-*.orig
-
-# Large files (models, datasets)
+# --- Model caches & indices (except FAISS) ---
+models/
+indices/
+faiss_index/
+*.model
+*.bin
 *.pkl
 *.pickle
 *.h5
@@ -124,9 +62,42 @@ checkpoints/
 *.pt
 *.pth
 
-# Logs and databases
-*.sqlite
-*.db
+# --- Fine-tuning ---
+models/semantic_local/*
+models/ai_likeness/*
+fine_tuning/data/*
+!fine_tuning/data/.gitkeep
 
-# Documentation build
+# --- Build artifacts ---
+build/
+dist/
+*.egg-info/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+.pytest_cache/
+.mypy_cache/
+
+# --- Reports / outputs ---
+docinsight_report.json
+docinsight_report.html
+report.txt
+scripts/output/
+checkpoints/
+
+# --- Streamlit cache ---
+.streamlit/
+
+# --- Large / runtime artifacts ---
+*.pid
+*.sock
+*.sqlite
+
+# --- Documentation build ---
 docs/_build/
+
+# --- Database note ---
+# (Keep the main database but ignore others)
+*.db
+!docinsight.db

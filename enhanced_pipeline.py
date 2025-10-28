@@ -392,7 +392,6 @@ class CrossEncoderReranker:
 
 class DocumentAnalysisPipeline:
     """Main pipeline for document analysis"""
-    
     def __init__(self, corpus_sentences: Optional[List[str]] = None):
         self.text_extractor = TextExtractor()
         self.sentence_processor = SentenceProcessor()
@@ -400,25 +399,34 @@ class DocumentAnalysisPipeline:
         self.semantic_engine = SemanticSearchEngine()
         self.reranker = CrossEncoderReranker()
         self.sentence_classifier = SentenceClassifier()
-        
-        # Use persistent retrieval system (Phase 2)
-        self.persistent_retrieval = self._try_load_persistent_retrieval()
-    
-        if self.persistent_retrieval:
-            logger.info("Using persistent retrieval system (Phase 2)")
-            if not self.semantic_engine.retrieval_engine.is_ready():
-                raise RuntimeError(
-                    "Persistent retrieval system loaded but not ready. "
-                    "Please build the corpus first using: python build_massive_corpus.py"
-                )
-        else:
-            # REMOVE FALLBACK - FORCE ERROR INSTEAD
-            raise RuntimeError(
-                "No corpus available. Build corpus first:\n"
-                "1. Run: python build_massive_corpus.py\n"
-                "2. Or click 'Build Corpus' in Streamlit interface"
-            )
 
+        # --- Retrieval setup -------------------------------------------------
+        from retrieval import RetrievalEngine
+        from pathlib import Path
+
+        logger.info("Initializing retrieval engine...")
+
+        self.retrieval_engine = RetrievalEngine()
+
+        # Force-load prebuilt local corpus if available
+        db_path = Path("docinsight.db")
+        index_path = Path("indexes/faiss.index")
+
+        if db_path.exists() and index_path.exists():
+            try:
+                logger.info(f"Loading local prebuilt corpus: {db_path} + {index_path}")
+                # Initialize index manager manually to ensure FAISS loads
+                self.retrieval_engine.index_manager.load_index()
+                corpus_stats = self.retrieval_engine.get_corpus_stats()
+                logger.info(f"✅ Local corpus loaded: {corpus_stats.get('documents', 'N/A')} docs, "
+                            f"{corpus_stats.get('embedded_chunks', 'N/A')} chunks")
+            except Exception as e:
+                logger.error(f"⚠️ Failed to load prebuilt corpus: {e}")
+        else:
+            logger.warning("⚠️ No prebuilt corpus found; using in-memory retrieval only.")
+
+        
+    
 
     def analyze_sentence(self, sentence: str) -> Dict[str, Any]:
         """Analyze a single sentence for similarity and risk"""
@@ -457,7 +465,7 @@ class DocumentAnalysisPipeline:
                 'confidence_score': confidence_score,
                 'match_strength': match_strength,
                 'reason': reason,
-                'best_match': best_match.get('candidate', ''),
+                'best_match': best_match.get('candidate', '')[:300] + "...",
                 'semantic_score': best_match.get('semantic_score', 0.0),
                 'semantic_norm': best_match.get('semantic_norm', 0.0),
                 'rerank_score': best_match.get('rerank_score', 0.0),

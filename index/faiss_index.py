@@ -3,7 +3,6 @@ FAISS index management for persistent similarity search
 
 Handles building, loading, and querying FAISS indexes.
 """
-
 import numpy as np
 import pickle
 import logging
@@ -12,16 +11,19 @@ from typing import List, Dict, Any, Optional, Tuple
 import json
 import os
 
-# Optional FAISS import
+logger = logging.getLogger(__name__)
+
+# --- FIXED FAISS IMPORT HANDLING ---
 try:
     import faiss
     HAS_FAISS = True
-except ImportError:
+    logger.info("FAISS successfully imported.")
+except Exception as e:
     HAS_FAISS = False
+    logger.error(f"FAISS import failed: {e}")
+# ----------------------------------
 
 from config import INDEX_PATH, INDEX_TYPE, INDEX_DIMENSION
-
-logger = logging.getLogger(__name__)
 
 
 class FaissIndex:
@@ -169,7 +171,11 @@ class FaissIndex:
             List of (chunk_id, score) tuples
         """
         if not self.is_available():
-            return []
+            self.load_index()
+            if not self.is_available():
+                logger.error("FAISS index not loaded; cannot perform search")
+                return []
+
             
         try:
             # Ensure query is 2D and float32
@@ -260,9 +266,10 @@ class FaissIndex:
         return True
         
     def is_available(self) -> bool:
-        """Check if FAISS is available and index is ready"""
-        return HAS_FAISS
-        
+        """Check if FAISS is available and the in-memory index object is loaded"""
+        return HAS_FAISS and self.index is not None
+
+            
     def get_stats(self) -> Dict[str, Any]:
         """Get index statistics"""
         stats = {

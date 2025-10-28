@@ -314,8 +314,8 @@ def main():
     try:
         dbm = get_db_manager()
         stats = dbm.get_corpus_stats()
-        # Require at least 1000 chunks
-        corpus_ready = stats.get('total_chunks', 0) >= 1000
+        # Require at least 1 chunks
+        corpus_ready = stats.get('total_chunks', 0) > 0 or stats.get('embedded_chunks', 0) > 0
     except:
         corpus_ready = False
     
@@ -360,6 +360,10 @@ def main():
                 # Use cached pipeline for report generation (avoid reconstruct)
                 pipeline = get_cached_pipeline()
                 report_files = pipeline.generate_report_files(analysis_result)
+
+                st.session_state.analysis_result = analysis_result
+                st.session_state.report_files = report_files
+
             
             # Display results
             st.success("✅ Analysis completed!")
@@ -494,7 +498,16 @@ def main():
 
 
     st.header("🧪 Configuration")
-    st.write(f"Extended demo corpus: {'Enabled ✅' if EXTENDED_CORPUS_ENABLED else 'Disabled ❌'}")
+    if corpus_ready:
+        st.sidebar.success("✅ Prebuilt Corpus Loaded (Local)")
+    else:
+        st.sidebar.warning("⚠️ No corpus found. Please build one.")
+
+if 'analysis_result' not in st.session_state:
+    st.session_state.analysis_result = None
+if 'report_files' not in st.session_state:
+    st.session_state.report_files = None
+
 
 
 if __name__ == "__main__":
