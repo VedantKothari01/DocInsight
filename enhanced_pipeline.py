@@ -1,8 +1,7 @@
 """
-Enhanced pipeline for DocInsight
+Enhanced pipeline for DocInsight with fine-tuned model support
 
-Cleaned, simplified, and integrated pipeline with scoring aggregation.
-Prepared for future DB integration.
+Updated to use fine-tuned Cross-Encoder and spaCy models
 """
 
 import os
@@ -96,7 +95,7 @@ class SentenceProcessor:
 
 
 class StylometryAnalyzer:
-    """Handles stylometry feature extraction"""
+    """Handles stylometry feature extraction with fine-tuned spaCy support"""
     
     def __init__(self):
         try:
@@ -104,12 +103,35 @@ class StylometryAnalyzer:
         except Exception as e:
             nltk.download('stopwords', quiet=True)
 
+        self.nlp = None
+        self.model_source = 'none'
+        self._load_spacy_model()
+    
+    def _load_spacy_model(self):
+        """Load fine-tuned or base spaCy model"""
+        # Try fine-tuned model first
+        fine_tuned_path = "models/spacy_finetuned"
+        
+        if Path(fine_tuned_path).exists():
+            try:
+                logger.info(f"Loading fine-tuned spaCy model from: {fine_tuned_path}")
+                self.nlp = spacy.load(fine_tuned_path)
+                self.model_source = 'fine_tuned'
+                logger.info("✓ Fine-tuned spaCy model loaded")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to load fine-tuned spaCy model: {e}")
+        
+        # Fallback to base model
         try:
+            logger.info(f"Loading base spaCy model: {SPACY_MODEL_NAME}")
             self.nlp = spacy.load(SPACY_MODEL_NAME)
-            logger.info(f"Loaded spaCy model: {SPACY_MODEL_NAME}")
+            self.model_source = 'base'
+            logger.info(f"✓ Base spaCy model loaded: {SPACY_MODEL_NAME}")
         except OSError: 
             logger.warning(f"spaCy model {SPACY_MODEL_NAME} not found. Stylometry features will be limited.")
             self.nlp = None
+            self.model_source = 'unavailable'
     
     def extract_features(self, sentence: str) -> Dict[str, float]:
         """Extract comprehensive stylometry features from sentence"""
@@ -151,11 +173,11 @@ class StylometryAnalyzer:
             func_word_count = sum(1 for w in words if w in english_stopwords)
             features['function_word_ratio'] = func_word_count / max(1, len(words))
             
-            # Stopword ratio using spaCy's stopwords (more comprehensive)
+            # Stopword ratio using spaCy's stopwords
             stopword_count = sum(1 for t in alpha_tokens if t.is_stop)
             features['stopword_ratio'] = stopword_count / max(1, len(alpha_tokens))
             
-            # N-gram entropy (measure of predictability)
+            # N-gram entropy
             features['bigram_entropy'] = self._calculate_ngram_entropy(words, n=2)
             features['trigram_entropy'] = self._calculate_ngram_entropy(words, n=3)
             
@@ -170,18 +192,15 @@ class StylometryAnalyzer:
         if len(words) < n:
             return 0.0
         
-        # Generate n-grams
         ngrams = [tuple(words[i:i+n]) for i in range(len(words) - n + 1)]
         
         if not ngrams:
             return 0.0
         
-        # Calculate frequency distribution
         ngram_counts = {}
         for ng in ngrams:
             ngram_counts[ng] = ngram_counts.get(ng, 0) + 1
         
-        # Calculate entropy
         total = len(ngrams)
         entropy = 0.0
         for count in ngram_counts.values():
@@ -191,8 +210,9 @@ class StylometryAnalyzer:
         
         return entropy
 
+
 class SemanticSearchEngine:
-    """Handles semantic search using SBERT and FAISS"""
+    """Handles semantic search using fine-tuned SBERT and FAISS"""
     
     def __init__(self):
         self.model = None
@@ -208,34 +228,28 @@ class SemanticSearchEngine:
         self._try_load_persistent_retrieval()
     
     def _load_models(self):
-        """Load fine-tuned semantic model from fine_tuning.py"""
-        try:
-            from fine_tuner import ModelFineTuner
-            
-            # Initialize fine-tuner to get model path
-            fine_tune = ModelFineTuner()
-            
-            # Check if fine-tuned model exists
-            if Path(fine_tune.output_path).exists():
-                logger.info(f"Loading fine-tuned model from: {fine_tune.output_path}")
-                self.model = SentenceTransformer(fine_tune.output_path)
+        """Load fine-tuned semantic model"""
+        # Try fine-tuned model first
+        fine_tuned_path = MODEL_FINE_TUNED_PATH
+        
+        if Path(fine_tuned_path).exists():
+            try:
+                logger.info(f"Loading fine-tuned SBERT model from: {fine_tuned_path}")
+                self.model = SentenceTransformer(fine_tuned_path)
                 self.model_source = 'fine_tuned'
-                self.model_path = fine_tune.output_path
-                logger.info("✓ Fine-tuned model loaded (trained on PAWS, QQP, STSB, Novels, Source Code)")
-            else:
-                # Fallback to base model
-                logger.warning(f"Fine-tuned model not found at {fine_tune.output_path}")
-                logger.info("Falling back to base SBERT model")
-                self.model = SentenceTransformer(SBERT_MODEL_NAME)
-                self.model_source = 'base'
-                self.model_path = SBERT_MODEL_NAME
-                logger.info(f"✓ Base model loaded: {SBERT_MODEL_NAME}")
-                
-        except ImportError:
-            logger.warning("fine_tuning.py not found, using base model")
+                self.model_path = fine_tuned_path
+                logger.info("✓ Fine-tuned SBERT model loaded (trained on PAWS, QQP, STSB)")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to load fine-tuned model: {e}")
+        
+        # Fallback to base model
+        try:
+            logger.info(f"Loading base SBERT model: {SBERT_MODEL_NAME}")
             self.model = SentenceTransformer(SBERT_MODEL_NAME)
             self.model_source = 'base'
             self.model_path = SBERT_MODEL_NAME
+            logger.info(f"✓ Base SBERT model loaded: {SBERT_MODEL_NAME}")
         except Exception as e:
             logger.error(f"Error loading model: {e}")
             self.model = None
@@ -259,7 +273,7 @@ class SemanticSearchEngine:
             logger.debug(f"Could not load persistent retrieval: {e}")
     
     def build_index(self, corpus_sentences: List[str]):
-        """Build FAISS index from corpus sentences; always retain numpy embeddings for fallback."""
+        """Build FAISS index from corpus sentences"""
         if self.use_persistent_retrieval:
             logger.info("Using persistent retrieval system - skipping in-memory index build")
             return True
@@ -272,12 +286,10 @@ class SemanticSearchEngine:
             logger.info(f"Building semantic structures for {len(corpus_sentences)} sentences")
             self.corpus_sentences = corpus_sentences
 
-            # Encode corpus embeddings
             corpus_embeddings = self.model.encode(corpus_sentences, convert_to_numpy=True)
-            # Normalize for cosine via dot product
             norms = np.linalg.norm(corpus_embeddings, axis=1, keepdims=True) + 1e-12
             corpus_embeddings = corpus_embeddings / norms
-            self._corpus_embeddings = corpus_embeddings  # store for fallback
+            self._corpus_embeddings = corpus_embeddings
 
             if FAISS_AVAILABLE:
                 d = corpus_embeddings.shape[1]
@@ -285,21 +297,21 @@ class SemanticSearchEngine:
                 self.index.add(corpus_embeddings)
                 logger.info(f"FAISS index built with {self.index.ntotal} sentences")
             else:
-                logger.warning("FAISS not available; will use numpy fallback for similarity search")
+                logger.warning("FAISS not available; will use numpy fallback")
             return True
 
         except Exception as e:
-            logger.error(f"Error building semantic index structures: {e}")
+            logger.error(f"Error building semantic index: {e}")
             return False
 
     def _fallback_numpy_search(self, query: str, top_k: int) -> List[Dict]:
-        """Fallback cosine similarity search using stored numpy embeddings."""
+        """Fallback cosine similarity search"""
         if self.model is None or not hasattr(self, '_corpus_embeddings'):
             return []
         try:
             q_emb = self.model.encode([query], convert_to_numpy=True)
             q_emb = q_emb / (np.linalg.norm(q_emb, axis=1, keepdims=True) + 1e-12)
-            sims = np.dot(self._corpus_embeddings, q_emb[0])  # cosine via normalized vectors
+            sims = np.dot(self._corpus_embeddings, q_emb[0])
             top_indices = np.argsort(-sims)[:top_k]
             results = []
             for idx in top_indices:
@@ -311,14 +323,12 @@ class SemanticSearchEngine:
     
     def search(self, query: str, top_k: int = DEFAULT_TOP_K) -> List[Dict]:
         """Perform semantic search"""
-        # Phase 2: Use persistent retrieval if available
         if self.use_persistent_retrieval and self.retrieval_engine:
             try:
                 results = self.retrieval_engine.retrieve_similar_chunks(
                     [query], top_k=top_k
                 )
                 
-                # Convert to Phase 1 format for compatibility
                 formatted_results = []
                 for result in results:
                     formatted_results.append({
@@ -329,18 +339,15 @@ class SemanticSearchEngine:
                 return formatted_results
                 
             except Exception as e:
-                logger.warning(f"Persistent retrieval failed, falling back to in-memory: {e}")
-                # Fall through to Phase 1 implementation
+                logger.warning(f"Persistent retrieval failed, falling back: {e}")
                 
-        # Phase 1: In-memory search
         if self.model is None:
             logger.warning("Search engine model not loaded")
             return []
         
         try:
-            if self.index is not None:  # FAISS path
+            if self.index is not None:
                 query_embedding = self.model.encode([query], convert_to_numpy=True)
-                # normalize
                 query_embedding = query_embedding / (np.linalg.norm(query_embedding, axis=1, keepdims=True) + 1e-12)
                 scores, indices = self.index.search(query_embedding, top_k)  # type: ignore
                 results = []
@@ -351,26 +358,43 @@ class SemanticSearchEngine:
             else:
                 return self._fallback_numpy_search(query, top_k)
         except Exception as e:
-            logger.warning(f"FAISS search error ({e}); attempting numpy fallback")
+            logger.warning(f"FAISS search error: {e}")
             return self._fallback_numpy_search(query, top_k)
 
 
 class CrossEncoderReranker:
-    """Handles cross-encoder reranking for higher precision"""
+    """Handles cross-encoder reranking with fine-tuned model support"""
     
     def __init__(self):
         self.model = None
+        self.model_source = 'none'
         self._load_model()
     
     def _load_model(self):
-        """Load cross-encoder model with resilient failure handling"""
+        """Load fine-tuned or base cross-encoder model"""
+        # Try fine-tuned model first
+        fine_tuned_path = "models/cross_encoder_finetuned"
+        
+        if Path(fine_tuned_path).exists():
+            try:
+                logger.info(f"Loading fine-tuned Cross-Encoder from: {fine_tuned_path}")
+                self.model = CrossEncoder(fine_tuned_path)
+                self.model_source = 'fine_tuned'
+                logger.info("✓ Fine-tuned Cross-Encoder loaded")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to load fine-tuned Cross-Encoder: {e}")
+        
+        # Fallback to base model
         try:
-            logger.info(f"Loading cross-encoder model: {CROSS_ENCODER_MODEL_NAME}")
+            logger.info(f"Loading base Cross-Encoder: {CROSS_ENCODER_MODEL_NAME}")
             self.model = CrossEncoder(CROSS_ENCODER_MODEL_NAME)
-            logger.info("Cross-encoder model loaded successfully")
+            self.model_source = 'base'
+            logger.info("✓ Base Cross-Encoder loaded")
         except Exception as e:
-            logger.warning(f"Failed to load cross-encoder model: {e}. Reranking will be disabled.")
+            logger.warning(f"Failed to load Cross-Encoder: {e}. Reranking disabled.")
             self.model = None
+            self.model_source = 'unavailable'
     
     def rerank(self, query: str, candidates: List[str]) -> List[Dict]:
         """Rerank candidates using cross-encoder"""
@@ -394,7 +418,8 @@ class CrossEncoderReranker:
 
 
 class DocumentAnalysisPipeline:
-    """Main pipeline for document analysis"""
+    """Main pipeline for document analysis with fine-tuned models"""
+    
     def __init__(self, corpus_sentences: Optional[List[str]] = None):
         self.text_extractor = TextExtractor()
         self.sentence_processor = SentenceProcessor()
@@ -403,22 +428,19 @@ class DocumentAnalysisPipeline:
         self.reranker = CrossEncoderReranker()
         self.sentence_classifier = SentenceClassifier()
 
-        # --- Retrieval setup -------------------------------------------------
+        # Retrieval setup
         from retrieval import RetrievalEngine
         from pathlib import Path
 
         logger.info("Initializing retrieval engine...")
-
         self.retrieval_engine = RetrievalEngine()
 
-        # Force-load prebuilt local corpus if available
         db_path = Path("docinsight.db")
         index_path = Path("indexes/faiss.index")
 
         if db_path.exists() and index_path.exists():
             try:
                 logger.info(f"Loading local prebuilt corpus: {db_path} + {index_path}")
-                # Initialize index manager manually to ensure FAISS loads
                 self.retrieval_engine.index_manager.load_index()
                 corpus_stats = self.retrieval_engine.get_corpus_stats()
                 logger.info(f"✅ Local corpus loaded: {corpus_stats.get('documents', 'N/A')} docs, "
@@ -427,9 +449,6 @@ class DocumentAnalysisPipeline:
                 logger.error(f"⚠️ Failed to load prebuilt corpus: {e}")
         else:
             logger.warning("⚠️ No prebuilt corpus found; using in-memory retrieval only.")
-
-        
-    
 
     def analyze_sentence(self, sentence: str) -> Dict[str, Any]:
         """Analyze a single sentence for similarity and risk"""
@@ -456,7 +475,7 @@ class DocumentAnalysisPipeline:
                 query_features, candidate_features
             )
             
-            # Classify risk level (now returns risk_level, fused_score, match_strength, reason)
+            # Classify risk level
             risk_level, confidence_score, match_strength, reason = self.sentence_classifier.classify_sentence(fused_results)
             
             # Get best match
@@ -514,12 +533,13 @@ class DocumentAnalysisPipeline:
             if not text.strip():
                 raise ValueError("Empty document")
 
-            # Optional citation masking (reduces false positives on references)
+            # Citation masking
             try:
-                from ingestion.citation_mask import CitationMasker  # local import to avoid circular
+                from ingestion.citation_mask import CitationMasker
                 citation_masker = CitationMasker()
             except Exception:
                 citation_masker = type('NullMasker',(object,),{'enabled':False})()
+            
             masked_text, citations = text, []
             citation_summary = {}
             try:
@@ -528,7 +548,7 @@ class DocumentAnalysisPipeline:
                     citation_summary = citation_masker.get_citation_summary(citations)
                     logger.info(f"Citation masking applied: {citation_summary.get('total',0)} citations masked")
             except Exception as ce:
-                logger.warning(f"Citation masking failed, continuing without: {ce}")
+                logger.warning(f"Citation masking failed: {ce}")
             
             # Split into sentences
             sentences = self.sentence_processor.split_sentences(masked_text)
@@ -540,16 +560,16 @@ class DocumentAnalysisPipeline:
             # Analyze each sentence
             sentence_results = []
             for i, sentence in enumerate(sentences):
-                if i % 10 == 0:  # Log progress
+                if i % 10 == 0:
                     logger.info(f"Analyzing sentence {i+1}/{len(sentences)}")
                 
                 result = self.analyze_sentence(sentence)
                 sentence_results.append(result)
 
-            # Post-process to dampen repeated identical best_match dominance
+            # Post-process repeated matches
             sentence_results = self._postprocess_repeated_matches(sentence_results)
             
-            # Perform document-level analysis
+            # Document-level analysis
             originality_analysis = analyze_document_originality(sentence_results)
             
             # Compile final report
@@ -564,13 +584,12 @@ class DocumentAnalysisPipeline:
                 },
                 'processing_info': {
                     'semantic_engine_available': self.semantic_engine.model is not None,
+                    'semantic_model_source': self.semantic_engine.model_source,
                     'cross_encoder_available': self.reranker.model is not None,
+                    'cross_encoder_source': self.reranker.model_source,
                     'stylometry_available': self.stylometry_analyzer.nlp is not None,
-                    'semantic_model': {
-                        'source': self.semantic_engine.model_source,
-                        'path': self.semantic_engine.model_path,
-                        'use_fine_tuned_flag': USE_FINE_TUNED_MODEL
-                    },
+                    'stylometry_source': self.stylometry_analyzer.model_source,
+                    'semantic_model_path': self.semantic_engine.model_path,
                     'reuse_decay': {
                         'allowance': REUSE_DECAY_ALLOWANCE,
                         'decay_factor': REUSE_DECAY_FACTOR
@@ -586,23 +605,7 @@ class DocumentAnalysisPipeline:
             raise
 
     def _postprocess_repeated_matches(self, sentence_results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Dampen confidence/risk when the same corpus sentence is reused excessively.
-
-        Heuristic rationale: A very generic corpus fact (e.g. definition of SQL) may appear
-        as top match for many semantically nearby but distinct input sentences. After the first
-        few legitimate reuses, additional occurrences provide diminishing plagiarism evidence.
-
-        Strategy:
-        - Track frequency of each best_match among non-low sentences.
-        - Apply a decay to confidence_score and fused_score beyond an allowance threshold.
-        - Potentially downgrade risk level if decayed score drops below thresholds.
-        - Add explanation tag in 'reason'.
-
-        Parameters (tunable):
-        - allowance = config.REUSE_DECAY_ALLOWANCE (first N unpenalized)
-        - decay_factor = config.REUSE_DECAY_FACTOR applied multiplicatively per extra occurrence
-        - min_confidence_floor: don't reduce below 0 to avoid negatives
-        """
+        """Dampen confidence/risk when same corpus sentence is reused excessively"""
         allowance = REUSE_DECAY_ALLOWANCE
         decay_factor = REUSE_DECAY_FACTOR
         match_counts: Dict[str, int] = {}
@@ -614,40 +617,33 @@ class DocumentAnalysisPipeline:
             match_counts[bm] = match_counts.get(bm, 0) + 1
             occurrence = match_counts[bm]
             if occurrence <= allowance:
-                continue  # no penalty
-            # Compute decay multiplier
+                continue
+            
             extra = occurrence - allowance
             multiplier = decay_factor ** extra
             original_conf = res.get('confidence_score', 0.0)
             new_conf = max(0.0, original_conf * multiplier)
             res['confidence_score'] = new_conf
-            # Adjust fused_score inside best candidate details if present
+            
             fused = res.get('fused_score', original_conf)
             res['fused_score'] = max(0.0, fused * multiplier)
-            # Potentially downgrade risk
+            
+            # Downgrade risk if needed
             risk = res.get('risk_level', RISK_LEVELS['LOW'])
             sem_norm = res.get('semantic_norm', 0.0)
             if risk == RISK_LEVELS['HIGH']:
                 if not (res['fused_score'] >= HIGH_RISK_THRESHOLD and sem_norm >= SEMANTIC_HIGH_FLOOR):
-                    # Fall back to MEDIUM or LOW depending on medium gating
                     if res['fused_score'] >= MEDIUM_RISK_THRESHOLD and sem_norm >= SEMANTIC_MEDIUM_FLOOR:
                         res['risk_level'] = RISK_LEVELS['MEDIUM']
-                        res['reason'] += f" | downgraded to MEDIUM due to repeated match ({occurrence} uses)"
+                        res['reason'] += f" | downgraded to MEDIUM (repeated match: {occurrence} uses)"
                     else:
                         res['risk_level'] = RISK_LEVELS['LOW']
-                        res['reason'] += f" | downgraded to LOW due to repeated match ({occurrence} uses)"
-                else:
-                    res['reason'] += f" | high retained after repetition ({occurrence} uses)"
+                        res['reason'] += f" | downgraded to LOW (repeated match: {occurrence} uses)"
             elif risk == RISK_LEVELS['MEDIUM']:
                 if not (res['fused_score'] >= MEDIUM_RISK_THRESHOLD and sem_norm >= SEMANTIC_MEDIUM_FLOOR):
                     res['risk_level'] = RISK_LEVELS['LOW']
-                    res['reason'] += f" | downgraded to LOW due to repeated match ({occurrence} uses)"
-                else:
-                    res['reason'] += f" | medium retained after repetition ({occurrence} uses)"
-            else:
-                # LOW risk - optionally annotate if repetition heavy
-                if occurrence > allowance + 2:
-                    res['reason'] += f" | generic match reused ({occurrence} uses)"
+                    res['reason'] += f" | downgraded to LOW (repeated match: {occurrence} uses)"
+            
         return sentence_results
     
     def generate_report_files(self, analysis_result: Dict[str, Any], 
@@ -656,15 +652,14 @@ class DocumentAnalysisPipeline:
         try:
             os.makedirs(output_dir, exist_ok=True)
             
-            # Generate filenames
             json_path = os.path.join(output_dir, 'docinsight_report.json')
             html_path = os.path.join(output_dir, 'docinsight_report.html')
             
-            # Save JSON report
+            # Save JSON
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(analysis_result, f, indent=2, default=str)
             
-            # Generate HTML report
+            # Generate HTML
             html_content = self._generate_html_report(analysis_result)
             with open(html_path, 'w', encoding='utf-8') as f:
                 f.write(html_content)
@@ -681,8 +676,8 @@ class DocumentAnalysisPipeline:
         doc_path = analysis_result.get('document_path', 'Unknown')
         originality = analysis_result.get('originality_analysis', {})
         metrics = originality.get('originality_metrics', {})
+        processing = analysis_result.get('processing_info', {})
         
-        # HTML template
         html_parts = [
             f"<html><head><title>DocInsight Report</title></head><body>",
             f"<h1>DocInsight Originality Report</h1>",
@@ -690,8 +685,17 @@ class DocumentAnalysisPipeline:
             f"<h2>Summary</h2>",
             f"<p><strong>Originality Score:</strong> {metrics.get('originality_score', 0.0):.1%}</p>",
             f"<p><strong>Plagiarized Coverage:</strong> {metrics.get('plagiarized_coverage', 0.0):.1%}</p>",
-            f"<p><strong>Risk Spans Found:</strong> {originality.get('total_risk_spans', 0)}</p>",
+            f"<p><strong>Risk Spans:</strong> {originality.get('total_risk_spans', 0)}</p>",
         ]
+        
+        # Model info
+        html_parts.append("<h2>Model Information</h2>")
+        html_parts.append("<ul>")
+        html_parts.append(f"<li><strong>Semantic Model:</strong> {processing.get('semantic_model_source', 'unknown')} "
+                         f"({processing.get('semantic_model_path', 'N/A')})</li>")
+        html_parts.append(f"<li><strong>Cross-Encoder:</strong> {processing.get('cross_encoder_source', 'unknown')}</li>")
+        html_parts.append(f"<li><strong>spaCy Model:</strong> {processing.get('stylometry_source', 'unknown')}</li>")
+        html_parts.append("</ul>")
         
         # Sentence distribution
         distribution = metrics.get('sentence_distribution', {})
@@ -713,25 +717,11 @@ class DocumentAnalysisPipeline:
                 html_parts.append(f"<p><strong>Preview:</strong> {html.escape(span.get('preview_text', ''))}</p>")
                 html_parts.append("</div>")
         
-        # Plagiarism factor components (if present)
-        if 'plagiarism_components' in metrics:
-            comps = metrics['plagiarism_components']
-            html_parts.append("<h2>Plagiarism Factor Components</h2>")
-            html_parts.append("<ul>")
-            html_parts.append(f"<li>Coverage Component: {comps.get('coverage_component',0.0):.4f}</li>")
-            html_parts.append(f"<li>Severity Component: {comps.get('severity_component',0.0):.4f}</li>")
-            html_parts.append(f"<li>Span Ratio Component: {comps.get('span_ratio_component',0.0):.4f}</li>")
-            weights = comps.get('weights', {})
-            html_parts.append(f"<li>Weights: α={weights.get('alpha')}, β={weights.get('beta')}, γ={weights.get('gamma')}</li>")
-            html_parts.append("</ul>")
-            if 'plagiarism_factor' in metrics:
-                html_parts.append(f"<p><strong>Plagiarism Factor:</strong> {metrics.get('plagiarism_factor',0.0):.4f}</p>")
-
         html_parts.append("</body></html>")
         return "\n".join(html_parts)
 
 
-# Convenience function for simple document analysis
+# Convenience function
 def analyze_document_file(file_path: str, corpus_sentences: Optional[List[str]] = None) -> Dict[str, Any]:
     """
     Convenience function to analyze a document file

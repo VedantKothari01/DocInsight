@@ -1,0 +1,24 @@
+{
+  "datasets": {
+    "paws": 5000,
+    "qqp": 5000,
+    "stsb": 5749
+  },
+  "validation": {
+    "mean_sim": 0.6179255247116089,
+    "std_sim": 0.30094900727272034,
+    "best_f1": 0.7758716104039846,
+    "best_thresh": 0.49999999999999994,
+    "high_risk_thresh": 0.7270673513412476,
+    "med_risk_thresh": 0.6,
+    "sem_high_floor": 0.7,
+    "sem_med_floor": 0.5
+  },
+  "recommendations": {
+    "semantic": 0.7,
+    "stylo": 0.25,
+    "ai": 0.05
+  },
+  "cross_encoder": {},
+  "spacy": {}
+}

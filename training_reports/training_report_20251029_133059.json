@@ -1,0 +1,30 @@
+{
+  "start_time": "2025-10-29T13:23:48.598451",
+  "end_time": "2025-10-29T13:30:55.292269",
+  "total_examples": 35749,
+  "dataset_distribution": {
+    "paws": 5000,
+    "qqp": 5000,
+    "stsb": 5749,
+    "novels": 20000,
+    "sourcecode": 0
+  },
+  "validation_scores": {
+    "mean_similarity": 0.4228896200656891,
+    "std_similarity": 0.2587379217147827,
+    "best_threshold": 0.5499999999999999,
+    "best_f1_score": 0.7822878228782287,
+    "recommended_high_risk_threshold": 0.737556517124176,
+    "recommended_medium_risk_threshold": 0.6,
+    "recommended_semantic_high_floor": 0.5566434860229492,
+    "recommended_semantic_medium_floor": 0.35
+  },
+  "recommended_thresholds": {},
+  "recommended_weights": {
+    "semantic": 0.6,
+    "stylometry": 0.3,
+    "ai": 0.10000000000000003
+  },
+  "train_examples": 32174,
+  "val_examples": 3575
+}
