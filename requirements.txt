@@ -37,3 +37,6 @@ streamlit>=1.20.0
 
 #UVICORN
 uvicorn>=0.22.0
+
+# datasets
+datasets>=2.14.5

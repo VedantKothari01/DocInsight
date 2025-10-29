@@ -1,9 +1,7 @@
-
 """
-DocInsight Streamlit Application
+DocInsight Streamlit Application - Multi-File Upload Support
 
-Updated UI to show high-level originality metrics, risk spans, and capped sentence details.
-Features document-level aggregation scoring and improved user experience.
+Supports uploading and analyzing up to 15 documents simultaneously.
 """
 
 import streamlit as st
@@ -13,6 +11,7 @@ import tempfile
 import logging
 from pathlib import Path
 import traceback
+from typing import List, Dict
 
 # Local imports
 from enhanced_pipeline import DocumentAnalysisPipeline
@@ -26,6 +25,9 @@ from retrieval import RetrievalEngine
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Constants
+MAX_FILES = 30
+
 # Page configuration
 st.set_page_config(
     page_title="DocInsight - Document Originality Analysis",
@@ -34,9 +36,10 @@ st.set_page_config(
 )
 
 
-def display_originality_metrics(metrics: dict):
+def display_originality_metrics(metrics: dict, doc_name: str = ""):
     """Display document-level originality metrics including plagiarism factor breakdown."""
-    st.header("📊 Originality Analysis")
+    header = f"📊 Originality Analysis - {doc_name}" if doc_name else "📊 Originality Analysis"
+    st.header(header)
 
     # Primary metrics
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -134,7 +137,7 @@ def display_top_risk_spans(top_spans: list):
                 st.write(f"- Position: {span['start_index']}-{span['end_index']}")
             
             # Show sentences in this span
-            if st.checkbox(f"Show sentences in span {i}", key=f"span_{i}"):
+            if st.checkbox(f"Show sentences in span {i}", key=f"span_{i}_{span['start_index']}"):
                 st.write("**Sentences in this span:**")
                 for j, sent_result in enumerate(span['sentences']):
                     sentence = sent_result.get('sentence', '')
@@ -147,7 +150,7 @@ def display_top_risk_spans(top_spans: list):
                     st.write("---")
 
 
-def display_sentence_details(sentence_results: list, max_display: int = MAX_SENTENCE_DISPLAY):
+def display_sentence_details(sentence_results: list, max_display: int = MAX_SENTENCE_DISPLAY, doc_key: str = ""):
     """Display detailed sentence analysis (capped to prevent UI overload)"""
     st.subheader("📝 Sentence Analysis Details")
     
@@ -165,11 +168,12 @@ def display_sentence_details(sentence_results: list, max_display: int = MAX_SENT
         risk_filter = st.selectbox(
             "Filter by risk level:",
             options=["All", "HIGH", "MEDIUM", "LOW"],
-            index=0
+            index=0,
+            key=f"risk_filter_{doc_key}"
         )
     
     with col2:
-        show_details = st.checkbox("Show detailed scores", value=False)
+        show_details = st.checkbox("Show detailed scores", value=False, key=f"show_details_{doc_key}")
     
     # Apply filter
     if risk_filter != "All":
@@ -231,9 +235,9 @@ def display_sentence_details(sentence_results: list, max_display: int = MAX_SENT
             st.write("---")
 
 
-def create_download_buttons(report_files: dict, analysis_result: dict):
+def create_download_buttons(report_files: dict, doc_name: str):
     """Create download buttons for reports"""
-    st.subheader("📥 Download Reports")
+    st.subheader(f"📥 Download Reports - {doc_name}")
     
     col1, col2 = st.columns(2)
     
@@ -245,8 +249,9 @@ def create_download_buttons(report_files: dict, analysis_result: dict):
             st.download_button(
                 label="📄 Download HTML Report",
                 data=html_content,
-                file_name="docinsight_report.html",
-                mime="text/html"
+                file_name=f"{Path(doc_name).stem}_report.html",
+                mime="text/html",
+                key=f"html_download_{doc_name}"
             )
     
     with col2:
@@ -257,8 +262,9 @@ def create_download_buttons(report_files: dict, analysis_result: dict):
             st.download_button(
                 label="📊 Download JSON Report",
                 data=json_content,
-                file_name="docinsight_report.json",
-                mime="application/json"
+                file_name=f"{Path(doc_name).stem}_report.json",
+                mime="application/json",
+                key=f"json_download_{doc_name}"
             )
 
 
@@ -285,13 +291,6 @@ def display_processing_info(processing_info: dict):
             st.write(f"Source: {sem_meta.get('source','?')}")
             st.write(f"Path: {sem_meta.get('path','?')}")
             st.write(f"Fine-tuned flag: {sem_meta.get('use_fine_tuned_flag')}")
-            # Show evaluation summary link if exists
-            eval_md = Path('scripts/output/model_eval.md')
-            eval_json = Path('scripts/output/model_eval.json')
-            if eval_md.exists() and eval_json.exists():
-                with open(eval_md, 'r', encoding='utf-8') as f:
-                    if st.checkbox('Show model evaluation summary', value=False):
-                        st.markdown(f.read())
 
 
 @st.cache_resource(show_spinner=False)
@@ -299,22 +298,66 @@ def get_cached_pipeline():
     """Create and cache the analysis pipeline (models + indexes)."""
     return DocumentAnalysisPipeline()
 
+
 @st.cache_data(show_spinner=False)
-def analyze_file_cached(temp_path: str, file_bytes_hash: str):  # hash parameter ensures cache key uniqueness
+def analyze_file_cached(temp_path: str, file_bytes_hash: str):
+    """Cached analysis function"""
     pipeline = get_cached_pipeline()
     return pipeline.analyze_document(temp_path)
 
+
+def display_batch_summary(results: Dict[str, dict]):
+    """Display summary of all analyzed documents"""
+    st.header("📊 Batch Analysis Summary")
+    
+    if not results:
+        st.info("No documents analyzed yet.")
+        return
+    
+    # Create summary dataframe
+    summary_data = []
+    for filename, result_data in results.items():
+        try:
+            # Extract the analysis result from the stored structure
+            analysis_result = result_data.get('analysis', {})
+            metrics = analysis_result.get('originality_analysis', {}).get('originality_metrics', {})
+            
+            originality_score = metrics.get('originality_score', 0.0)
+            plag_coverage = metrics.get('plagiarized_coverage', 0.0)
+            sentence_dist = metrics.get('sentence_distribution', {})
+            high_risk = sentence_dist.get('HIGH', 0)
+            total_sentences = metrics.get('total_sentences', 0)
+            
+            summary_data.append({
+                'Document': filename,
+                'Originality Score': f"{originality_score:.1%}",
+                'Plagiarism Coverage': f"{plag_coverage:.1%}",
+                'High Risk Sentences': high_risk,
+                'Total Sentences': total_sentences
+            })
+        except Exception as e:
+            logger.error(f"Error processing summary for {filename}: {e}")
+            summary_data.append({
+                'Document': filename,
+                'Originality Score': "Error",
+                'Plagiarism Coverage': "Error",
+                'High Risk Sentences': "—",
+                'Total Sentences': "—"
+            })
+    
+    st.dataframe(summary_data, use_container_width=True)
+
+
 def main():
-    """Main Streamlit application"""
+    """Main Streamlit application with multi-file support"""
     st.title("📄 DocInsight - Document Originality Analysis")
-    st.markdown("Upload a document to analyze its originality and detect potential plagiarism.")
+    st.markdown(f"Upload up to **{MAX_FILES} documents** to analyze their originality and detect potential plagiarism.")
     
     # CHECK IF CORPUS IS READY
     corpus_ready = False
     try:
         dbm = get_db_manager()
         stats = dbm.get_corpus_stats()
-        # Require at least 1 chunks
         corpus_ready = stats.get('total_chunks', 0) > 0 or stats.get('embedded_chunks', 0) > 0
     except:
         corpus_ready = False
@@ -323,52 +366,110 @@ def main():
         st.warning("⚠️ Academic corpus must be built first")
         
         if st.button("Build Academic Corpus Now"):
-            # Your build_academic_corpus() code here
             pass
         
-        st.stop()  # CRITICAL: Don't proceed without corpus
+        st.stop()
     
-    # Only reach here if corpus exists
     st.success("✅ Corpus ready")
     
-    # File upload
-    uploaded_file = st.file_uploader(
-        "Choose a document to analyze",
+    # Multi-file upload
+    uploaded_files = st.file_uploader(
+        f"Choose up to {MAX_FILES} documents to analyze",
         type=[ext.lstrip('.') for ext in SUPPORTED_EXTENSIONS],
-        help=f"Supported formats: {', '.join(SUPPORTED_EXTENSIONS)}"
+        help=f"Supported formats: {', '.join(SUPPORTED_EXTENSIONS)}",
+        accept_multiple_files=True
     )
     
-    if uploaded_file is not None:
-        # Save uploaded file to temporary location
-        with tempfile.NamedTemporaryFile(delete=False, suffix=Path(uploaded_file.name).suffix) as tmp_file:
-            tmp_file.write(uploaded_file.getbuffer())
-            temp_path = tmp_file.name
+    if uploaded_files:
+        # Limit number of files
+        if len(uploaded_files) > MAX_FILES:
+            st.error(f"❌ Please upload no more than {MAX_FILES} files. You uploaded {len(uploaded_files)} files.")
+            st.stop()
         
-        try:
-            # Show processing message
-            with st.spinner("Analyzing document... This may take a few minutes."):
-                # Initialize pipeline and analyze document
-                # Hash file bytes for caching key
-                uploaded_file.seek(0)
-                import hashlib
-                file_bytes = uploaded_file.getvalue()
-                file_hash = hashlib.md5(file_bytes).hexdigest()
-
-                # Cached analysis
-                analysis_result = analyze_file_cached(temp_path, file_hash)
-
-                # Use cached pipeline for report generation (avoid reconstruct)
-                pipeline = get_cached_pipeline()
-                report_files = pipeline.generate_report_files(analysis_result)
-
-                st.session_state.analysis_result = analysis_result
-                st.session_state.report_files = report_files
-
+        st.info(f"📂 {len(uploaded_files)} file(s) selected for analysis")
+        
+        # Analysis button
+        if st.button("🚀 Analyze All Documents", type="primary"):
+            # Initialize results storage
+            if 'batch_results' not in st.session_state:
+                st.session_state.batch_results = {}
             
-            # Display results
-            st.success("✅ Analysis completed!")
+            # Progress tracking
+            progress_bar = st.progress(0)
+            status_text = st.empty()
             
-            # Extract key components
+            # Analyze each file
+            for idx, uploaded_file in enumerate(uploaded_files):
+                filename = uploaded_file.name
+                status_text.text(f"Analyzing {idx + 1}/{len(uploaded_files)}: {filename}")
+                
+                # Save to temporary file
+                with tempfile.NamedTemporaryFile(delete=False, suffix=Path(filename).suffix) as tmp_file:
+                    tmp_file.write(uploaded_file.getbuffer())
+                    temp_path = tmp_file.name
+                
+                try:
+                    # Hash file bytes for caching
+                    uploaded_file.seek(0)
+                    import hashlib
+                    file_bytes = uploaded_file.getvalue()
+                    file_hash = hashlib.md5(file_bytes).hexdigest()
+                    
+                    # Analyze document
+                    analysis_result = analyze_file_cached(temp_path, file_hash)
+                    
+                    # Generate reports
+                    pipeline = get_cached_pipeline()
+                    report_files = pipeline.generate_report_files(analysis_result)
+                    
+                    # Store results
+                    st.session_state.batch_results[filename] = {
+                        'analysis': analysis_result,
+                        'reports': report_files
+                    }
+                    
+                except Exception as e:
+                    st.error(f"❌ Error analyzing {filename}: {str(e)}")
+                    logger.error(f"Error analyzing {filename}: {e}")
+                    logger.error(traceback.format_exc())
+                
+                finally:
+                    # Clean up temporary file
+                    try:
+                        os.unlink(temp_path)
+                    except Exception as e:
+                        logger.warning(f"Could not delete temporary file {temp_path}: {e}")
+                
+                # Update progress
+                progress_bar.progress((idx + 1) / len(uploaded_files))
+            
+            status_text.text("✅ All documents analyzed!")
+            st.success(f"Successfully analyzed {len(st.session_state.batch_results)} document(s)")
+    
+    # Display results if available
+    if 'batch_results' in st.session_state and st.session_state.batch_results:
+        st.divider()
+        
+        # Batch summary
+        display_batch_summary(st.session_state.batch_results)
+        
+        st.divider()
+        
+        # Individual document results
+        st.header("📑 Individual Document Reports")
+        
+        # Document selector
+        selected_doc = st.selectbox(
+            "Select a document to view detailed results:",
+            options=list(st.session_state.batch_results.keys())
+        )
+        
+        if selected_doc:
+            result_data = st.session_state.batch_results[selected_doc]
+            analysis_result = result_data['analysis']
+            report_files = result_data['reports']
+            
+            # Extract components
             originality_analysis = analysis_result.get('originality_analysis', {})
             originality_metrics = originality_analysis.get('originality_metrics', {})
             top_risk_spans = originality_analysis.get('top_risk_spans', [])
@@ -377,26 +478,26 @@ def main():
             processing_info = analysis_result.get('processing_info', {})
             citation_info = analysis_result.get('citations', {})
             
-            # Display main metrics
-            display_originality_metrics(originality_metrics)
+            # Display metrics
+            display_originality_metrics(originality_metrics, selected_doc)
             
-            # Display distribution and risk spans side by side
+            # Distribution and risk spans
             col1, col2 = st.columns([1, 2])
             with col1:
                 display_sentence_distribution(sentence_distribution)
             with col2:
                 display_top_risk_spans(top_risk_spans)
             
-            # Display detailed sentence analysis
-            display_sentence_details(sentence_results)
+            # Sentence details
+            display_sentence_details(sentence_results, doc_key=selected_doc)
             
             # Download buttons
-            create_download_buttons(report_files, analysis_result)
+            create_download_buttons(report_files, selected_doc)
             
             # Processing info
             display_processing_info(processing_info)
-
-            # Citation summary (if available)
+            
+            # Citation summary
             if citation_info:
                 with st.expander("📚 Citation Summary"):
                     st.write(f"Masking enabled: {citation_info.get('masking_enabled')}")
@@ -404,20 +505,8 @@ def main():
                     if summary:
                         st.write({k: v for k, v in summary.items() if k != 'total'})
                         st.write(f"Total citations masked: {summary.get('total',0)}")
-            
-        except Exception as e:
-            st.error(f"❌ Error analyzing document: {str(e)}")
-            logger.error(f"Error in document analysis: {e}")
-            logger.error(traceback.format_exc())
-        
-        finally:
-            # Clean up temporary file
-            try:
-                os.unlink(temp_path)
-            except Exception as e:
-                logger.warning(f"Could not delete temporary file {temp_path}: {e}")
     
-    # Sidebar with information
+    # Sidebar
     with st.sidebar:
         st.header("ℹ️ About DocInsight")
         st.markdown("""
@@ -441,7 +530,8 @@ def main():
         """)
         
         st.header("🚀 Features")
-        st.markdown("""
+        st.markdown(f"""
+        - **Batch processing**: Up to {MAX_FILES} files at once
         - Support for PDF, DOCX, and TXT files
         - Real-time similarity detection
         - Detailed sentence-level analysis
@@ -449,43 +539,44 @@ def main():
         - Risk span clustering
         - Processing component status
         """)
+        
         st.header("📚 Corpus Management")
         st.caption("Build and manage your academic corpus for document analysis.")
-        # Starter corpus (multi-domain, one-click) — idempotent via DB flag
+        
         try:
             _dbm_flag = get_db_manager()
             starter_done = bool(_dbm_flag.get_setting('starter_corpus_built', False))
         except Exception:
             starter_done = False
+        
         starter_label = "Academic Corpus Built ✔" if starter_done else "Build Academic Corpus (~20 docs)"
         starter_disabled = starter_done
         starter_btn = st.button(starter_label, disabled=starter_disabled, use_container_width=True)
-
+        
         if starter_btn and not starter_done:
             try:
-                with st.spinner("Building academic corpus across multiple domains (first run only)..."):
+                with st.spinner("Building academic corpus across multiple domains..."):
                     dbm = get_db_manager()
                     pipeline = IngestionPipeline(dbm)
-                    # Wikipedia topics (broad academic domains)
+                    
                     wiki_topics = [
                         "Machine learning", "Climate change", "Photosynthesis", "French Revolution",
-                        "Neural network", "Quantum computing", "Econometrics", "Genetics", "Cybersecurity", "Data structures"
+                        "Neural network", "Quantum computing", "Econometrics", "Genetics", 
+                        "Cybersecurity", "Data structures"
                     ]
                     for topic in wiki_topics:
                         src = create_wiki_search_source(topic)
                         pipeline.ingest_source(src)
-
-                    # arXiv categories (academic papers)
+                    
                     arxiv_categories = ["cs.AI", "cs.CL", "stat.ML", "math.OC", "physics.comp-ph"]
                     for cat in arxiv_categories:
                         src = create_arxiv_category_source(cat, max_results=3)
                         pipeline.ingest_source(src)
-
-                    # Build or load index (idempotent)
+                    
                     idx = IndexManager(dbm)
                     build_stats = idx.build_index(force_rebuild=False)
-                    # Mark as built
                     dbm.set_setting('starter_corpus_built', True, 'Prebuilt multi-domain academic corpus')
+                
                 st.success("Academic corpus ready and indexed ✔")
                 st.write({
                     "index_type": build_stats.get("index_type"),
@@ -497,19 +588,5 @@ def main():
                 st.error(f"Academic corpus build failed: {e}")
 
 
-    st.header("🧪 Configuration")
-    if corpus_ready:
-        st.sidebar.success("✅ Prebuilt Corpus Loaded (Local)")
-    else:
-        st.sidebar.warning("⚠️ No corpus found. Please build one.")
-
-if 'analysis_result' not in st.session_state:
-    st.session_state.analysis_result = None
-if 'report_files' not in st.session_state:
-    st.session_state.report_files = None
-
-
-
 if __name__ == "__main__":
-
     main()

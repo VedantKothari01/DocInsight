@@ -51,7 +51,6 @@ log_*.txt
 docinsight_setup.log
 
 # --- Model caches & indices (except FAISS) ---
-models/
 indices/
 faiss_index/
 *.model
