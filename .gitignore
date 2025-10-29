@@ -7,6 +7,7 @@
 !indexes/
 !indexes/faiss.index
 !indexes/metadata.json
+!indexes/faiss.index
 
 # --- OS / IDE junk ---
 .DS_Store
@@ -55,18 +56,12 @@ indices/
 faiss_index/
 *.model
 *.bin
-*.pkl
 *.pickle
 *.h5
 *.hdf5
 *.pt
 *.pth
 
-# --- Fine-tuning ---
-models/semantic_local/*
-models/ai_likeness/*
-fine_tuning/data/*
-!fine_tuning/data/.gitkeep
 
 # --- Build artifacts ---
 build/
@@ -98,6 +93,5 @@ checkpoints/
 docs/_build/
 
 # --- Database note ---
-# (Keep the main database but ignore others)
 *.db
 !docinsight.db

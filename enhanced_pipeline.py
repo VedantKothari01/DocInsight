@@ -208,33 +208,36 @@ class SemanticSearchEngine:
         self._try_load_persistent_retrieval()
     
     def _load_models(self):
-        """Load semantic model (fine-tuned preferred if enabled)."""
+        """Load fine-tuned semantic model from fine_tuning.py"""
         try:
-            candidate_paths = []
-            if USE_FINE_TUNED_MODEL:
-                fine_tuned_config = os.path.join(MODEL_FINE_TUNED_PATH, 'config.json')
-                if os.path.exists(fine_tuned_config):
-                    candidate_paths.append(('fine_tuned', MODEL_FINE_TUNED_PATH))
-            # Always add base as fallback
-            candidate_paths.append(('base', SBERT_MODEL_NAME))
-
-            load_error = None
-            for source, path in candidate_paths:
-                try:
-                    logger.info(f"Attempting to load semantic model ({source}): {path}")
-                    self.model = SentenceTransformer(path)
-                    self.model_source = source
-                    self.model_path = path
-                    logger.info(f"Semantic model loaded: source={source} path={path}")
-                    return
-                except Exception as e:  # pragma: no cover
-                    load_error = e
-                    logger.warning(f"Failed loading {source} model at {path}: {e}")
-                    continue
-            if self.model is None:
-                raise RuntimeError(f"Failed to load any semantic model (last error: {load_error})")
+            from fine_tuner import ModelFineTuner
+            
+            # Initialize fine-tuner to get model path
+            fine_tune = ModelFineTuner()
+            
+            # Check if fine-tuned model exists
+            if Path(fine_tune.output_path).exists():
+                logger.info(f"Loading fine-tuned model from: {fine_tune.output_path}")
+                self.model = SentenceTransformer(fine_tune.output_path)
+                self.model_source = 'fine_tuned'
+                self.model_path = fine_tune.output_path
+                logger.info("✓ Fine-tuned model loaded (trained on PAWS, QQP, STSB, Novels, Source Code)")
+            else:
+                # Fallback to base model
+                logger.warning(f"Fine-tuned model not found at {fine_tune.output_path}")
+                logger.info("Falling back to base SBERT model")
+                self.model = SentenceTransformer(SBERT_MODEL_NAME)
+                self.model_source = 'base'
+                self.model_path = SBERT_MODEL_NAME
+                logger.info(f"✓ Base model loaded: {SBERT_MODEL_NAME}")
+                
+        except ImportError:
+            logger.warning("fine_tuning.py not found, using base model")
+            self.model = SentenceTransformer(SBERT_MODEL_NAME)
+            self.model_source = 'base'
+            self.model_path = SBERT_MODEL_NAME
         except Exception as e:
-            logger.error(f"Error loading semantic model: {e}")
+            logger.error(f"Error loading model: {e}")
             self.model = None
             self.model_source = 'error'
             
@@ -741,5 +744,4 @@ def analyze_document_file(file_path: str, corpus_sentences: Optional[List[str]] 
         Complete analysis results
     """
     pipeline = DocumentAnalysisPipeline(corpus_sentences)
-
     return pipeline.analyze_document(file_path)

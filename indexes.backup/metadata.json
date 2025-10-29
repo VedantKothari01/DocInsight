@@ -1,0 +1,7 @@
+{
+  "index_type": "IndexFlatIP",
+  "dimension": 384,
+  "num_vectors": 6716,
+  "chunk_count": 6716,
+  "build_timestamp": "2025-10-29 01:21:43.354388"
+}

@@ -101,7 +101,7 @@ import os
 
 # Model paths and configuration
 MODEL_BASE_NAME = SBERT_MODEL_NAME  # Base model for semantic similarity
-MODEL_FINE_TUNED_PATH = 'models/semantic_local/'  # Path for fine-tuned model
+MODEL_FINE_TUNED_PATH = 'models/fine_tuned_sbert/'  # Path for fine-tuned model
 USE_FINE_TUNED_MODEL = os.getenv('DOCINSIGHT_USE_FINE_TUNED', 'true').lower() == 'true'
 FORCE_RETRAIN = os.getenv('DOCINSIGHT_FORCE_RETRAIN', 'false').lower() == 'true'
 EXTENDED_CORPUS_ENABLED = os.getenv('DOCINSIGHT_EXTENDED_CORPUS', 'true').lower() == 'true'
